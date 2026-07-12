@@ -28,7 +28,7 @@ Pick the first `not-started` item whose dependencies are all `done`. Don't skip 
 - **Done when**: `gh api repos/.../` shows `allow_merge_commit=false` + `allow_rebase_merge=false` + `delete_branch_on_merge=true`. Approval/enforce_admins/CodeQL are documented-deferred, not blockers for closing this item.
 
 ### BL-02 — Editorial independence / conflict-of-interest policy
-- **Status**: not-started
+- **Status**: done (2026-07-12) — published at `/politica-editorial.html`, anchor `#firewall` for cross-links. `BL-05` (methodology) and `BL-29` (B2B pricing) must link `#firewall` when they ship.
 - **Depends on**: nothing — must exist before BL-29 (B2B) launches, published alongside BL-05
 - **Why**: `business-model.md` Product 2 sells featured candidate profiles. A "neutral aggregator" that also takes candidate money needs an explicit firewall (paying for a featured profile never changes poll numbers or aggregation) or the core differentiator (trust) collapses.
 - **In**: public policy statement — what's for sale (visibility, verified badge) vs. never for sale (poll results, methodology, rankings)
