@@ -56,7 +56,7 @@ Pick the first `not-started` item whose dependencies are all `done`. Don't skip 
 - **Done when**: `styles.css` tokens match the values above, `docs/engineering-standards.md` §6 documents them with hex codes, and `politica-editorial.html` renders with the new system (contrast re-verified ≥ WCAG AA, same method as `BL-02`'s checklist).
 
 ### BL-05 — Legal & attribution policy (content republication, JNE photos, judicial records)
-- **Status**: not-started
+- **Status**: done (2026-07-12) — published at `/fuentes-correcciones.html`, anchor `#fuentes-correcciones`. Correction channel: GitHub Issues (real, working today — formal contact via `BL-06` later). `BL-14`/`BL-24` must link `#fuentes-correcciones` when they ship; `BL-24` wording updated to a re-review gate.
 - **Depends on**: nothing — must be settled before BL-14 (publishes third-party poll data) and BL-24 (publishes judicial records)
 - **Why**: this site republishes third-party pollster data, JNE candidate photos, and (BL-24) candidate judicial records. Each carries a distinct legal risk that, for a solo operator, is the highest-consequence area of the whole project. Constraint 8 in `CLAUDE.md` makes the principle binding; this item is where the concrete rules get written.
 - **In**:
@@ -254,7 +254,7 @@ Pick the first `not-started` item whose dependencies are all `done`. Don't skip 
 
 ### BL-24 — Candidate judicial record badge
 - **Status**: not-started
-- **Depends on**: BL-05 (correction process + attribution rule), BL-11
+- **Depends on**: BL-05 (re-review gate — not just "BL-05 exists," this item's own tasks must re-read `fuentes-correcciones.html` and confirm the correction process still matches what's being built before shipping, per `BL-05`'s `design.md` decision 4, same pattern as `BL-03`→`BL-25`), BL-11
 - **Entities**: #5 Judicial records/flags
 - **Reference**: simulatuvoto's `CandidatoFlags`/`BadgeAntecedente` — reusable, needs a JNE hoja-de-vida source
 - **In**: visual badge on the candidate fact sheet if they have a sentence/prior office, with "source: JNE + date" (BL-05), for the pilot district
