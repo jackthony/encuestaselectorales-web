@@ -18,14 +18,14 @@ Pick the first `not-started` item whose dependencies are all `done`. Don't skip 
 ## Phase 0 — Governance & legal (FIRST — no external data needed, de-risks everything after)
 
 ### BL-01 — GitHub repo hardening (solo-operator posture)
-- **Status**: not-started
+- **Status**: done (2026-07-12) — squash-only, `delete_branch_on_merge`, wiki off, topics set, verified via `gh api`. `has_projects` didn't apply (likely deprecated repo-level field, not blocking). CodeQL deferred to first `.js` file (BL-06/BL-11) — see `devsecops.md`.
 - **Depends on**: nothing
 - **Reference**: `docs/devsecops.md` (audited gaps + exact `gh` commands)
 - **Why first**: `main` auto-deploys to production with no staging (`CLAUDE.local.md`), so the PR gate is the only safety net.
 - **Solo-operator constraint**: GitHub won't let you approve your own PR. So `required_approving_review_count=1` + `enforce_admins=on` would deadlock the only maintainer — you could never merge. Those two wait until a 2nd maintainer joins. Today's hardening is everything that tightens safety WITHOUT needing a second human.
-- **In** (apply now): keep PR-required, squash-only merges, `delete_branch_on_merge` on, CodeQL default setup on. Keep `approvals=0` and `enforce_admins=off` (deliberate, solo). Settings changes — **user runs the `gh` commands** (access-control changes; see `devsecops.md`).
-- **Out**: required approval + `enforce_admins` (defer to 2nd-maintainer day); required status checks (needs CI — BL-20)
-- **Done when**: `gh api repos/.../` shows `allow_merge_commit=false` + `allow_rebase_merge=false` + `delete_branch_on_merge=true`, and CodeQL default setup is `configured`. A backlog note records that approval+enforce_admins are intentionally deferred.
+- **In** (apply now): keep PR-required, squash-only merges, `delete_branch_on_merge` on. Keep `approvals=0` and `enforce_admins=off` (deliberate, solo). Settings changes — **user runs the `gh` commands** (access-control changes; see `devsecops.md`).
+- **Out**: required approval + `enforce_admins` (defer to 2nd-maintainer day); required status checks (needs CI — BL-20); CodeQL default setup — **tried, GitHub rejected it**: repo is 100% HTML today (`gh api .../languages` → `{"HTML":2291}`), 0 JS/TS files, CodeQL doesn't scan plain HTML. Re-attempt once the first `.js` lands (BL-06/BL-11).
+- **Done when**: `gh api repos/.../` shows `allow_merge_commit=false` + `allow_rebase_merge=false` + `delete_branch_on_merge=true`. Approval/enforce_admins/CodeQL are documented-deferred, not blockers for closing this item.
 
 ### BL-02 — Editorial independence / conflict-of-interest policy
 - **Status**: not-started

@@ -11,20 +11,21 @@
 | Secret scanning push protection | `enabled` | Good, no action — blocks commits containing known secret patterns |
 | Dependabot security updates | `enabled` | Good, no action |
 | Dependabot vulnerability alerts | `enabled` (204 on `/vulnerability-alerts`) | Good, no action |
-| CodeQL (code scanning) | `not-configured` | **Gap** — free one-click "default setup" for public repos, currently off (fixed by BL-01) |
+| CodeQL (code scanning) | `not-configured` | **Deferred, not a gap** — tried BL-01, GitHub rejected: repo language is 100% HTML (`gh api .../languages` → `{"HTML":2291}`), 0 JS/TS files exist. CodeQL doesn't scan plain HTML. Re-run the same command once the first `.js` file lands (naturally BL-06/BL-11, `validate-data.js`) |
 | GitHub Actions workflows | `0` | **Gap** — no CI exists (see `backlog.md` BL-20) |
 | Branch protection: PR required | `on` | Good |
 | Branch protection: required approvals | `0` | **Deliberate (solo)** — GitHub blocks self-approval; requiring 1 would deadlock the only maintainer. Raise to 1 when a 2nd maintainer joins. |
 | Branch protection: enforce_admins | `off` | **Deliberate (solo)** — owner must be able to merge; with approvals=0 and no 2nd human, enforcing admins would lock merges. Enable alongside approvals=1 later. |
 | Branch protection: required status checks | none configured | Expected — no CI exists yet (BL-20 fixes this) |
 | Branch protection: force-push / delete | blocked | Good, no action |
-| `delete_branch_on_merge` (repo setting) | `false` | **Gap** — conflicts with the "short-lived branch" policy in `engineering-standards.md`; branches pile up unless deleted manually |
+| `delete_branch_on_merge` (repo setting) | `true` (applied 2026-07-12, BL-01) | Done |
 | Commit signature verification | `off` | Optional — low priority for a solo-maintainer static site |
 | Default Actions workflow permissions | `read` | Good, already secure default — no action, noted for BL-20 (workflows inherit read-only `GITHUB_TOKEN` unless a job explicitly requests more) |
-| Merge strategies | squash + merge-commit + rebase all allowed | **Gap** — allowing all 3 fights the "1 `BL-xx` = 1 clean commit on `main`" model in `engineering-standards.md`; squash-only keeps history 1:1 with the backlog |
+| Merge strategies | squash-only (applied 2026-07-12, BL-01) | Done — history is 1:1 with the backlog |
 | PR template | now exists (`.github/pull_request_template.md`, 2026-07-12) | Done — enforces the BL-xx/TDD-evidence/done-when format from `engineering-standards.md` §4-5 |
-| Wiki / Projects (repo features) | both `enabled`, unused | Minor — `docs/backlog.md` is the single tracker (`CLAUDE.md` execution model); leaving these on invites someone to start a second, conflicting tracker. Low priority to disable. |
-| Repo description/topics | description present, no topics | Cosmetic — topics improve discoverability on a public repo, not a security item |
+| Wiki | `disabled` (applied 2026-07-12, BL-01) | Done |
+| Projects | still `enabled` — PATCH accepted, had no effect | **Known no-op** — `has_projects` is likely a deprecated repo-level field now that GitHub Projects moved to org/user-level; not worth chasing further, doesn't conflict with anything since nobody uses it |
+| Repo topics | `elections`, `peru`, `polls` (applied 2026-07-12, BL-01) | Done |
 
 ## Target state — BL-01 (solo-operator, apply now)
 
@@ -39,9 +40,11 @@ gh api -X PATCH repos/jackthony/encuestaselectorales-web \
 gh api -X PATCH repos/jackthony/encuestaselectorales-web \
   -f allow_squash_merge=true -f allow_merge_commit=false -f allow_rebase_merge=false
 
-# Enable CodeQL default setup (free, public repo)
-gh api -X PATCH repos/jackthony/encuestaselectorales-web/code-scanning/default-setup \
-  -f state=configured -f query_suite=default -f languages[]=javascript-typescript
+# CodeQL default setup — DEFERRED, don't run yet: repo is 100% HTML today,
+# GitHub rejects javascript-typescript with "language not present in repository".
+# Re-run this once the first .js file exists (BL-06/BL-11):
+# gh api -X PATCH repos/jackthony/encuestaselectorales-web/code-scanning/default-setup \
+#   -f state=configured -f query_suite=default -f 'languages[]=javascript-typescript'
 
 # Optional: disable unused surfaces (backlog.md is the single tracker, not Issues/Projects/Wiki)
 gh api -X PATCH repos/jackthony/encuestaselectorales-web \
