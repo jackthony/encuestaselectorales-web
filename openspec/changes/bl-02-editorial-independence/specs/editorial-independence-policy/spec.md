@@ -19,7 +19,7 @@ The page SHALL enumerate, with concrete examples (not just abstract principle), 
 - **THEN** each item names a concrete site feature (e.g. "el % de intención de voto mostrado para un candidato") rather than only an abstract claim (e.g. "somos neutrales")
 
 ### Requirement: Stable anchor for future cross-links
-The page SHALL expose a named HTML anchor (`#firewall`) on the section containing the for-sale/never-for-sale lists, so `BL-05` (methodology page) and `BL-29` (B2B pricing page) can link directly to the commitment, not just the page.
+The page SHALL expose a named HTML anchor (`#firewall`) on the section containing the for-sale/never-for-sale lists, so `BL-06` (methodology page) and `BL-30` (B2B pricing page) can link directly to the commitment, not just the page.
 
 #### Scenario: Anchor resolves to the firewall section
 - **WHEN** `/politica-editorial.html#firewall` is requested

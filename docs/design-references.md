@@ -52,4 +52,4 @@ Reviewed `especiaisg1.globo/.../pesquisas-eleitorais/`:
 
 ## Design conclusion
 
-Neither encuestas.com.pe nor simulatuvoto's poll section show trend charts or a fact sheet (methodology/sample/margin of error). Adopting that standard (538/Datafolha/IEP style: chart + visible fact sheet) is the core differentiation behind `BL-12`/`BL-13`.
+Neither encuestas.com.pe nor simulatuvoto's poll section show trend charts or a fact sheet (methodology/sample/margin of error). Adopting that standard (538/Datafolha/IEP style: chart + visible fact sheet) is the core differentiation behind `BL-13`/`BL-14`.

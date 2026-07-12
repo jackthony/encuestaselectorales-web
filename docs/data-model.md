@@ -21,9 +21,9 @@
 | 13 | Device token / anonymous session | simulatuvoto's `useDeviceToken` | Phase 2 |
 | 14 | Article/News | encuestas.com.pe (blog) — only as an example of what NOT to do without structure | Phase 3 (optional) |
 | 15 | B2B client (paying candidate/party) | Product 2 in `business-model.md` | Phase 3 |
-| 16 | Historical trend (candidate × round) | confirmed gap — no reference shows this (see BL-14 in `backlog.md`) | MVP-adjacent |
-| 17 | Shareable result card | simulatuvoto's `Card*`, adapted to poll results (not a simulator) — see BL-15 | Phase 2 |
-| 18 | Pollster rating / house effect | 538 methodology — see BL-30 | Phase 4 |
+| 16 | Historical trend (candidate × round) | confirmed gap — no reference shows this (see BL-15 in `backlog.md`) | MVP-adjacent |
+| 17 | Shareable result card | simulatuvoto's `Card*`, adapted to poll results (not a simulator) — see BL-16 | Phase 2 |
+| 18 | Pollster rating / house effect | 538 methodology — see BL-31 | Phase 4 |
 
 ---
 
@@ -106,7 +106,7 @@ CREATE TABLE encuesta_respuestas_municipales (
 
 ## 3. Relationship between layers
 
-`resultados-lima.json` = manual snapshot (or exported from the aggregate view once a backend exists). MVP doesn't need a backend — hand-written JSON covers the results view (`BL-13`) and the candidate directory (`BL-10`).
+`resultados-lima.json` = manual snapshot (or exported from the aggregate view once a backend exists). MVP doesn't need a backend — hand-written JSON covers the results view (`BL-14`) and the candidate directory (`BL-11`).
 
 With `encuestadoraId` in `encuesta.json`, a single "Lima Mayoralty" page can list N `encuesta.json` entries (IEP, CPI, Datum, Ipsos, own) for the same `cargo`, each with its own fact sheet and chart — that's what competes directly against `encuestas.com.pe` (which doesn't compare sources) and gets close to the G1/538 pattern (multi-institute aggregation).
 
