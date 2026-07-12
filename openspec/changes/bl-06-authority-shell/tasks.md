@@ -27,4 +27,4 @@
 
 ## 6. PR
 
-- [ ] 6.1 Open PR from `feat/bl-06-authority-shell` into `main`
+- [x] 6.1 Open PR from `feat/bl-06-authority-shell` into `main`
