@@ -37,6 +37,7 @@ main  (protected: PR required, no force-push, no delete)
 At the start of any session touching this repo:
 
 1. Read `docs/backlog.md` **Status** column. Pick the first `not-started` item whose `depends on` are all `done`.
+1b. Check `git config user.email` — must be the GitHub noreply address, not a personal/work email (repo is public). Fix before the first commit if it's wrong. Detail: `docs/devsecops.md` §Git identity.
 2. Check current git branch. If already on `feat/bl-xx-*` mid-work, resume that item — don't start a new one.
 3. Confirm `openspec/changes/bl-xx-slug/` exists for the item. If not, propose it first (spec-before-code is mandatory, see `~/.claude/OPENSPEC.md`).
 4. Stay inside that branch/spec scope. One `BL-xx` per session unless the user explicitly asks for more.
