@@ -90,6 +90,25 @@ Checked available MCP servers and skills — no GitHub-specific MCP server or sk
 - `BL-22` — Cloudflare in front of Hostinger (DDoS/bot protection, not a GitHub setting but same "production security" concern)
 - `BL-26` — anti-abuse for the own-poll backend (Phase 7)
 
+## Git identity — mandatory, public repo
+
+Repo is public — every commit's `Author` field is permanently visible, scrapable, and indexable, whether or not a `Co-authored-by` trailer is added. This applies to every repo of this user's, not just this one.
+
+**Incident (2026-07-12)**: 7 commits already merged to `main` carry `JackAcity <jaaguilar@acity.com.pe>` — a real work email, exposed because Claude Code's Bash-driven commits inherited the machine's global `git config` (personal identity, not meant for public disclosure). Decision: leave those 7 commits as-is (rewriting public history needs a force-push, blocked by branch protection, and forks/GitHub cache could retain the old data anyway — not worth the risk for what's already out). Fixed going forward instead.
+
+**Mandatory rule — set on every repo before the first commit, not after**:
+
+```bash
+git config user.name "Jack Aguilar"
+git config user.email "43307950+jackthony@users.noreply.github.com"
+```
+
+This is a **repo-local** `git config` (no `--global`) — it overrides the machine's personal-identity default scoped to this repo only, using GitHub's own privacy-preserving noreply address (`<id>+<username>@users.noreply.github.com`, found via the account's GitHub settings or `gh api user`). Never let a real personal/work email reach a commit author field in a public repo.
+
+**Session-start check**: before the first commit in any repo touched this session, run `git config user.email` — if it prints a personal/work address instead of the noreply one, fix it before committing, not after.
+
+No `Co-authored-by: Claude...` trailer, ever (existing preference). No `Co-authored-by: Jack Aguilar...` trailer either — the `Author` field already carries that once the identity above is set; a trailer would just duplicate it.
+
 ## Secrets policy (for when Track E lands)
 
 No secrets exist in this repo today (fully static, no API keys). When Track E (own-poll backend) ships:
