@@ -1,0 +1,19 @@
+CLAUDE.local.md
+.claude/settings.local.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Env / secrets (Track E backend, when it lands)
+.env
+.env.local
+.env*.local
+
+# Node (BL-20 CI tooling, when it lands)
+node_modules/
+npm-debug.log*
