@@ -50,7 +50,7 @@
 | Trend chart | 538, Datafolha | To build |
 | Interactive own poll (online opt-in) | encuestas.com.pe (same mechanism, better honesty) | To build |
 | Candidate directory per district (with judicial records if applicable) | simulatuvoto `/candidatos` + `CandidatoFlags` | Reusable from simulatuvoto |
-| Lima landing (district nav) | encuestas.com.pe (structure, not branding) | Planned (`BL-09`) |
+| Lima landing (district nav) | encuestas.com.pe (structure, not branding) | Planned (`BL-10`) |
 
 **Model**: free. Generates traffic/SEO and credibility — the base the paid products stand on.
 

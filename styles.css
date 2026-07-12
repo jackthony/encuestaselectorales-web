@@ -1,11 +1,23 @@
 /* Shared design tokens + base rules — one file until it's demonstrably too large (docs/engineering-standards.md §0) */
+/* Values sourced from the harness `dataviz` skill's validated reference palette (BL-04) — not invented hex. */
 :root {
-  --bg: #0b1220;
-  --bg-elevated: #111a2e;
-  --text: #e6edf7;
-  --muted: #93a4bf;
-  --accent: #3b82f6;
-  --border: rgba(148, 163, 184, 0.18);
+  --bg: #f9f9f7;         /* page plane */
+  --surface: #fcfcfb;    /* card/surface */
+  --text: #0b0b0b;       /* primary ink */
+  --muted: #52514e;      /* secondary ink (body text) */
+  --muted-2: #898781;    /* axis/label-weight muted, reserved for lower-emphasis text */
+  --accent: #2a78d6;       /* == dataviz reference categorical slot 1 (blue), shared with future charts (BL-13). Non-text use only (borders/tints, 3:1 bar) — fails 4.5:1 as flat text (4.19:1, verified). */
+  --accent-text: #256abf;  /* same hue, ramp step 500 — for accent used AS text/bullets (5.12:1, passes AA) */
+  --border: rgba(11, 11, 11, 0.10);
+
+  /* Status colors — reserved, not yet used on any page (BL-14/BL-24 will draw from these) */
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+
+  --font-heading: ui-serif, Georgia, "Times New Roman", serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 * {
@@ -20,7 +32,7 @@ body {
 }
 
 body {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-body);
   color: var(--text);
   background: var(--bg);
   line-height: 1.6;
@@ -33,12 +45,16 @@ main {
 }
 
 h1 {
+  font-family: var(--font-heading);
+  font-weight: 700;
   font-size: clamp(24px, 5vw, 34px);
   line-height: 1.2;
   margin-bottom: 12px;
 }
 
 h2 {
+  font-family: var(--font-heading);
+  font-weight: 700;
   font-size: clamp(18px, 3.5vw, 22px);
   margin: 32px 0 12px;
 }
@@ -63,7 +79,7 @@ li::before {
   content: "•";
   position: absolute;
   left: 4px;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .tag {
@@ -71,9 +87,9 @@ li::before {
   font-size: 12px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--accent);
-  border: 1px solid rgba(59, 130, 246, 0.35);
-  background: rgba(59, 130, 246, 0.08);
+  color: var(--accent-text);
+  border: 1px solid rgba(42, 120, 214, 0.35);
+  background: rgba(42, 120, 214, 0.08);
   padding: 4px 10px;
   border-radius: 999px;
   margin-bottom: 8px;
@@ -88,7 +104,7 @@ footer {
 }
 
 footer a {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 @media (min-width: 768px) {

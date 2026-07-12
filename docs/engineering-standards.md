@@ -7,14 +7,14 @@
 ## 0. File & folder layout (ponytail: flattest structure that works, extend only when 2+ pages actually need it)
 
 ```
-/index.html                  landing (placeholder today, BL-09 replaces it)
+/index.html                  landing (placeholder today, BL-10 replaces it)
 /politica-editorial.html     BL-02 — one file per public page, flat, matches index.html precedent
-/<slug>.html                 future single pages (BL-03 privacy, BL-04 legal, BL-05 methodology/about...)
-/distritos/<slug>.html       future per-district pages (BL-10+) — only district content nests, everything else stays flat
+/<slug>.html                 future single pages (BL-03 privacy, BL-05 legal, BL-06 methodology/about...)
+/distritos/<slug>.html       future per-district pages (BL-11+) — only district content nests, everything else stays flat
 /styles.css                  ONE shared stylesheet: design tokens (CSS custom properties, §6) + base rules. Split into more files only when styles.css is demonstrably too large to navigate — not preemptively.
 /data/*.json                 hand-written data (distrito.json, partido.json, candidato.json, encuesta.json, encuestadora.json — shapes in docs/data-model.md)
-/img/                        candidate photos, logos (added when BL-08/BL-10 need them)
-/scripts/validate-data.js    BL-20 CI check — plain node, no dependencies
+/img/                        candidate photos, logos (added when BL-09/BL-11 need them)
+/scripts/validate-data.js    BL-21 CI check — plain node, no dependencies
 ```
 
 No `src/`, no build output folder, no component/framework directory — there's no build step (`CLAUDE.md` Stack), so there's nothing to compile into anything. One folder nests (`/distritos/`) because 43 pages sharing a pattern genuinely need it; nothing else does yet. Don't add `/pages/`, `/components/`, `/assets/` subdivisions ahead of a second thing that would go in them — extend this list in the same PR that first needs the new location, not before.
@@ -85,8 +85,8 @@ Static site, no build → lightweight checks, no heavy framework (Jest/Vitest wo
 | What's checked | How (no new dependencies) | Kind |
 |---|---|---|
 | Data shape (`distrito.json`, `partido.json`, `candidato.json`, `encuesta.json`) | `scripts/validate-data.js` (pure `node`, no libs) — required fields, unique ids, cross-refs (`encuestadoraId` in catalog, `distritoId` exists). `node scripts/validate-data.js` | **Logic — test-first**: write the check for the new field/ref before the JSON has it, watch it fail, then add data |
-| % math / parsing in any JS (e.g. BL-12 chart, BL-14 trend delta) | `assert`-based mini-test next to the function | **Logic — test-first** |
-| Base accessibility (BL-19) | axe DevTools on every new page | Checklist (not a red/green test) |
+| % math / parsing in any JS (e.g. BL-13 chart, BL-15 trend delta) | `assert`-based mini-test next to the function | **Logic — test-first** |
+| Base accessibility (BL-20) | axe DevTools on every new page | Checklist (not a red/green test) |
 | Responsive (§7) | Manual check at the 3 breakpoints | Checklist |
 | Valid HTML | W3C Validator (or one-off `npx html-validate`) | Checklist |
 
@@ -96,7 +96,29 @@ Ponytail rule on tooling: mini-tests stay `assert`-based and framework-free unti
 
 - **Mobile-first**: CSS defaults to mobile, widens via `min-width` media queries — never the reverse.
 - **Design tokens as CSS custom properties** (`:root { --color-... }`), no repeated hardcoded values. Neutral palette for site chrome (nav, background, text) — **party colors live only in the data** (`partido.color`), never in layout, same principle as simulatuvoto's `columna-tokens.ts` (keep political brand color separate from UI color).
-- Charts (BL-12, trend): follow the `dataviz` skill before picking colors/shapes — already available in the harness, use it when building that component.
+
+### Visual identity (BL-04) — concrete values, `styles.css`
+
+Source: harness `dataviz` skill's validated reference palette (`references/palette.md`), light theme. Not invented hex.
+
+| Token | Hex | Role |
+|---|---|---|
+| `--bg` | `#f9f9f7` | page plane |
+| `--surface` | `#fcfcfb` | card/surface |
+| `--text` | `#0b0b0b` | primary ink (18.67:1 on `--bg`) |
+| `--muted` | `#52514e` | secondary ink / body text (7.53:1 on `--bg`) |
+| `--muted-2` | `#898781` | reserved, lower-emphasis text |
+| `--accent` | `#2a78d6` | non-text only (borders/tints, 3:1 bar) — **fails 4.5:1 as flat text (4.19:1, measured)**. == future chart categorical slot 1 (BL-13 continuity) |
+| `--accent-text` | `#256abf` | accent used AS text/bullets/links — same hue, ramp step 500 (5.12:1 on `--bg`, passes AA) |
+| `--border` | `rgba(11,11,11,0.10)` | hairline |
+
+Status colors (reserved, not applied on any page yet — for `BL-14`/`BL-24`): `--status-good #0ca30c`, `--status-warning #fab219`, `--status-serious #ec835a`, `--status-critical #d03b3b`.
+
+**Rule**: never use `--accent` where text renders on it directly (link color, label color, bullet glyphs) — always `--accent-text` for that. `--accent` is for borders/background tints/future chart series only. This distinction exists because the reference palette's slot-1 blue was validated for UI/chart non-text contrast (≥3:1), not the stricter 4.5:1 required for body-sized text — verify contrast per use, don't assume a palette value that passes for one role passes for all roles.
+
+**Typography**: headings `ui-serif, Georgia, "Times New Roman", serif` (editorial character, zero webfonts/external requests). Body `system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`.
+
+- Charts (BL-13, trend): follow the `dataviz` skill before picking colors/shapes — already available in the harness, use it when building that component. Reuse `--accent` as categorical slot 1 for continuity with site chrome.
 - No JS framework dependency — vanilla JS, same criterion as the already-locked stack decision.
 
 ## 7. Responsive

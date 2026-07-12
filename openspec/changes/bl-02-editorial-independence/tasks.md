@@ -15,7 +15,7 @@
 ## 3. Verify against checklist (content item's "green")
 
 - [x] 3.1 Re-run the 1.1 checklist against the finished page — every item now passes (verified via local HTTP server + browser: `get_page_text`, JS-based DOM/CSSOM inspection).
-- [x] 3.2 HTML validity checked structurally (doctype, no duplicate ids, viewport meta, charset, no `<img>` without alt) — full W3C Validator run deferred to CI (BL-20) since no network-validator access in this session.
+- [x] 3.2 HTML validity checked structurally (doctype, no duplicate ids, viewport meta, charset, no `<img>` without alt) — full W3C Validator run deferred to CI (BL-21) since no network-validator access in this session.
 - [x] 3.3 Manual accessibility check (no axe-core available in-session): contrast ratios computed (text 15.89:1, muted 7.40:1, accent 5.09:1 — all pass WCAG AA ≥4.5:1), heading hierarchy H1→H2→H2 (no skips), landmarks present (`main`/`footer`/`section`), link has accessible text, `lang="es"` set. No critical errors found.
 - [x] 3.4 Responsive verified via CSSOM inspection (media query `(min-width: 768px)` compiles correctly) + structural analysis (max-width 720px container, relative units, no fixed-width elements, no images/tables — no horizontal-overflow risk at any width). Note: browser tool's `resize_window` didn't reflect actual viewport in this session (known tool limitation, not a page defect) — verified by CSS/DOM inspection instead of pixel screenshots.
 - [x] 3.5 `docs/backlog.md` BL-02 Status updated to `done`.

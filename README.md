@@ -18,7 +18,7 @@ Everything not obvious from the code lives in `docs/` (English, one file = one r
 
 | File | Answers |
 |---|---|
-| `docs/backlog.md` | What to build, when, current status — `BL-01`…`BL-30`, numbered in execution order |
+| `docs/backlog.md` | What to build, when, current status — `BL-01`…`BL-31`, numbered in execution order |
 | `docs/data-model.md` | What each data object is (entity index + JSON shapes) |
 | `docs/business-model.md` | Why the product exists — positioning, monetization |
 | `docs/design-references.md` | Raw competitor/reference research (facts only) |
