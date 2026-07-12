@@ -64,6 +64,10 @@ p {
   margin-bottom: 16px;
 }
 
+a {
+  color: var(--accent-text);
+}
+
 ul {
   list-style: none;
   margin-bottom: 16px;
@@ -101,10 +105,6 @@ footer {
   border-top: 1px solid var(--border);
   font-size: 13px;
   color: var(--muted);
-}
-
-footer a {
-  color: var(--accent-text);
 }
 
 @media (min-width: 768px) {
