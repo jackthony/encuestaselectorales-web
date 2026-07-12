@@ -71,7 +71,7 @@ Pick the first `not-started` item whose dependencies are all `done`. Don't skip 
 ## Phase 1 — Authority & audience (no external data needed; compounds while waiting for JNE)
 
 ### BL-06 — Authority shell + social media content plan
-- **Status**: not-started
+- **Status**: done (2026-07-12) — published `/metodologia.html` and `/quienes-somos.html`; WhatsApp (`wa.me/51971388435`) + methodology/about links added to the shared footer across all published pages; project email not yet set up, shown as pending rather than a fabricated address; social content plan at `docs/social-content-plan.md` (today → Aug 5 2026).
 - **Depends on**: BL-02 (link the editorial policy), BL-05 (link the sources/corrections page)
 - **Why**: confirmed JNE calendar — election Oct 4, 2026; admitted candidate lists Aug 5; final candidacies Sept 5. Today (Jul 12) no official candidate or municipal-poll data exists. The only controllable lever now is authority + audience.
 - **Reference**: AAPOR/IEP-style public methodology (`design-references.md`), "platform, not opinion" positioning from simulatuvoto's `ESTRATEGIA-NEGOCIO.md`
