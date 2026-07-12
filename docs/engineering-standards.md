@@ -4,7 +4,20 @@
 
 ---
 
-## 1. Branch topology (DevOps)
+## 0. File & folder layout (ponytail: flattest structure that works, extend only when 2+ pages actually need it)
+
+```
+/index.html                  landing (placeholder today, BL-09 replaces it)
+/politica-editorial.html     BL-02 — one file per public page, flat, matches index.html precedent
+/<slug>.html                 future single pages (BL-03 privacy, BL-04 legal, BL-05 methodology/about...)
+/distritos/<slug>.html       future per-district pages (BL-10+) — only district content nests, everything else stays flat
+/styles.css                  ONE shared stylesheet: design tokens (CSS custom properties, §6) + base rules. Split into more files only when styles.css is demonstrably too large to navigate — not preemptively.
+/data/*.json                 hand-written data (distrito.json, partido.json, candidato.json, encuesta.json, encuestadora.json — shapes in docs/data-model.md)
+/img/                        candidate photos, logos (added when BL-08/BL-10 need them)
+/scripts/validate-data.js    BL-20 CI check — plain node, no dependencies
+```
+
+No `src/`, no build output folder, no component/framework directory — there's no build step (`CLAUDE.md` Stack), so there's nothing to compile into anything. One folder nests (`/distritos/`) because 43 pages sharing a pattern genuinely need it; nothing else does yet. Don't add `/pages/`, `/components/`, `/assets/` subdivisions ahead of a second thing that would go in them — extend this list in the same PR that first needs the new location, not before.
 
 ```
 main  (protected: PR required, no force-push, no delete)

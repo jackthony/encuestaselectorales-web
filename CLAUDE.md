@@ -39,7 +39,7 @@ Static HTML/CSS/JS. No build, no framework. Hostinger auto-deploys `main` → `e
 | `docs/data-model.md` | What each data object is — entity index + JSON shapes |
 | `docs/business-model.md` | Why the product exists — positioning, monetization |
 | `docs/design-references.md` | Raw competitor/reference research (facts only) |
-| `docs/engineering-standards.md` | How to build — branches, session protocol, commits, PRs, tests, UX, responsive |
+| `docs/engineering-standards.md` | How to build — file/folder layout, branches, session protocol, commits, PRs, tests, UX, responsive |
 | `docs/devsecops.md` | Repo/production security posture, audited against real GitHub settings |
 
 Own reference (same author/agency, private): `github.com/jackthony/simulatuvoto` — schema, SEO, accessibility, anti-abuse, and virality patterns already proven in production, cited per backlog item where reused.
