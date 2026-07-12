@@ -11,7 +11,7 @@
 | Secret scanning push protection | `enabled` | Good, no action — blocks commits containing known secret patterns |
 | Dependabot security updates | `enabled` | Good, no action |
 | Dependabot vulnerability alerts | `enabled` (204 on `/vulnerability-alerts`) | Good, no action |
-| CodeQL (code scanning) | `not-configured` | **Deferred, not a gap** — tried BL-01, GitHub rejected: repo language is 100% HTML (`gh api .../languages` → `{"HTML":2291}`), 0 JS/TS files exist. CodeQL doesn't scan plain HTML. Re-run the same command once the first `.js` file lands (naturally BL-07/BL-12, `validate-data.js`) |
+| CodeQL (code scanning) | `not-configured` | **Follow-up, not a gap** — tried BL-01, GitHub rejected: repo was 100% HTML then (`{"HTML":2291}`, 0 JS/TS files). `BL-07` added the first `.js` file (`scripts/validate-data.js`) — re-run the `gh api .../code-scanning/default-setup` command below (access-control change, user runs it) now that JS exists in the repo |
 | GitHub Actions workflows | `0` | **Gap** — no CI exists (see `backlog.md` BL-21) |
 | Branch protection: PR required | `on` | Good |
 | Branch protection: required approvals | `0` | **Deliberate (solo)** — GitHub blocks self-approval; requiring 1 would deadlock the only maintainer. Raise to 1 when a 2nd maintainer joins. |
@@ -40,11 +40,11 @@ gh api -X PATCH repos/jackthony/encuestaselectorales-web \
 gh api -X PATCH repos/jackthony/encuestaselectorales-web \
   -f allow_squash_merge=true -f allow_merge_commit=false -f allow_rebase_merge=false
 
-# CodeQL default setup — DEFERRED, don't run yet: repo is 100% HTML today,
-# GitHub rejects javascript-typescript with "language not present in repository".
-# Re-run this once the first .js file exists (BL-07/BL-12):
-# gh api -X PATCH repos/jackthony/encuestaselectorales-web/code-scanning/default-setup \
-#   -f state=configured -f query_suite=default -f 'languages[]=javascript-typescript'
+# CodeQL default setup — ready to run: BL-07 added the first .js file
+# (scripts/validate-data.js), so javascript-typescript is now a real
+# language in the repo.
+gh api -X PATCH repos/jackthony/encuestaselectorales-web/code-scanning/default-setup \
+  -f state=configured -f query_suite=default -f 'languages[]=javascript-typescript'
 
 # Optional: disable unused surfaces (backlog.md is the single tracker, not Issues/Projects/Wiki)
 gh api -X PATCH repos/jackthony/encuestaselectorales-web \

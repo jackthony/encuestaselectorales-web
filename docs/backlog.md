@@ -89,7 +89,7 @@ Pick the first `not-started` item whose dependencies are all `done`. Don't skip 
 ## Phase 2 — Data foundation (nothing renders without this)
 
 ### BL-07 — 43 Lima district catalog
-- **Status**: not-started
+- **Status**: done (2026-07-12) — `data/distrito.json` (43 records) + `scripts/validate-data.js` (first `.js` file in the repo, test-first: watched it fail against a missing file, then added data to green). CodeQL default-setup re-attempt is an access-control change the user runs via `gh` (`docs/devsecops.md`) — documented as a follow-up, not blocking this item, same precedent as `BL-01`.
 - **Depends on**: nothing
 - **Entities**: #1 District
 - **Reference**: `encuestas.com.pe` nav dropdown (43 districts in `design-references.md`)
