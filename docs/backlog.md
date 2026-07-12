@@ -36,7 +36,7 @@ Pick the first `not-started` item whose dependencies are all `done`. Don't skip 
 - **Done when**: policy published and linked from the methodology page and any future B2B pricing page
 
 ### BL-03 — Privacy policy
-- **Status**: not-started
+- **Status**: done (2026-07-12) — published at `/politica-privacidad.html`, anchor `#compromiso` for cross-links. `BL-06` (methodology) must link `#compromiso` when it ships. `BL-25` re-review gate wording fixed to match this item's spec.
 - **Depends on**: nothing to publish a baseline now; must be complete before BL-25 (own-poll data collection) goes live
 - **Why**: Peru's Ley de Protección de Datos Personales (29733) applies once real personal data is collected.
 - **In**: explicit "what we collect / what we never collect" —
@@ -267,7 +267,7 @@ Pick the first `not-started` item whose dependencies are all `done`. Don't skip 
 
 ### BL-25 — Own-poll collection schema
 - **Status**: not-started
-- **Depends on**: BL-23 validated (demand to activate), BL-03 (privacy policy complete — hard gate)
+- **Depends on**: BL-23 validated (demand to activate), BL-03 (re-review gate — not just "BL-03 exists," this item's own tasks must re-read `politica-privacidad.html` and confirm it still matches what's being built before shipping, per `BL-03`'s `design.md` decision 2)
 - **Entities**: #11 Individual response, #12 Public aggregate view, #13 Device token
 - **Reference**: simulatuvoto's `001_encuesta_respuestas.sql` — same stratification enums (sex/age/NSE/zone/likely_voter/firmness), national → district scope
 - **In**: out of scope until Phase 6 is validated — placeholder to hold the reference
