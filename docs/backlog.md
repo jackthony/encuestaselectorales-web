@@ -89,7 +89,7 @@ Pick the first `not-started` item whose dependencies are all `done`. Don't skip 
 ## Phase 2 — Data foundation (nothing renders without this)
 
 ### BL-07 — 43 Lima district catalog
-- **Status**: not-started
+- **Status**: done (2026-07-13) — `data/distrito.json` (43 records) + `scripts/validate-distritos.js` (count/required-fields/slug-format/uniqueness), TDD red→green per `CLAUDE.md` constraint 7.
 - **Depends on**: nothing
 - **Entities**: #1 District
 - **Reference**: `encuestas.com.pe` nav dropdown (43 districts in `design-references.md`)
