@@ -1,0 +1,10 @@
+[
+  { "id": 1, "nombre": "Renovación Popular", "siglas": "RP", "color": "#B22222", "logo": null },
+  { "id": 2, "nombre": "Podemos Perú", "siglas": "PP", "color": "#00A99D", "logo": null },
+  { "id": 3, "nombre": "Avanza País - Partido de Integración Social", "siglas": "AVP", "color": "#F58220", "logo": null },
+  { "id": 4, "nombre": "Alianza para el Progreso", "siglas": "APP", "color": "#ED1C24", "logo": null },
+  { "id": 5, "nombre": "Partido Democrático Somos Perú", "siglas": "SP", "color": "#009444", "logo": null },
+  { "id": 6, "nombre": "Acción Popular", "siglas": "AP", "color": "#6EC6E8", "logo": null },
+  { "id": 7, "nombre": "Partido Morado", "siglas": "PM", "color": "#6A1B9A", "logo": null },
+  { "id": 8, "nombre": "Fuerza Popular", "siglas": "FP", "color": "#FF6B00", "logo": null }
+]

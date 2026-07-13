@@ -107,10 +107,10 @@ Pick the first `not-started` item whose dependencies are all `done`. Don't skip 
 - **Done when**: 5 records exist with id/name/type/website
 
 ### BL-09 — Parties and candidates, 1 pilot district
-- **Status**: not-started
+- **Status**: done (2026-07-13) — `data/partido.json` (8 records) + `data/candidato.json` (8 records): the real, ONPE/JNE-reported 2022 Miraflores mayoral race (winner: Carlos Canales, Renovación Popular), used as the documented historical set this item's own backlog note allows before real 2026 JNE data exists (Aug 5). Every candidate `activo: false` so it can't be mistaken for a 2026 claim; `foto`/`numero`/`logo` are `null` (not sourced/verified yet — `BL-11` follow-up). `scripts/validate-partidos.js` + `scripts/validate-candidatos.js` (cross-ref distritoId/partidoId), TDD red→green per `CLAUDE.md` constraint 7.
 - **Depends on**: BL-07
 - **Entities**: #3 Party, #4 Candidate
-- **OPEN DECISION**: which district is the pilot is not yet chosen — pick one with real available data and manageable candidate count before proposing this spec. Blocks the whole Phase 2→4 chain until named.
+- **Pilot district: Miraflores** (decided 2026-07-13, user call) — high media profile, historically a concentrated race (few strong candidates), good showcase district before real 2026 data exists.
 - **Reference**: simulatuvoto's `partidos.ts`/`Candidato` (shape); real data = JNE municipal lists (available after Aug 5 — before that, use a documented dummy/historical set to unblock the stack)
 - **In**: 1 full district (mayoral candidates) as an end-to-end test case
 - **Out**: the other 42 districts (replicated by data later, BL-28)

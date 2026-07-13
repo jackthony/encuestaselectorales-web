@@ -1,0 +1,10 @@
+[
+  { "id": 1, "nombre": "Carlos Fernando Canales Anchorena", "partidoId": 1, "cargo": "alcalde_distrital", "distritoId": "miraflores", "foto": null, "numero": null, "activo": false },
+  { "id": 2, "nombre": "María Rocío Cano Guerinoni", "partidoId": 2, "cargo": "alcalde_distrital", "distritoId": "miraflores", "foto": null, "numero": null, "activo": false },
+  { "id": 3, "nombre": "Alessandra Camila Krause Alva", "partidoId": 3, "cargo": "alcalde_distrital", "distritoId": "miraflores", "foto": null, "numero": null, "activo": false },
+  { "id": 4, "nombre": "Manuel Alejandro Masías Oyanguren", "partidoId": 4, "cargo": "alcalde_distrital", "distritoId": "miraflores", "foto": null, "numero": null, "activo": false },
+  { "id": 5, "nombre": "Ernesto Javier Mendoza De La Puente", "partidoId": 5, "cargo": "alcalde_distrital", "distritoId": "miraflores", "foto": null, "numero": null, "activo": false },
+  { "id": 6, "nombre": "Sergio Manuel Meza Salazar", "partidoId": 6, "cargo": "alcalde_distrital", "distritoId": "miraflores", "foto": null, "numero": null, "activo": false },
+  { "id": 7, "nombre": "Diego Sebastián Mora Olivares", "partidoId": 7, "cargo": "alcalde_distrital", "distritoId": "miraflores", "foto": null, "numero": null, "activo": false },
+  { "id": 8, "nombre": "Sitza Lita Romero Peralta", "partidoId": 8, "cargo": "alcalde_distrital", "distritoId": "miraflores", "foto": null, "numero": null, "activo": false }
+]
