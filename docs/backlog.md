@@ -98,7 +98,7 @@ Pick the first `not-started` item whose dependencies are all `done`. Don't skip 
 - **Done when**: all 43 districts exist as records with a stable id slug (URL-usable)
 
 ### BL-08 — Pollster catalog
-- **Status**: not-started
+- **Status**: done (2026-07-13) — `data/encuestadora.json` (5 records: `iep`/`ipsos`/`datum`/`cpi`/`propia`) + `scripts/validate-encuestadoras.js` (count/required-fields/slug-format/uniqueness/tipo-enum), TDD red→green per `CLAUDE.md` constraint 7.
 - **Depends on**: nothing (parallel to BL-07)
 - **Entities**: #6 Pollster
 - **Reference**: `design-references.md` (IEP, Ipsos, Datum, CPI + own)
