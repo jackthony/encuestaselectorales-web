@@ -1,0 +1,17 @@
+[
+  {
+    "id": "2022-miraflores-alcaldia-ejemplo",
+    "cargo": "alcalde_distrital",
+    "ambito": "distrital",
+    "distritoId": "miraflores",
+    "fechaInicio": "2022-08-15",
+    "fechaFin": "2022-09-01",
+    "tamanoMuestra": 400,
+    "margenError": 4.9,
+    "nivelConfianza": 95,
+    "modalidad": "presencial",
+    "metodologia": "DATO DE EJEMPLO — no es una encuesta real de ninguna encuestadora institucional. Creado únicamente para validar el formato JSON de BL-12 antes de que existan datos reales (el JNE admite candidaturas el 5 de agosto de 2026).",
+    "encuestadoraId": "ejemplo",
+    "fuentePdf": null
+  }
+]
