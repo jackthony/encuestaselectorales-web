@@ -74,6 +74,8 @@
       con las siguientes etapas del proyecto.
     </p>
 
+    <div id="candidatos-directorio" class="candidatos-grid" style="display:none"></div>
+
     <footer>
       <p>Desarrollado por <a href="https://neuracode.dev/">Neuracode</a> — agencia tecnológica, no actor político.</p>
       <p>
@@ -86,20 +88,80 @@
     </footer>
   </main>
 
+  <script src="/scripts/candidatos-por-distrito.js"></script>
   <script>
     (function () {
       var params = new URLSearchParams(window.location.search);
       var id = params.get('id');
       var titleEl = document.getElementById('distrito-nombre');
+      var mensajeEl = document.getElementById('distrito-mensaje');
+      var directorioEl = document.getElementById('candidatos-directorio');
+
+      function iniciales(nombre) {
+        return nombre
+          .split(' ')
+          .filter(Boolean)
+          .slice(0, 2)
+          .map(function (p) { return p.charAt(0).toUpperCase(); })
+          .join('');
+      }
+
+      function renderCandidatos(lista) {
+        if (!lista.length) {
+          return;
+        }
+        mensajeEl.style.display = 'none';
+        directorioEl.style.display = '';
+        lista.forEach(function (c) {
+          var card = document.createElement('div');
+          card.className = 'candidato-card';
+
+          var avatar = document.createElement('div');
+          avatar.className = 'candidato-avatar';
+          avatar.textContent = iniciales(c.nombre);
+          card.appendChild(avatar);
+
+          var nombre = document.createElement('div');
+          nombre.className = 'candidato-nombre';
+          nombre.textContent = c.nombre;
+          card.appendChild(nombre);
+
+          var partido = document.createElement('div');
+          partido.className = 'candidato-partido';
+          var swatch = document.createElement('span');
+          swatch.className = 'partido-swatch';
+          swatch.style.background = (c.partido && c.partido.color) || 'transparent';
+          partido.appendChild(swatch);
+          var partidoNombre = document.createElement('span');
+          partidoNombre.textContent = c.partido ? c.partido.nombre : 'Partido no disponible';
+          partido.appendChild(partidoNombre);
+          card.appendChild(partido);
+
+          var numero = document.createElement('div');
+          numero.className = 'candidato-numero';
+          numero.textContent = c.numero === null || c.numero === undefined
+            ? 'N.º no disponible'
+            : 'N.º ' + c.numero;
+          card.appendChild(numero);
+
+          directorioEl.appendChild(card);
+        });
+      }
 
       if (!id) {
         titleEl.textContent = 'Distrito no especificado';
         return;
       }
 
-      fetch('/data/distrito.json')
-        .then(function (res) { return res.json(); })
-        .then(function (distritos) {
+      Promise.all([
+        fetch('/data/distrito.json').then(function (res) { return res.json(); }),
+        fetch('/data/candidato.json').then(function (res) { return res.json(); }),
+        fetch('/data/partido.json').then(function (res) { return res.json(); }),
+      ])
+        .then(function (results) {
+          var distritos = results[0];
+          var candidatos = results[1];
+          var partidos = results[2];
           var distrito = distritos.find(function (d) { return d.id === id; });
           if (!distrito) {
             titleEl.textContent = 'Distrito no encontrado';
@@ -107,6 +169,7 @@
           }
           titleEl.textContent = distrito.nombre;
           document.title = distrito.nombre + ' — Encuestas Electorales Perú';
+          renderCandidatos(candidatosPorDistrito(id, candidatos, partidos));
         })
         .catch(function () {
           titleEl.textContent = 'No se pudo cargar el distrito';
