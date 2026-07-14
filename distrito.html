@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quiénes somos — Encuestas Electorales Perú</title>
-  <meta name="description" content="Quién está detrás de Encuestas Electorales Perú y nuestro compromiso de neutralidad." />
+  <title>Distrito — Encuestas Electorales Perú</title>
+  <meta name="description" content="Encuestas electorales municipales 2026 por distrito de Lima Metropolitana." />
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
@@ -65,25 +65,14 @@
   </header>
 
   <main>
-    <span class="tag">Quiénes somos</span>
-    <h1>Quiénes somos</h1>
+    <span class="tag">Distrito</span>
+    <h1 id="distrito-nombre">Cargando…</h1>
 
-    <p>
-      Encuestas Electorales Perú es un proyecto de Jack Aguilar, construido con
-      <a href="https://neuracode.dev/">Neuracode</a> como agencia tecnológica. No somos un
-      actor político ni representamos a ningún partido o candidato.
+    <p id="distrito-mensaje">
+      Página en construcción — el contenido con candidatos y encuestas de este distrito
+      llegará cuando el JNE admita listas de candidatos (5 de agosto de 2026) y avancemos
+      con las siguientes etapas del proyecto.
     </p>
-
-    <section id="neutralidad">
-      <h2>Nuestro compromiso</h2>
-      <p>
-        Agregamos y contextualizamos lo que producen las encuestadoras certificadas y
-        nuestra propia encuesta digital — no opinamos ni tomamos posición sobre ningún
-        candidato o partido. Esa neutralidad está publicada por escrito en nuestra
-        <a href="/politica-editorial.html#firewall">política editorial</a> y se mantiene
-        aunque el sitio genere ingresos por perfiles de candidatos destacados.
-      </p>
-    </section>
 
     <footer>
       <p>Desarrollado por <a href="https://neuracode.dev/">Neuracode</a> — agencia tecnológica, no actor político.</p>
@@ -96,5 +85,33 @@
       </p>
     </footer>
   </main>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var id = params.get('id');
+      var titleEl = document.getElementById('distrito-nombre');
+
+      if (!id) {
+        titleEl.textContent = 'Distrito no especificado';
+        return;
+      }
+
+      fetch('/data/distrito.json')
+        .then(function (res) { return res.json(); })
+        .then(function (distritos) {
+          var distrito = distritos.find(function (d) { return d.id === id; });
+          if (!distrito) {
+            titleEl.textContent = 'Distrito no encontrado';
+            return;
+          }
+          titleEl.textContent = distrito.nombre;
+          document.title = distrito.nombre + ' — Encuestas Electorales Perú';
+        })
+        .catch(function () {
+          titleEl.textContent = 'No se pudo cargar el distrito';
+        });
+    })();
+  </script>
 </body>
 </html>

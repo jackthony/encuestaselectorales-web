@@ -121,7 +121,7 @@ Pick the first `not-started` item whose dependencies are all `done`. Don't skip 
 ## Phase 3 — Site shell
 
 ### BL-10 — Landing + nav (shell)
-- **Status**: not-started
+- **Status**: done (2026-07-14) — real `index.html` landing page + shared header/nav ("Distritos de Lima" `<details>` dropdown, 43 links) added to all 6 published pages; `distrito.html?id=<slug>` placeholder page; `scripts/validate-nav.js` (nav-present + exact-43-match per page), TDD red→green per `CLAUDE.md` constraint 7; browser-verified (dropdown, keyboard-accessible `<details>`, district resolution, no console errors).
 - **Depends on**: BL-07
 - **Entities**: #1 District
 - **Reference**: `encuestas.com.pe` real nav — structure only, not branding
