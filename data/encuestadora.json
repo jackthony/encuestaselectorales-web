@@ -3,5 +3,6 @@
   { "id": "ipsos", "nombre": "Ipsos Perú", "tipo": "institucional", "web": "https://www.ipsos.com/es-pe" },
   { "id": "datum", "nombre": "Datum Internacional", "tipo": "institucional", "web": "https://www.datum.com.pe" },
   { "id": "cpi", "nombre": "Compañía Peruana de Estudios de Mercado y Opinión Pública (CPI)", "tipo": "institucional", "web": "https://cpi.pe" },
-  { "id": "propia", "nombre": "Encuesta propia (online, opt-in)", "tipo": "propia", "web": "https://encuestaselectorales.pe" }
+  { "id": "propia", "nombre": "Encuesta propia (online, opt-in)", "tipo": "propia", "web": "https://encuestaselectorales.pe" },
+  { "id": "ejemplo", "nombre": "Encuestadora de ejemplo (dato ficticio, no es una institución real)", "tipo": "ejemplo", "web": null }
 ]

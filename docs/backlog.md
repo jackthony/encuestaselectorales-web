@@ -143,7 +143,7 @@ Pick the first `not-started` item whose dependencies are all `done`. Don't skip 
 ## Phase 4 — The differentiator (aggregation + fact sheet + chart)
 
 ### BL-12 — Poll + result shape (already defined)
-- **Status**: not-started
+- **Status**: done (2026-07-14) — `data/encuesta.json` + `data/resultado.json` (1 Miraflores poll-round + result, `docs/data-model.md` shapes). No real IEP/Ipsos/Datum/CPI poll exists for Miraflores 2022, so per user decision this session the poll is attributed to a 6th, unmistakably-fictitious pollster catalog entry (`ejemplo`, `tipo: "ejemplo"`) rather than a real institution — avoids misattributing invented numbers to a real pollster (`CLAUDE.md` constraint 8). `scripts/validate-encuestas.js` + `scripts/validate-resultados.js` (cross-references + percentage-sum ±0.5 of 100), `scripts/validate-encuestadoras.js` updated (6 records, `ejemplo` tipo). TDD red→green per constraint 7 — the percentage-sum check is the "% math" logic the constraint calls out.
 - **Depends on**: BL-07, BL-08
 - **Entities**: #7 Poll, #8 Result, #9 Fact sheet
 - **Reference**: `data-model.md` (JSON shape with `encuestadoraId` already written)
