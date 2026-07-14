@@ -130,7 +130,7 @@ Pick the first `not-started` item whose dependencies are all `done`. Don't skip 
 - **Done when**: nav lists all 43 districts and every link resolves to a district URL (even if empty)
 
 ### BL-11 — District page (candidate fact sheet)
-- **Status**: not-started
+- **Status**: done (2026-07-14) — `distrito.html` renders a candidate directory (name, party name + color swatch, list number or "N.º no disponible", CSS-only initials avatar) for districts with `data/candidato.json` entries, via a shared `scripts/candidatos-por-distrito.js` module (Node-testable + browser-loadable, no build). Real JNE photos and real list numbers deliberately deferred (user decision 2026-07-14): photos blocked on `BL-05`'s unverified JNE photo-reuse terms (constraint 8), list numbers not sourced for the 2022 historical dataset. TDD red→green (`scripts/test-candidatos-por-distrito.js`) per `CLAUDE.md` constraint 7; browser-verified on `distrito.html?id=miraflores` (8 candidates) and `?id=barranco` (unchanged placeholder, no regression).
 - **Depends on**: BL-09, BL-10
 - **Entities**: #4 Candidate
 - **Reference**: simulatuvoto's `/candidatos` (directory by party/office, JNE photo)
