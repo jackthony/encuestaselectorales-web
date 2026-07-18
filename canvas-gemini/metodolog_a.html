@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metodología y Rigor | EncuestasElectorales.pe</title>
+    <meta name="description" content="Conoce la metodología detrás de nuestra plataforma de medición ciudadana en tiempo real para las Elecciones de Lima 2026.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Noto Serif', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#102f86',
+                            green: '#15ba75',
+                            bg: '#fcfcfc',
+                            surface: '#f4f5f3',
+                            card: '#ffffff',
+                            border: '#e5e7eb',
+                            text: '#111827',
+                            muted: '#4b5563'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(16, 47, 134, 0.05)',
+                        'modal': '0 25px 50px -12px rgba(16, 47, 134, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: theme('colors.brand.bg'); color: theme('colors.brand.text'); }
+        h1, h2, h3, h4, .font-serif { font-family: theme('fontFamily.serif'); letter-spacing: -0.02em; }
+        a { color: theme('colors.brand.blue'); transition: color 0.2s ease; }
+        a:hover { opacity: 0.8; }
+        
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .scroll-animate.is-visible { opacity: 1; transform: translateY(0); }
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        
+        /* Estilos editoriales para el contenido (Estilo Pew Research) */
+        .prose-editorial p { margin-bottom: 1.5em; line-height: 1.8; color: theme('colors.brand.text'); font-size: 1.125rem; font-weight: 400; }
+        .prose-editorial h2 { font-family: theme('fontFamily.serif'); font-size: 2rem; font-weight: 800; color: theme('colors.brand.blue'); margin-top: 2.5em; margin-bottom: 1em; padding-bottom: 0.5em; border-bottom: 2px solid theme('colors.brand.border'); line-height: 1.2;}
+        .prose-editorial h3 { font-family: theme('fontFamily.sans'); font-weight: 700; font-size: 1.25rem; color: theme('colors.brand.text'); margin-top: 1.5em; margin-bottom: 0.75em; }
+        .prose-editorial ul { margin-bottom: 1.5em; padding-left: 1.5em; color: theme('colors.brand.text'); font-size: 1.125rem; }
+        .prose-editorial li { margin-bottom: 0.75em; line-height: 1.6; }
+        .prose-editorial li::marker { color: theme('colors.brand.green'); font-weight: bold; }
+        .prose-editorial strong { color: theme('colors.brand.blue'); font-weight: 700; }
+        
+        /* Destacados tipo cita */
+        .prose-editorial blockquote { border-left: 4px solid theme('colors.brand.green'); padding-left: 1.5em; font-style: italic; color: theme('colors.brand.muted'); margin-top: 2em; margin-bottom: 2em; font-size: 1.25rem; }
+    </style>
+</head>
+<body class="antialiased font-sans flex flex-col min-h-screen">
+
+    <!-- Ticker Superior -->
+    <div class="bg-brand-green text-[#062010] text-[11px] md:text-xs font-bold py-2 px-4 w-full relative z-50 shadow-sm border-b border-white/20">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2 tracking-wide uppercase">
+                <span class="relative flex h-2 w-2 mr-1">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#062010] opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-[#062010]"></span>
+                </span>
+                Sondeo ciudadano en vivo · Elecciones 2026
+            </div>
+            <div id="reloj" class="font-mono tracking-wide hidden md:block" aria-live="polite">
+                --/--/---- --:--:--
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Institucional -->
+    <header class="bg-brand-card w-full border-b border-brand-border sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+            
+            <!-- Logo -->
+            <a href="index.html" class="flex flex-col cursor-pointer group" aria-label="Ir al inicio">
+                <div class="text-2xl md:text-3xl font-extrabold tracking-tight leading-none mb-0.5">
+                    <span class="text-brand-blue">Encuestas</span><span class="text-brand-text">electorales</span><span class="text-brand-green">.pe</span>
+                </div>
+                <div class="text-[10px] md:text-xs font-bold text-brand-muted tracking-widest uppercase">
+                    Sondeo ciudadano · Lima 2026
+                </div>
+            </a>
+
+            <!-- Navegación Desktop -->
+            <nav class="hidden md:flex items-center gap-8 text-[13px] font-bold text-brand-blue tracking-widest uppercase">
+                <a href="index.html" class="hover:text-brand-blue/70 transition-colors">Inicio</a>
+                <a href="index.html#distritos" class="hover:text-brand-blue/70 transition-colors">Distritos de Lima</a>
+                <a href="#" class="text-brand-green border-b-2 border-brand-green pb-1">Metodología</a>
+                <a href="#" class="hover:text-brand-blue/70 transition-colors">Quiénes somos</a>
+            </nav>
+
+            <!-- Menú Mobile Toggle -->
+            <div class="flex items-center gap-4">
+                <button id="mobile-menu-btn" class="md:hidden text-brand-blue text-2xl p-2" aria-label="Menú">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menú Mobile -->
+        <div id="mobile-menu" class="hidden absolute top-full left-0 w-full bg-brand-card border-b border-brand-border shadow-modal">
+            <nav class="flex flex-col text-sm font-bold text-brand-blue uppercase divide-y divide-gray-100">
+                <a href="index.html" class="block px-6 py-4 hover:bg-brand-surface">Inicio</a>
+                <a href="index.html#distritos" class="block px-6 py-4 hover:bg-brand-surface">Distritos de Lima</a>
+                <a href="#" class="block px-6 py-4 bg-brand-surface text-brand-green">Metodología</a>
+                <a href="#" class="block px-6 py-4 hover:bg-brand-surface">Quiénes somos</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full">
+        <!-- Page Header -->
+        <section class="bg-brand-surface border-b border-brand-border pt-16 pb-20 px-4">
+            <div class="max-w-7xl mx-auto">
+                <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-blue mb-6 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full shadow-sm scroll-animate">
+                    <i class="fas fa-chart-network"></i> Inteligencia Electoral
+                </div>
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-brand-blue max-w-4xl leading-[1.1] mb-6 scroll-animate delay-100">
+                    Midiendo el pulso político de Lima en tiempo real
+                </h1>
+                <p class="text-lg md:text-xl text-brand-muted max-w-3xl leading-relaxed scroll-animate delay-200">
+                    EncuestasElectorales.pe es la plataforma tecnológica de medición ciudadana que pone el escenario electoral de la capital al alcance de todos. Participación masiva, datos vivos y transparencia absoluta.
+                </p>
+            </div>
+        </section>
+
+        <section class="max-w-7xl mx-auto px-4 py-16 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+            
+            <!-- Sidebar Navigation (Sticky) -->
+            <aside class="hidden lg:block lg:col-span-3">
+                <div class="sticky top-28 bg-brand-card border border-brand-border rounded-xl p-6 shadow-sm scroll-animate">
+                    <h3 class="text-xs font-bold text-brand-muted uppercase tracking-widest mb-5">En esta página</h3>
+                    <nav class="flex flex-col gap-4 text-sm font-semibold">
+                        <a href="#como-medimos" class="text-brand-text hover:text-brand-green transition-colors flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-300 inline-block"></span> Cómo medimos
+                        </a>
+                        <a href="#nuestro-compromiso" class="text-brand-text hover:text-brand-green transition-colors flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-300 inline-block"></span> Nuestro compromiso
+                        </a>
+                        <a href="#rigor-transparencia" class="text-brand-text hover:text-brand-green transition-colors flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-300 inline-block"></span> Rigor y transparencia
+                        </a>
+                    </nav>
+
+                    <div class="mt-8 pt-6 border-t border-brand-border">
+                        <div class="bg-blue-50 rounded-lg p-5">
+                            <i class="fas fa-bolt text-xl text-brand-blue mb-3"></i>
+                            <h4 class="font-bold text-brand-blue text-sm mb-2">Datos Vivos</h4>
+                            <p class="text-xs text-brand-muted leading-relaxed">Nuestra arquitectura permite que los resultados se actualicen continuamente conforme la ciudadanía participa.</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content / Editorial Prose -->
+            <div class="lg:col-span-8 lg:col-start-4 prose-editorial scroll-animate delay-100">
+                
+                <p class="text-xl text-brand-blue font-serif font-bold leading-relaxed mb-10">
+                    El ecosistema de la información ha cambiado. Las decisiones electorales ya no esperan semanas para ser analizadas. En EncuestasElectorales.pe hemos construido una infraestructura digital diseñada para capturar, procesar y visualizar la intención de voto de la ciudadanía limeña con la inmediatez que exige el mundo moderno.
+                </p>
+
+                <h2 id="como-medimos">1. Cómo medimos: El sondeo digital de alto alcance</h2>
+                <p>
+                    Nuestra metodología se basa en el despliegue de <strong>sondeos de opinión online abiertos (opt-in)</strong>. A diferencia de las mediciones tradicionales y episódicas, nuestra plataforma funciona como un organismo vivo que recopila la opinión de los votantes las 24 horas del día.
+                </p>
+                <p>
+                    A través de nuestro portal interactivo, movilizamos una participación ciudadana masiva. Diseñamos nuestras encuestas para que sean friccionales y accesibles desde cualquier dispositivo móvil o de escritorio, lo que nos permite medir el termómetro electoral con una velocidad sin precedentes. 
+                </p>
+                <ul>
+                    <li><strong>Cobertura Total:</strong> Mapeamos y mantenemos sondeos activos para los 43 distritos de Lima Metropolitana de forma simultánea.</li>
+                    <li><strong>Actualización Continua:</strong> Los datos no reposan en cajones. A medida que aumenta la participación ciudadana, las tendencias se reflejan en la plataforma alimentando el debate público al instante.</li>
+                    <li><strong>Muestra Dinámica:</strong> Al ser una plataforma abierta, nuestra muestra crece orgánicamente, capturando la energía, el interés y la movilización digital de los diferentes sectores del electorado.</li>
+                </ul>
+
+                <blockquote>
+                    "Reemplazamos la espera estática por datos fluidos. Entregamos a la ciudadanía una radiografía digital constante de su propio distrito."
+                </blockquote>
+
+                <h2 id="nuestro-compromiso">2. Nuestro compromiso: Independencia y neutralidad</h2>
+                <p>
+                    La confianza en los datos nace de la ausencia de agendas ocultas. <strong>EncuestasElectorales.pe</strong> opera bajo un mandato estricto de independencia editorial y metodológica.
+                </p>
+                <p>
+                    No estamos vinculados a ninguna organización política, candidato, ni entidad gubernamental. Nuestro único objetivo es actuar como un espejo tecnológico de las preferencias ciudadanas. Creemos firmemente que presentar los datos de manera clara, accesible y libre de ruidos mediáticos empodera al votante para tomar decisiones mejor informadas.
+                </p>
+                <p>
+                    Nuestra plataforma está financiada de manera independiente, garantizando que el diseño de nuestros sondeos y la publicación de nuestros paneles de resultados jamás respondan a presiones externas ni intereses partidarios.
+                </p>
+
+                <h2 id="rigor-transparencia">3. Rigor tecnológico y transparencia de datos</h2>
+                <p>
+                    Medir la opinión pública en el entorno digital requiere de escudos tecnológicos robustos para proteger la integridad de la información. No nos limitamos a contar clics; validamos interacciones.
+                </p>
+                <p>
+                    Para asegurar la calidad de nuestro sondeo ciudadano, hemos implementado una capa de seguridad y control en la recolección de datos:
+                </p>
+                
+                <div class="grid md:grid-cols-2 gap-6 my-8">
+                    <div class="bg-brand-surface p-6 border border-brand-border rounded-xl">
+                        <div class="text-brand-green text-2xl mb-3"><i class="fas fa-shield-check"></i></div>
+                        <h4 class="font-bold text-brand-text text-lg mb-2">Unicidad del Voto</h4>
+                        <p class="text-sm text-brand-muted m-0 leading-relaxed">Nuestros sistemas aplican algoritmos de huella digital (Browser Fingerprinting) combinados con hashing de red para asegurar que cada ciudadano emita un solo voto válido por distrito.</p>
+                    </div>
+                    <div class="bg-brand-surface p-6 border border-brand-border rounded-xl">
+                        <div class="text-brand-green text-2xl mb-3"><i class="fas fa-robot"></i></div>
+                        <h4 class="font-bold text-brand-text text-lg mb-2">Filtros Anti-Bot</h4>
+                        <p class="text-sm text-brand-muted m-0 leading-relaxed">Analizamos patrones de tráfico y velocidad de respuesta para descartar participaciones automatizadas, protegiendo la plataforma de manipulaciones inorgánicas.</p>
+                    </div>
+                </div>
+
+                <p>
+                    <strong>Transparencia ante todo:</strong> La honestidad es nuestro principal valor. En cada uno de nuestros paneles de resultados informamos claramente al usuario la naturaleza de nuestro estudio. Los ciudadanos saben en todo momento que están consultando un sondeo web basado en participación voluntaria (opt-in). 
+                </p>
+                <p>
+                    No ocultamos nuestras cartas. Presentamos la cantidad total de votos emitidos, el momento exacto de la última actualización y el desglose completo de todas las opciones, incluyendo el voto blanco y nulo, garantizando un mapa electoral nítido y auditable por cualquiera.
+                </p>
+                
+                <hr class="border-brand-border my-12">
+                
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-8 text-center">
+                    <h3 class="font-serif text-2xl font-bold text-brand-blue mb-4 !mt-0">¿Tienes dudas sobre nuestra plataforma?</h3>
+                    <p class="text-brand-muted mb-6 max-w-lg mx-auto">
+                        Nuestro equipo de analistas e ingenieros está a disposición de la prensa, la academia y la ciudadanía para detallar nuestra infraestructura cívica.
+                    </p>
+                    <a href="mailto:contacto@encuestaselectorales.pe" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-bold rounded-lg text-white bg-brand-blue hover:bg-[#0c2466] shadow-sm transition-transform hover:-translate-y-0.5">
+                        <i class="far fa-envelope mr-2"></i> Contactar al equipo
+                    </a>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Institucional -->
+    <footer class="bg-[#0b1221] text-gray-300 py-12 mt-auto border-t-[5px] border-brand-green" role="contentinfo">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-12 gap-10">
+            <div class="md:col-span-5">
+                <div class="text-xl font-extrabold tracking-tight leading-none mb-2 text-white">
+                    <span class="text-white">Encuestas</span>electorales<span class="text-brand-green">.pe</span>
+                </div>
+                <p class="text-sm text-gray-400 leading-relaxed mb-4 max-w-sm">
+                    Plataforma ciudadana para el seguimiento de la intención de voto municipal en Lima Metropolitana.
+                </p>
+                <div class="bg-white/5 border border-white/10 p-3 rounded text-xs text-gray-400">
+                    <strong class="text-white">Nota Metodológica:</strong> Sondeo web opt-in. Metodología transparente y datos en tiempo real.
+                </div>
+            </div>
+            
+            <div class="md:col-span-3 md:col-start-7">
+                <h4 class="text-white font-bold uppercase tracking-wider text-xs mb-4">Navegación</h4>
+                <ul class="flex flex-col gap-2 text-sm font-medium">
+                    <li><a href="index.html" class="text-gray-400 hover:text-white transition-colors">Inicio</a></li>
+                    <li><a href="metodologia.html" class="text-white">Metodología</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Política Editorial</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Privacidad</a></li>
+                </ul>
+            </div>
+            
+            <div class="md:col-span-3">
+                <h4 class="text-white font-bold uppercase tracking-wider text-xs mb-4">Contacto</h4>
+                <ul class="flex flex-col gap-2 text-sm text-gray-400">
+                    <li><i class="far fa-envelope mr-2 text-brand-green"></i> contacto@encuestaselectorales.pe</li>
+                    <li><i class="fab fa-whatsapp mr-2 text-brand-green"></i> +51 971 388 435</li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // 1. Reloj en vivo (Ticker)
+        function startClock() {
+            const clockEl = document.getElementById('reloj');
+            if(!clockEl) return;
+            setInterval(() => {
+                const now = new Date();
+                const dOpts = { day: '2-digit', month: 'short', year: 'numeric' };
+                const tOpts = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+                clockEl.textContent = `${now.toLocaleDateString('es-PE', dOpts)} ${now.toLocaleTimeString('es-PE', tOpts)}`;
+            }, 1000);
+        }
+
+        // 2. Animaciones de scroll (Spring-like con Intersection Observer)
+        function setupScrollAnimations() {
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: "0px 0px -20px 0px" });
+
+            document.querySelectorAll('.scroll-animate').forEach(el => observer.observe(el));
+        }
+
+        // 3. Menú Móvil Toggle
+        function setupMobileMenu() {
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+            if(btn && menu) {
+                btn.addEventListener('click', () => {
+                    menu.classList.toggle('hidden');
+                });
+            }
+        }
+
+        // Inicializar funciones al cargar el DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            startClock();
+            setupScrollAnimations();
+            setupMobileMenu();
+        });
+    </script>
+</body>
+</html>

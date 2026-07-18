@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuestas Electorales Perú - Transparencia y Datos 2026</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tipografía: Inter (Lectura/Datos) y Noto Serif (Titulares Editoriales) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Noto Serif', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#102f86',  // Azul Institucional Principal
+                            green: '#15BA75', // Verde de Acción/Destaque
+                            bg: '#fcfcfc',    // Fondo principal muy claro
+                            card: '#ffffff',
+                            border: '#e5e7eb', // Gris muy suave para divisiones
+                            text: '#111827',
+                            textMuted: '#4b5563'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: theme('colors.brand.bg'); color: theme('colors.brand.text'); }
+        
+        /* Efectos Hover */
+        .hover-color-green:hover { color: theme('colors.brand.green'); transition: color 0.2s ease; }
+        .hover-bg-green:hover { background-color: theme('colors.brand.green'); transition: background-color 0.2s ease; }
+        
+        /* Utilidades para scrollbars invisibles en sliders horizontales */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 
+           ANIMACIONES 2026: Simulando "Spring Physics" con bezier 
+           Un inicio rápido con un asentamiento suave y muy ligero rebote.
+        */
+        .spring-transition {
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        }
+
+        /* Clases base para el Intersection Observer (Scroll Reveal) */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.7s ease-out, transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .scroll-animate.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Retrasos para crear el efecto en cascada (Stagger) */
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        
+        /* Microinteracción de barras en la votación */
+        .bar-fill {
+            width: 0%;
+            transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s;
+        }
+        .is-visible .bar-fill {
+            /* El JS o Tailwind aplicará el width final en línea, la transición lo anima */
+        }
+    </style>
+</head>
+<body class="antialiased font-sans">
+
+    <!-- BARRA SUPERIOR (Ticker en Tiempo Real) -->
+    <div class="bg-brand-green text-white text-[11px] md:text-xs font-semibold py-2 px-4 w-full relative z-20 shadow-sm">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div id="reloj" class="flex items-center gap-2 tracking-wide font-mono" aria-live="polite">
+                <i class="far fa-clock"></i> --/--/---- --:--:--
+            </div>
+            <div class="hidden md:flex items-center justify-end gap-6 overflow-hidden w-2/3">
+                <a href="#" class="cursor-pointer hover:text-brand-blue transition-colors truncate">
+                    Último estudio: Encuesta Presidencial Datum Internacional - Agosto 2026
+                </a>
+                <div class="flex gap-3 border-l border-white/30 pl-4">
+                    <button aria-label="Anterior" class="hover:text-brand-blue transition-colors"><i class="fas fa-chevron-left text-[10px]"></i></button>
+                    <button aria-label="Siguiente" class="hover:text-brand-blue transition-colors"><i class="fas fa-chevron-right text-[10px]"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CABECERA PRINCIPAL (Logo y Branding) -->
+    <header class="bg-white w-full border-b border-brand-border sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-6 md:py-8 flex flex-col md:flex-row items-center justify-between">
+            
+            <!-- Izquierda: Redes -->
+            <div class="hidden md:flex gap-5 text-brand-textMuted text-lg w-1/3 justify-start">
+                <a href="#" aria-label="Facebook" class="hover-color-green"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="X (Twitter)" class="hover-color-green"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="#" aria-label="YouTube" class="hover-color-green"><i class="fab fa-youtube"></i></a>
+            </div>
+
+            <!-- Centro: Identidad -->
+            <div class="flex flex-col items-center text-center w-full md:w-1/3 mb-4 md:mb-0 cursor-pointer">
+                <h1 class="text-3xl md:text-5xl font-extrabold text-brand-blue tracking-tight leading-none mb-1">
+                    Encuestas
+                </h1>
+                <div class="text-sm md:text-lg font-bold text-brand-green tracking-widest uppercase">
+                    Electorales<span class="text-brand-blue">.pe</span>
+                </div>
+            </div>
+
+            <!-- Derecha: Acciones y Hamburguesa Mobile -->
+            <div class="flex gap-4 w-full md:w-1/3 justify-between md:justify-end items-center">
+                <button id="mobile-menu-btn" class="md:hidden text-brand-blue text-2xl focus:outline-none p-2 rounded-md bg-gray-50 border border-gray-200" aria-label="Abrir Menú">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="flex gap-4 text-xs font-bold text-brand-textMuted uppercase tracking-wider items-center">
+                    <a href="#" class="hidden sm:flex items-center gap-2 hover:text-brand-blue transition-colors"><i class="far fa-envelope text-brand-green"></i> Boletín</a>
+                    <button aria-label="Buscar" class="text-lg hover-color-green ml-2"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVEGACIÓN DESKTOP -->
+        <nav class="hidden md:flex max-w-7xl mx-auto px-4 py-3 justify-center border-t border-gray-100">
+            <ul class="flex gap-8 text-[13px] font-bold text-brand-blue tracking-widest uppercase">
+                <li><a href="#" class="hover-color-green transition-colors pb-1 border-b-2 border-transparent hover:border-brand-green">Presidencial</a></li>
+                <li class="relative group cursor-pointer">
+                    <a href="#" class="flex items-center gap-1 hover-color-green transition-colors">Regiones <i class="fas fa-chevron-down text-[10px] opacity-50"></i></a>
+                </li>
+                <li><a href="#" class="hover-color-green transition-colors pb-1 border-b-2 border-transparent hover:border-brand-green">Alcaldía de Lima</a></li>
+                <li class="relative group cursor-pointer">
+                    <a href="#" class="flex items-center gap-1 hover-color-green transition-colors">Distritos <i class="fas fa-chevron-down text-[10px] opacity-50"></i></a>
+                </li>
+                <li><a href="#" class="text-brand-green hover:text-brand-blue transition-colors pb-1 border-b-2 border-transparent hover:border-brand-blue">Simulador de Voto</a></li>
+            </ul>
+        </nav>
+
+        <!-- NAVEGACIÓN MÓVIL (Desplegable) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-brand-border absolute w-full shadow-lg origin-top">
+            <ul class="flex flex-col text-sm font-bold text-brand-blue uppercase">
+                <li><a href="#" class="block px-6 py-4 border-b border-gray-100 hover:bg-gray-50">Presidencial</a></li>
+                <li><a href="#" class="flex justify-between items-center px-6 py-4 border-b border-gray-100 hover:bg-gray-50">Regiones <i class="fas fa-chevron-down"></i></a></li>
+                <li><a href="#" class="block px-6 py-4 border-b border-gray-100 hover:bg-gray-50">Alcaldía de Lima</a></li>
+                <li><a href="#" class="flex justify-between items-center px-6 py-4 border-b border-gray-100 hover:bg-gray-50">Distritos de Lima <i class="fas fa-chevron-down"></i></a></li>
+                <li><a href="#" class="block px-6 py-4 bg-gray-50 text-brand-green">Simulador de Voto</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-10 overflow-hidden">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            
+            <!-- COLUMNA IZQUIERDA: FEED DE ENCUESTAS (Estilo Noticiero/Blog) -->
+            <div class="lg:col-span-8 flex flex-col gap-8">
+                
+                <div class="flex items-center justify-between border-b-2 border-brand-blue pb-2 mb-2 scroll-animate">
+                    <h2 class="text-xl md:text-2xl font-serif font-bold text-brand-blue">Últimos Estudios Publicados</h2>
+                    <span class="text-xs font-semibold text-brand-textMuted uppercase tracking-wider bg-gray-100 px-3 py-1 rounded">Ver todos</span>
+                </div>
+
+                <!-- ARTÍCULO 1 (Destacado) -->
+                <article class="flex flex-col md:flex-row gap-6 group cursor-pointer scroll-animate bg-white p-4 border border-brand-border rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                    <!-- Imagen / Portada -->
+                    <div class="relative w-full md:w-2/5 aspect-[4/3] shrink-0 overflow-hidden rounded bg-gray-100">
+                        <img src="https://placehold.co/600x450/e2e8f0/475569?text=Municipalidad+Comas" alt="Comas" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out">
+                        <!-- Tag Categórico -->
+                        <span class="absolute top-3 left-3 bg-brand-blue text-white text-[10px] font-bold px-2.5 py-1 uppercase tracking-wider rounded-sm shadow">
+                            Lima Norte
+                        </span>
+                    </div>
+                    
+                    <!-- Contenido (Data) -->
+                    <div class="flex flex-col flex-1 py-1">
+                        <!-- Metadata (Fecha, Fuente) -->
+                        <div class="flex flex-wrap items-center text-[11px] text-brand-textMuted font-semibold uppercase tracking-wider gap-3 mb-2">
+                            <span class="text-brand-green"><i class="fas fa-chart-bar mr-1"></i> Ipsos Perú</span>
+                            <span>·</span>
+                            <span><i class="far fa-calendar mr-1"></i> Trabajo de campo: Ago 2026</span>
+                        </div>
+                        
+                        <!-- Titular -->
+                        <h3 class="text-2xl font-serif font-bold text-brand-blue leading-tight mb-3 group-hover:text-brand-green transition-colors">
+                            Intención de voto para la Alcaldía de Comas
+                        </h3>
+                        
+                        <!-- Resumen (Extracto de Blog) -->
+                        <p class="text-sm text-gray-600 leading-relaxed line-clamp-3 mb-4">
+                            Según el último estudio de opinión a nivel distrital, el candidato Ulises Villegas consolida su liderazgo en Comas, superando en más de 12 puntos a su más cercano competidor en un escenario de alta indecisión a tres meses de los comicios...
+                        </p>
+                        
+                        <!-- Footer del Artículo -->
+                        <div class="mt-auto flex items-center justify-between border-t border-gray-100 pt-4">
+                            <div class="flex gap-2">
+                                <span class="bg-gray-100 text-brand-textMuted hover:bg-gray-200 px-2.5 py-1.5 text-xs rounded transition-colors" title="Compartir en X"><i class="fa-brands fa-x-twitter"></i></span>
+                                <span class="bg-[#1877F2]/10 text-[#1877F2] hover:bg-[#1877F2]/20 px-2.5 py-1.5 text-xs rounded transition-colors" title="Compartir en Facebook"><i class="fab fa-facebook-f"></i></span>
+                            </div>
+                            <span class="text-brand-blue font-bold text-sm group-hover:text-brand-green flex items-center gap-1 transition-colors">
+                                Leer informe técnico <i class="fas fa-arrow-right text-[10px] mt-0.5"></i>
+                            </span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- ARTÍCULO 2 -->
+                <article class="flex flex-col md:flex-row gap-6 group cursor-pointer scroll-animate delay-100 bg-white p-4 border border-brand-border rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                    <div class="relative w-full md:w-2/5 aspect-[4/3] shrink-0 overflow-hidden rounded bg-gray-100">
+                        <img src="https://placehold.co/600x450/cbd5e1/475569?text=GORE+Ucayali" alt="Ucayali" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out">
+                        <span class="absolute top-3 left-3 bg-brand-blue text-white text-[10px] font-bold px-2.5 py-1 uppercase tracking-wider rounded-sm shadow">
+                            Regiones
+                        </span>
+                    </div>
+                    <div class="flex flex-col flex-1 py-1">
+                        <div class="flex flex-wrap items-center text-[11px] text-brand-textMuted font-semibold uppercase tracking-wider gap-3 mb-2">
+                            <span class="text-brand-green"><i class="fas fa-chart-bar mr-1"></i> CPI</span>
+                            <span>·</span>
+                            <span><i class="far fa-calendar mr-1"></i> Trabajo de campo: Jul 2026</span>
+                        </div>
+                        <h3 class="text-2xl font-serif font-bold text-brand-blue leading-tight mb-3 group-hover:text-brand-green transition-colors">
+                            Elecciones Regionales: Gobierno Regional de Ucayali
+                        </h3>
+                        <p class="text-sm text-gray-600 leading-relaxed line-clamp-3 mb-4">
+                            Estudio probabilístico realizado en las provincias de Coronel Portillo, Atalaya, Padre Abad y Purús. Se evidencia un empate técnico estadístico en el primer lugar entre los movimientos regionales, desplazando a los partidos tradicionales nacionales.
+                        </p>
+                        <div class="mt-auto flex items-center justify-between border-t border-gray-100 pt-4">
+                            <div class="flex gap-2">
+                                <span class="bg-gray-100 text-brand-textMuted hover:bg-gray-200 px-2.5 py-1.5 text-xs rounded transition-colors"><i class="fa-brands fa-x-twitter"></i></span>
+                                <span class="bg-[#1877F2]/10 text-[#1877F2] hover:bg-[#1877F2]/20 px-2.5 py-1.5 text-xs rounded transition-colors"><i class="fab fa-facebook-f"></i></span>
+                            </div>
+                            <span class="text-brand-blue font-bold text-sm group-hover:text-brand-green flex items-center gap-1 transition-colors">
+                                Leer informe técnico <i class="fas fa-arrow-right text-[10px] mt-0.5"></i>
+                            </span>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Paginación Simple -->
+                <div class="flex justify-center mt-4 scroll-animate delay-200">
+                    <button class="border border-brand-border bg-white text-brand-blue font-bold px-6 py-2 rounded shadow-sm hover:border-brand-blue transition-colors">
+                        Cargar más resultados
+                    </button>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: SIDEBAR (Simulador de Voto y Rigor) -->
+            <aside class="lg:col-span-4 flex flex-col gap-8">
+                
+                <!-- Caja Institucional (Reemplazo del banner publicitario) -->
+                <div class="bg-brand-blue text-white p-6 rounded-lg shadow-md relative overflow-hidden scroll-animate">
+                    <!-- Elemento decorativo gráfico de fondo -->
+                    <div class="absolute -right-6 -top-6 opacity-10">
+                        <i class="fas fa-chart-pie text-9xl"></i>
+                    </div>
+                    
+                    <h3 class="font-serif text-lg font-bold mb-2 relative z-10">Metodología Rigurosa</h3>
+                    <p class="text-sm text-blue-100 leading-relaxed mb-4 relative z-10 font-medium">
+                        Agregamos y normalizamos datos de las principales encuestadoras inscritas en el JNE para combatir la desinformación electoral.
+                    </p>
+                    <a href="#" class="inline-flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider hover:text-brand-green transition-colors relative z-10">
+                        Nuestra Metodología <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <!-- WIDGET INTERACTIVO: Sondeo de Usuario -->
+                <div class="bg-white rounded-lg shadow-md border border-brand-border overflow-hidden scroll-animate delay-100">
+                    <div class="bg-gray-50 border-b border-brand-border p-4">
+                        <div class="flex items-center gap-2 text-brand-green text-xs font-bold uppercase tracking-widest mb-1">
+                            <span class="relative flex h-2 w-2">
+                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-green opacity-75"></span>
+                              <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-green"></span>
+                            </span>
+                            Sondeo Interactivo Abierto
+                        </div>
+                        <h3 class="font-serif text-brand-blue font-bold text-[15px] leading-snug">
+                            ¿Por cuál de los siguientes candidatos a la Alcaldía de Lima votaría si las elecciones fueran mañana?
+                        </h3>
+                    </div>
+                    
+                    <form action="#" method="POST" class="p-0">
+                        <fieldset class="border-none m-0 p-0">
+                            <legend class="sr-only">Seleccione un candidato a la Alcaldía de Lima</legend>
+                            
+                            <div class="flex flex-col divide-y divide-gray-100">
+                                
+                                <!-- Opción 1 -->
+                                <label class="group relative flex flex-col p-4 cursor-pointer hover:bg-blue-50/50 transition-colors">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex gap-3">
+                                            <div class="mt-1">
+                                                <input type="radio" name="sondeo_lima" value="c1" class="w-4 h-4 text-brand-green focus:ring-brand-green accent-brand-green border-gray-300">
+                                            </div>
+                                            <div>
+                                                <span class="block text-sm font-bold text-gray-800">Carlos Canales</span>
+                                                <span class="block text-xs text-gray-500 mt-0.5">Renovación Popular</span>
+                                            </div>
+                                        </div>
+                                        <!-- Miniatura Logo Partido -->
+                                        <div class="w-8 h-8 rounded-full border border-gray-200 bg-[url('https://placehold.co/40x40/ffffff/102f86?text=RP')] bg-cover shrink-0"></div>
+                                    </div>
+                                    <!-- Barra de resultado animada (simula mostrarse al votar) -->
+                                    <div class="w-full bg-gray-100 h-1.5 mt-3 rounded-full overflow-hidden hidden group-focus-within:block">
+                                        <div class="bg-brand-blue h-full bar-fill rounded-full" style="width: 28%"></div>
+                                    </div>
+                                </label>
+
+                                <!-- Opción 2 -->
+                                <label class="group relative flex flex-col p-4 cursor-pointer hover:bg-blue-50/50 transition-colors">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex gap-3">
+                                            <div class="mt-1">
+                                                <input type="radio" name="sondeo_lima" value="c2" class="w-4 h-4 text-brand-green focus:ring-brand-green accent-brand-green border-gray-300">
+                                            </div>
+                                            <div>
+                                                <span class="block text-sm font-bold text-gray-800">Julio Gagó</span>
+                                                <span class="block text-xs text-gray-500 mt-0.5">Fuerza Popular</span>
+                                            </div>
+                                        </div>
+                                        <div class="w-8 h-8 rounded-full border border-gray-200 bg-[url('https://placehold.co/40x40/ffffff/f97316?text=FP')] bg-cover shrink-0"></div>
+                                    </div>
+                                </label>
+
+                                <!-- Opción 3 -->
+                                <label class="group relative flex flex-col p-4 cursor-pointer hover:bg-blue-50/50 transition-colors">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex gap-3">
+                                            <div class="mt-1">
+                                                <input type="radio" name="sondeo_lima" value="c3" class="w-4 h-4 text-brand-green focus:ring-brand-green accent-brand-green border-gray-300">
+                                            </div>
+                                            <div>
+                                                <span class="block text-sm font-bold text-gray-800">Alberto Tejada</span>
+                                                <span class="block text-xs text-gray-500 mt-0.5">Acción Popular</span>
+                                            </div>
+                                        </div>
+                                        <div class="w-8 h-8 rounded-full border border-gray-200 bg-[url('https://placehold.co/40x40/ffffff/dc2626?text=AP')] bg-cover shrink-0"></div>
+                                    </div>
+                                </label>
+                                
+                                <!-- Otros -->
+                                <label class="group relative flex items-center gap-3 p-4 cursor-pointer hover:bg-blue-50/50 transition-colors">
+                                    <input type="radio" name="sondeo_lima" value="blanco_viciado" class="w-4 h-4 text-brand-green focus:ring-brand-green accent-brand-green border-gray-300">
+                                    <span class="text-sm font-medium text-gray-600">Blanco / Viciado / No precisa</span>
+                                </label>
+
+                            </div>
+
+                            <div class="p-4 bg-gray-50 border-t border-gray-100">
+                                <button type="button" class="w-full bg-brand-blue text-white font-bold py-2.5 rounded hover:bg-[#0c2466] spring-transition transform hover:-translate-y-0.5 shadow-md hover:shadow-lg text-sm uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2">
+                                    Registrar mi voto
+                                </button>
+                                <p class="text-[10px] text-center text-gray-400 mt-3 font-medium">
+                                    Protección Anti-Bot activa. Solo 1 voto permitido por IP/Dispositivo.
+                                </p>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+
+            </aside>
+        </div>
+    </main>
+
+    <!-- Botón Flotante (WhatsApp para contacto de candidatos) -->
+    <a href="#" aria-label="Contactar por WhatsApp" class="fixed bottom-6 right-6 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-lg hover:scale-110 spring-transition z-50 group focus:outline-none focus:ring-4 focus:ring-green-300">
+        <i class="fab fa-whatsapp"></i>
+        <!-- Tooltip animado -->
+        <div class="absolute bottom-16 right-0 bg-white text-gray-800 text-xs w-52 p-3 rounded-lg shadow-xl text-center border border-gray-200 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-none origin-bottom-right">
+            <span class="block text-gray-500 mb-1 leading-snug">¿Falta tu candidato o información en la plataforma?</span>
+            <span class="font-bold text-[#25D366]">Escríbenos directamente</span>
+            <!-- Triángulo del tooltip -->
+            <div class="absolute -bottom-2 right-5 w-4 h-4 bg-white border-b border-r border-gray-200 transform rotate-45"></div>
+        </div>
+    </a>
+
+    <!-- FOOTER INSTITUCIONAL -->
+    <footer class="bg-gray-900 text-gray-300 py-12 mt-12 border-t-[6px] border-brand-green" role="contentinfo">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
+            <div>
+                <div class="text-xl font-bold text-white tracking-widest uppercase mb-4">
+                    Encuestas<span class="text-brand-green">.pe</span>
+                </div>
+                <p class="text-gray-400 leading-relaxed mb-4 pr-4">
+                    Plataforma independiente dedicada al registro, agregación y análisis de los sondeos de opinión para las Elecciones Generales y Regionales 2026.
+                </p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold uppercase tracking-wider mb-4 border-b border-gray-700 pb-2 inline-block">Navegación</h4>
+                <ul class="flex flex-col gap-2">
+                    <li><a href="#" class="hover:text-white transition-colors">Metodología y Filtros</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Directorio de Encuestadoras JNE</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Aviso Legal y Privacidad</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold uppercase tracking-wider mb-4 border-b border-gray-700 pb-2 inline-block">Contacto</h4>
+                <p class="text-gray-400 mb-2"><i class="far fa-envelope mr-2"></i> contacto@encuestaselectorales.pe</p>
+                <p class="text-gray-400"><i class="fab fa-whatsapp mr-2"></i> +51 999 888 777</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- LÓGICA DE INTERFAZ -->
+    <script>
+        // 1. Reloj en tiempo real
+        function updateClock() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            let dateString = now.toLocaleDateString('es-ES', options).replace(',', '');
+            const relojEl = document.getElementById('reloj');
+            if(relojEl) relojEl.innerHTML = `<i class="far fa-clock"></i> ${dateString}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 2. Menú Móvil con animación (Despliegue tipo acordeón suave)
+        const btnMenu = document.getElementById('mobile-menu-btn');
+        const menuMovil = document.getElementById('mobile-menu');
+        
+        btnMenu.addEventListener('click', () => {
+            const isHidden = menuMovil.classList.contains('hidden');
+            
+            if (isHidden) {
+                menuMovil.classList.remove('hidden');
+                // Forzar un reflow para que la animación CSS funcione desde display:none
+                void menuMovil.offsetWidth; 
+                menuMovil.style.transform = "scaleY(1)";
+                menuMovil.style.opacity = "1";
+                btnMenu.innerHTML = '<i class="fas fa-times"></i>';
+            } else {
+                menuMovil.style.transform = "scaleY(0.95)";
+                menuMovil.style.opacity = "0";
+                setTimeout(() => {
+                    menuMovil.classList.add('hidden');
+                }, 200); // Coincide con el tiempo de transición CSS si lo hubiera
+                btnMenu.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+        });
+
+        // 3. Animaciones de Scroll (Intersection Observer API)
+        document.addEventListener("DOMContentLoaded", function() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px 0px -50px 0px', // Dispara un poco antes de que llegue al fondo
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Añade la clase que activa el CSS (opacity 1, transform 0)
+                        entry.target.classList.add('is-visible');
+                        
+                        // Deja de observar para que la animación solo ocurra una vez
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            const elementsToAnimate = document.querySelectorAll('.scroll-animate');
+            elementsToAnimate.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>

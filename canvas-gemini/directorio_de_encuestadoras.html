@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directorio de Encuestadoras Registradas JNE - Encuestas Electorales</title>
+    <meta name="description" content="Directorio oficial de encuestadoras de opinión pública registradas en el JNE para las Elecciones 2026.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Noto Serif', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#102f86',
+                            green: '#15BA75',
+                            bg: '#f8fafc',
+                            card: '#ffffff',
+                            border: '#e2e8f0',
+                            text: '#0f172a',
+                            textMuted: '#475569'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: theme('colors.brand.bg'); color: theme('colors.brand.text'); }
+        .hover-color-green:hover { color: theme('colors.brand.green'); transition: color 0.2s ease; }
+        
+        /* Animaciones base 2026 (Spring Physics simulada) */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.7s ease-out, transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        }
+        .scroll-animate.is-visible { opacity: 1; transform: translateY(0); }
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+    </style>
+</head>
+<body class="antialiased font-sans flex flex-col min-h-screen">
+
+    <!-- BARRA TIPO TICKER -->
+    <div class="bg-brand-green text-white text-[11px] md:text-xs font-semibold py-2 px-4 w-full relative z-20 shadow-sm">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div id="reloj" class="flex items-center gap-2 font-mono tracking-wide" aria-live="polite">
+                <i class="far fa-clock"></i> Cargar hora...
+            </div>
+            <div class="hidden md:flex items-center gap-4">
+                <span class="bg-white/20 px-2 py-0.5 rounded text-[10px] uppercase tracking-widest">Transparencia</span>
+                <span class="text-white/90">Directorio auditado según normativa JNE</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CABECERA INSTITUCIONAL -->
+    <header class="bg-white w-full border-b border-brand-border sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-5 flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <div class="hidden md:flex gap-4 text-brand-textMuted text-lg w-1/3">
+                <a href="#" aria-label="Facebook" class="hover-color-green"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="X" class="hover-color-green"><i class="fa-brands fa-x-twitter"></i></a>
+            </div>
+
+            <!-- LOGO -->
+            <a href="index.html" class="flex flex-col items-center text-center w-full md:w-1/3 cursor-pointer group">
+                <h1 class="text-3xl md:text-4xl font-extrabold text-brand-blue tracking-tight leading-none mb-1 group-hover:text-brand-green transition-colors">
+                    Encuestas
+                </h1>
+                <div class="text-xs md:text-sm font-bold text-brand-textMuted tracking-widest uppercase">
+                    Electorales<span class="text-brand-green">.pe</span>
+                </div>
+            </a>
+
+            <!-- BUSCADOR / MOBILE -->
+            <div class="flex gap-4 w-full md:w-1/3 justify-between md:justify-end items-center">
+                <button id="mobile-menu-btn" class="md:hidden text-brand-blue text-2xl p-2 rounded-md hover:bg-gray-50 border border-transparent hover:border-gray-200" aria-label="Menú">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="hidden md:flex items-center gap-3">
+                    <button class="text-brand-textMuted hover:text-brand-green bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200 text-sm font-medium transition-colors">
+                        <i class="fas fa-search mr-1"></i> Buscar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MENÚ DESKTOP -->
+        <nav class="hidden md:flex max-w-7xl mx-auto px-4 py-3 justify-center border-t border-gray-100">
+            <ul class="flex gap-8 text-[12px] font-bold text-brand-blue tracking-widest uppercase">
+                <li><a href="index.html" class="hover-color-green transition-colors">Inicio</a></li>
+                <li><a href="#" class="hover-color-green transition-colors">Presidencial</a></li>
+                <li><a href="#" class="hover-color-green transition-colors">Regiones</a></li>
+                <li><a href="#" class="hover-color-green transition-colors">Distritos</a></li>
+                <li><a href="#" class="text-brand-green border-b-2 border-brand-green pb-1">Directorio Encuestadoras</a></li>
+            </ul>
+        </nav>
+
+        <!-- MENÚ MOBILE -->
+        <div id="mobile-menu" class="hidden absolute top-full left-0 w-full bg-white border-b border-brand-border shadow-lg">
+            <ul class="flex flex-col text-sm font-bold text-brand-blue uppercase divide-y divide-gray-100">
+                <li><a href="index.html" class="block px-6 py-4 hover:bg-gray-50">Inicio</a></li>
+                <li><a href="#" class="block px-6 py-4 hover:bg-gray-50">Presidencial</a></li>
+                <li><a href="#" class="block px-6 py-4 bg-gray-50 text-brand-green">Directorio Encuestadoras</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto px-4 py-8 md:py-12 flex-grow w-full">
+        
+        <!-- Migas de Pan -->
+        <nav class="text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-6 scroll-animate">
+            <a href="index.html" class="hover:text-brand-green transition-colors">Inicio</a> 
+            <span class="mx-2">/</span> 
+            <span class="text-brand-blue">Directorio de Encuestadoras</span>
+        </nav>
+
+        <!-- Cabecera de Sección -->
+        <div class="mb-10 scroll-animate border-b border-brand-border pb-8">
+            <h1 class="text-3xl md:text-5xl font-serif font-bold text-brand-blue leading-tight mb-4">
+                Encuestadoras Registradas
+            </h1>
+            <p class="text-lg text-gray-600 font-medium leading-relaxed max-w-3xl">
+                Listado oficial de las empresas de investigación de opinión pública. Según la Ley Orgánica de Elecciones, solo pueden publicar pronósticos electorales aquellas entidades inscritas en el Registro Electoral de Encuestadoras del Jurado Nacional de Elecciones (REE-JNE).
+            </p>
+        </div>
+
+        <!-- Filtros y Buscador (Prototipo UI) -->
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 scroll-animate">
+            <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+                <button class="bg-brand-blue text-white px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap shadow-sm hover:bg-[#0a2060] transition-colors">Todas</button>
+                <button class="bg-white border border-brand-border text-brand-text px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap shadow-sm hover:border-brand-blue transition-colors">Vigentes JNE</button>
+                <button class="bg-white border border-brand-border text-brand-text px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap shadow-sm hover:border-brand-blue transition-colors">Con Faltas</button>
+            </div>
+            
+            <div class="relative w-full md:w-64 shrink-0">
+                <input type="text" placeholder="Buscar encuestadora..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-colors">
+                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+            </div>
+        </div>
+
+        <!-- GRILLA DE ENCUESTADORAS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="pollster-grid">
+            
+            <!-- TARJETA 1 -->
+            <article class="bg-white rounded-xl border border-brand-border shadow-sm hover:shadow-lg hover:border-brand-blue/30 transition-all duration-300 flex flex-col group scroll-animate">
+                <div class="p-6 border-b border-gray-100 flex items-start justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-brand-blue font-serif mb-1 group-hover:text-brand-green transition-colors">Ipsos Perú</h2>
+                        <div class="text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Ipsos Opinión y Mercado S.A.</div>
+                        <span class="inline-flex items-center gap-1.5 bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Activo
+                        </span>
+                    </div>
+                    <!-- Placeholder Logo -->
+                    <div class="w-12 h-12 rounded bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
+                        <i class="fas fa-chart-pie text-gray-300 text-xl"></i>
+                    </div>
+                </div>
+                
+                <div class="p-6 flex-grow bg-gray-50/50">
+                    <dl class="grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
+                        <div>
+                            <dt class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Registro JNE</dt>
+                            <dd class="font-medium text-gray-900 font-mono text-xs">0001-REE/JNE</dd>
+                        </div>
+                        <div>
+                            <dt class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Metodología</dt>
+                            <dd class="font-medium text-gray-900">Presencial / Hogares</dd>
+                        </div>
+                        <div>
+                            <dt class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Estudios 2026</dt>
+                            <dd class="font-medium text-brand-blue text-lg">12 <span class="text-xs text-gray-400 font-normal">publicados</span></dd>
+                        </div>
+                        <div>
+                            <dt class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Alcance</dt>
+                            <dd class="font-medium text-gray-900">Nacional y Regional</dd>
+                        </div>
+                    </dl>
+                </div>
+                
+                <div class="p-4 border-t border-gray-100 mt-auto">
+                    <a href="#" class="flex justify-between items-center text-sm font-bold text-brand-blue group-hover:text-brand-green transition-colors w-full">
+                        Ver perfil y estudios <i class="fas fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </article>
+
+            <!-- TARJETA 2 -->
+            <article class="bg-white rounded-xl border border-brand-border shadow-sm hover:shadow-lg hover:border-brand-blue/30 transition-all duration-300 flex flex-col group scroll-animate delay-100">
+                <div class="p-6 border-b border-gray-100 flex items-start justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-brand-blue font-serif mb-1 group-hover:text-brand-green transition-colors">Datum Internacional</h2>
+                        <div class="text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Datum Internacional S.A.</div>
+                        <span class="inline-flex items-center gap-1.5 bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Activo
+                        </span>
+                    </div>
+                    <div class="w-12 h-12 rounded bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
+                        <i class="fas fa-chart-line text-gray-300 text-xl"></i>
+                    </div>
+                </div>
+                
+                <div class="p-6 flex-grow bg-gray-50/50">
+                    <dl class="grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
+                        <div>
+                            <dt class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Registro JNE</dt>
+                            <dd class="font-medium text-gray-900 font-mono text-xs">0002-REE/JNE</dd>
+                        </div>
+                        <div>
+                            <dt class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Metodología</dt>
+                            <dd class="font-medium text-gray-900">Presencial / CATI</dd>
+                        </div>
+                        <div>
+                            <dt class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Estudios 2026</dt>
+                            <dd class="font-medium text-brand-blue text-lg">8 <span class="text-xs text-gray-400 font-normal">publicados</span></dd>
+                        </div>
+                        <div>
+                            <dt class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Alcance</dt>
+                            <dd class="font-medium text-gray-900">Nacional</dd>
+                        </div>
+                    </dl>
+                </div>
+                
+                <div class="p-4 border-t border-gray-100 mt-auto">
+                    <a href="#" class="flex justify-between items-center text-sm font-bold text-brand-blue group-hover:text-brand-green transition-colors w-full">
+                        Ver perfil y estudios <i class="fas fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </article>
+
+            <!-- TARJETA 3 -->
+            <article class="bg-white rounded-xl border border-brand-border shadow-sm hover:shadow-lg hover:border-brand-blue/30 transition-all duration-300 flex flex-col group scroll-animate delay-200">
+                <div class="p-6 border-b border-gray-100 flex items-start justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-brand-blue font-serif mb-1 group-hover:text-brand-green transition-colors">CPI</h2>
+                        <div class="text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Compañía Peruana de Estudios</div>
+                        <span class="inline-flex items-center gap-1.5 bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Activo
+                        </span>
+                    </div>
+                    <div class="w-12 h-12 rounded bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
+                        <i class="fas fa-poll text-gray-300 text-xl"></i>
+                    </div>
+                </div>
+                
+                <div class="p-6 flex-grow bg-gray-50/50">
+                    <dl class="grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
+                        <div>
+                            <dt class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Registro JNE</dt>
+                            <dd class="font-medium text-gray-900 font-mono text-xs">0010-REE/JNE</dd>
+                        </div>
+                        <div>
+                            <dt class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Metodología</dt>
+                            <dd class="font-medium text-gray-900">Presencial (Hogares)</dd>
+                        </div>
+                        <div>
+                            <dt class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Estudios 2026</dt>
+                            <dd class="font-medium text-brand-blue text-lg">5 <span class="text-xs text-gray-400 font-normal">publicados</span></dd>
+                        </div>
+                        <div>
+                            <dt class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Alcance</dt>
+                            <dd class="font-medium text-gray-900">Nacional y Local</dd>
+                        </div>
+                    </dl>
+                </div>
+                
+                <div class="p-4 border-t border-gray-100 mt-auto">
+                    <a href="#" class="flex justify-between items-center text-sm font-bold text-brand-blue group-hover:text-brand-green transition-colors w-full">
+                        Ver perfil y estudios <i class="fas fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </article>
+
+            <!-- TARJETA 4 (Estado Suspendido Ejemplo) -->
+            <article class="bg-gray-50 rounded-xl border border-gray-200 shadow-sm flex flex-col group scroll-animate delay-300 opacity-80">
+                <div class="p-6 border-b border-gray-200 flex items-start justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-600 font-serif mb-1">Encuestadora X</h2>
+                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Ejemplo de Suspensión S.A.C.</div>
+                        <span class="inline-flex items-center gap-1.5 bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest">
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Suspendida
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6 flex-grow bg-white/50">
+                    <p class="text-sm text-gray-500 font-medium">Esta empresa no puede publicar estudios electorales por no actualizar su registro ante la Dirección Nacional de Fiscalización del JNE.</p>
+                </div>
+            </article>
+
+        </div>
+    </main>
+
+    <!-- FOOTER INSTITUCIONAL -->
+    <footer class="bg-brand-blue text-white py-12 border-t-[6px] border-brand-green mt-auto">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between gap-8 text-sm">
+            <div class="w-full md:w-1/3">
+                <div class="text-xl font-extrabold tracking-tight mb-2">
+                    Encuestas<span class="text-brand-green">.pe</span>
+                </div>
+                <p class="text-blue-200 leading-relaxed">
+                    Plataforma independiente dedicada al registro, agregación y análisis de los sondeos de opinión para las Elecciones Generales y Regionales 2026.
+                </p>
+            </div>
+            <div class="flex gap-12 text-blue-100">
+                <ul class="space-y-2">
+                    <li class="font-bold text-white uppercase tracking-wider text-xs mb-3">Marco Legal</li>
+                    <li><a href="#" class="hover:text-brand-green transition-colors">Ley Orgánica de Elecciones</a></li>
+                    <li><a href="#" class="hover:text-brand-green transition-colors">Reglamento REE-JNE</a></li>
+                </ul>
+                <ul class="space-y-2">
+                    <li class="font-bold text-white uppercase tracking-wider text-xs mb-3">Nosotros</li>
+                    <li><a href="politica-editorial.html" class="hover:text-brand-green transition-colors">Política Editorial</a></li>
+                    <li><a href="metodologia.html" class="hover:text-brand-green transition-colors">Metodología</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <!-- LÓGICA DE INTERFAZ -->
+    <script>
+        // Reloj
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('es-PE', { hour12: false });
+            const dateString = now.toLocaleDateString('es-PE', { year: 'numeric', month: 'short', day: 'numeric' });
+            document.getElementById('reloj').innerHTML = `<i class="far fa-clock"></i> ${dateString} ${timeString}`;
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        // Menú Móvil
+        const btnMenu = document.getElementById('mobile-menu-btn');
+        const menuMovil = document.getElementById('mobile-menu');
+        btnMenu.addEventListener('click', () => {
+            menuMovil.classList.toggle('hidden');
+        });
+
+        // Animaciones de Scroll (Spring-like)
+        document.addEventListener("DOMContentLoaded", function() {
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { root: null, rootMargin: '0px 0px -20px 0px', threshold: 0.1 });
+
+            document.querySelectorAll('.scroll-animate').forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>

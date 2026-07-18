@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sondeo Seguro - EncuestasElectorales.pe</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Noto Serif', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#102f86',
+                            green: '#15ba75',
+                            bg: '#f4f5f3'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: theme('colors.brand.bg'); }
+        /* Animación de pulso para el radar GPS */
+        .radar-ping { animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+        @keyframes ping-slow {
+            75%, 100% { transform: scale(2); opacity: 0; }
+        }
+        /* Fade in para modales */
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- WIDGET DE VOTACIÓN PRINCIPAL -->
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-md overflow-hidden relative z-10">
+        
+        <!-- Header del Widget -->
+        <div class="bg-brand-blue p-5 text-white">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-green opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-green"></span>
+                </span>
+                <span class="text-[10px] font-bold text-green-400 uppercase tracking-widest">Sondeo Interactivo Abierto</span>
+            </div>
+            <h3 class="font-serif text-xl font-bold leading-tight">
+                Si las elecciones para la Alcaldía de Miraflores fueran mañana, ¿por quién votarías?
+            </h3>
+        </div>
+
+        <!-- Formulario -->
+        <div class="p-5">
+            <form id="form-voto" class="space-y-3">
+                
+                <!-- Opciones (Simplificadas para el demo) -->
+                <label class="flex items-center p-3.5 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors has-[:checked]:border-brand-blue has-[:checked]:bg-blue-50/50 group">
+                    <input type="radio" name="candidato" value="1" class="w-4 h-4 text-brand-blue border-gray-300 focus:ring-brand-blue accent-brand-blue">
+                    <div class="ml-3 flex-grow">
+                        <div class="text-sm font-bold text-gray-900 group-hover:text-brand-blue">Carlos Canales Anchorena</div>
+                        <div class="text-[10px] text-gray-500 uppercase tracking-wider">Renovación Popular</div>
+                    </div>
+                </label>
+
+                <label class="flex items-center p-3.5 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors has-[:checked]:border-brand-blue has-[:checked]:bg-blue-50/50 group">
+                    <input type="radio" name="candidato" value="2" class="w-4 h-4 text-brand-blue border-gray-300 focus:ring-brand-blue accent-brand-blue">
+                    <div class="ml-3 flex-grow">
+                        <div class="text-sm font-bold text-gray-900 group-hover:text-brand-blue">María Rocío Cano Guerinoni</div>
+                        <div class="text-[10px] text-gray-500 uppercase tracking-wider">Podemos Perú</div>
+                    </div>
+                </label>
+
+                <button type="button" onclick="iniciarValidacion()" class="w-full mt-6 bg-brand-blue text-white font-bold py-3.5 rounded-xl hover:bg-[#0a2060] transition-colors shadow-md">
+                    Registrar mi voto
+                </button>
+            </form>
+
+            <div class="mt-4 text-center">
+                <span class="text-[10px] text-gray-400 font-medium"><i class="fas fa-shield-alt text-brand-green mr-1"></i> Protegido por validación geográfica y huella digital.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         OVERLAYS Y MODALES (LA "BÓVEDA BLINDADA")
+         ========================================== -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden flex items-center justify-center p-4">
+        
+        <!-- PASO 1: EL SOFT-ASK (Justificando el permiso) -->
+        <div id="paso-softask" class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl hidden fade-in">
+            <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-brand-blue text-xl mb-4 mx-auto">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <h4 class="text-center font-serif text-xl font-bold text-brand-blue mb-2">Verificación de Seguridad</h4>
+            <p class="text-center text-sm text-gray-600 mb-6 leading-relaxed">
+                Para garantizar la pureza de esta encuesta y evitar que "granjas de bots" manipulen los resultados, necesitamos validar tu ubicación física. 
+                <br><br>
+                <strong class="text-gray-800">Tu privacidad está segura:</strong> No guardamos tu dirección exacta ni compartimos este dato.
+            </p>
+            <button onclick="solicitarGPS()" class="w-full bg-brand-green text-white font-bold py-3 rounded-xl hover:bg-[#12a668] transition-colors shadow-md flex items-center justify-center gap-2 mb-3">
+                <i class="fas fa-location-arrow"></i> Validar Ubicación
+            </button>
+            <button onclick="cerrarModal()" class="w-full text-xs font-bold text-gray-400 hover:text-gray-600 uppercase tracking-wider py-2">
+                Cancelar voto
+            </button>
+        </div>
+
+        <!-- PASO 2: CARGANDO GPS (Simulación radar) -->
+        <div id="paso-cargando" class="bg-white rounded-2xl p-8 w-full max-w-sm shadow-2xl hidden flex flex-col items-center justify-center fade-in">
+            <div class="relative w-16 h-16 mb-4">
+                <div class="absolute inset-0 bg-brand-green/20 rounded-full radar-ping"></div>
+                <div class="absolute inset-0 flex items-center justify-center text-brand-green text-2xl">
+                    <i class="fas fa-satellite-dish"></i>
+                </div>
+            </div>
+            <h4 class="font-bold text-brand-blue text-lg">Validando conexión...</h4>
+            <p class="text-xs text-gray-500 mt-2 text-center">Por favor, dale a "Permitir" en el aviso de tu navegador.</p>
+        </div>
+
+        <!-- PASO 3: EL "SMART MATCH" (Resolución de conflicto) -->
+        <div id="paso-smartmatch" class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl hidden fade-in">
+            <div class="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center text-amber-500 text-xl mb-4 mx-auto border border-amber-100">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h4 class="text-center font-serif text-xl font-bold text-brand-blue mb-4">Confirmación de Distrito</h4>
+            
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-5 text-sm text-gray-700 leading-relaxed text-center">
+                Te hemos ubicado físicamente en <strong class="text-brand-blue">San Isidro</strong>.<br>
+                Sin embargo, estás a punto de votar para la alcaldía de <strong class="text-brand-blue">Miraflores</strong>. 
+                <br><br>
+                ¿Es esto correcto?
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="finalizarVoto('Miraflores')" class="w-full bg-brand-blue text-white font-bold py-3 rounded-xl hover:bg-[#0a2060] transition-colors shadow-sm text-sm">
+                    Sí, mi DNI y voto son de Miraflores
+                </button>
+                <button onclick="finalizarVoto('San Isidro')" class="w-full bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors text-sm">
+                    No, cambiar mi voto a San Isidro
+                </button>
+            </div>
+        </div>
+
+        <!-- PASO 4: ÉXITO -->
+        <div id="paso-exito" class="bg-white rounded-2xl p-8 w-full max-w-sm shadow-2xl hidden flex flex-col items-center justify-center fade-in text-center">
+            <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center text-brand-green text-3xl mb-4">
+                <i class="fas fa-check"></i>
+            </div>
+            <h4 class="font-serif text-2xl font-bold text-brand-blue mb-2">¡Voto Registrado!</h4>
+            <p class="text-sm text-gray-600">
+                Tu participación ha sido validada criptográficamente e ingresada a la matriz estadística.
+            </p>
+            <button onclick="cerrarModal()" class="mt-6 text-xs font-bold text-brand-blue uppercase tracking-wider hover:underline">
+                Volver a los resultados
+            </button>
+        </div>
+
+    </div>
+
+    <!-- LÓGICA DE LA INTERFAZ -->
+    <script>
+        // Variables de estado
+        let startTime; 
+
+        // Mostrar / Ocultar capas
+        const overlay = document.getElementById('modal-overlay');
+        const vistaSoftAsk = document.getElementById('paso-softask');
+        const vistaCargando = document.getElementById('paso-cargando');
+        const vistaSmartMatch = document.getElementById('paso-smartmatch');
+        const vistaExito = document.getElementById('paso-exito');
+
+        function ocultarTodasLasVistas() {
+            vistaSoftAsk.classList.add('hidden');
+            vistaCargando.classList.add('hidden');
+            vistaSmartMatch.classList.add('hidden');
+            vistaExito.classList.add('hidden');
+        }
+
+        function iniciarValidacion() {
+            // Verificar que seleccionó a un candidato
+            const seleccionado = document.querySelector('input[name="candidato"]:checked');
+            if(!seleccionado) {
+                alert("Por favor, selecciona un candidato primero.");
+                return;
+            }
+
+            // Mostrar el Soft-Ask modal
+            ocultarTodasLasVistas();
+            overlay.classList.remove('hidden');
+            vistaSoftAsk.classList.remove('hidden');
+        }
+
+        function solicitarGPS() {
+            // Iniciar cronómetro de interacción para la BD (Antifraude)
+            startTime = Date.now();
+            
+            // Pasar a vista cargando
+            ocultarTodasLasVistas();
+            vistaCargando.classList.remove('hidden');
+
+            if (navigator.geolocation) {
+                // Solicitar ubicación de Alta Precisión
+                navigator.geolocation.getCurrentPosition(
+                    gpsExito, 
+                    gpsError, 
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            } else {
+                alert("Tu navegador no soporta geolocalización.");
+                cerrarModal();
+            }
+        }
+
+        function gpsExito(position) {
+            /* 
+             * AQUÍ SUCEDE LA MAGIA EN EL BACKEND (Simulado en JS para el frontend).
+             * En un entorno real, enviarías lat/lng a PHP, PHP haría un Reverse Geocoding
+             * rápido usando la BD espacial y determinaría que el usuario está en "San Isidro".
+             * Como el voto era para "Miraflores", PHP devuelve un flag de "Mismatch".
+             */
+            
+            // Captura de datos para enviar a Claude Code (Backend)
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const accuracy = position.coords.accuracy; // Margen de error en metros
+            const interactionTime = Date.now() - startTime;
+
+            console.log("Datos para la Bóveda:", {lat, lng, accuracy, interactionTime});
+
+            // Simulamos un retraso de red para la demostración
+            setTimeout(() => {
+                // Forzamos el escenario de "Smart Match" (Discrepancia)
+                ocultarTodasLasVistas();
+                vistaSmartMatch.classList.remove('hidden');
+            }, 1500);
+        }
+
+        function gpsError(error) {
+            // Manejo de rechazos (El usuario huyó o bloqueó el permiso)
+            ocultarTodasLasVistas();
+            alert("No podemos registrar tu voto sin validación geográfica. Permiso denegado.");
+            cerrarModal();
+        }
+
+        function finalizarVoto(distritoFinal) {
+            /*
+             * Aquí envías el JSON final a `/api/vote.php`.
+             * Si eligió 'Miraflores', guardas { is_out_of_district: true }.
+             * Si eligió 'San Isidro', cambias el `distrito_id` del voto.
+             */
+            
+            ocultarTodasLasVistas();
+            vistaCargando.classList.remove('hidden');
+            
+            // Simulando guardado en Base de Datos...
+            setTimeout(() => {
+                ocultarTodasLasVistas();
+                vistaExito.classList.remove('hidden');
+            }, 1000);
+        }
+
+        function cerrarModal() {
+            overlay.classList.add('hidden');
+            ocultarTodasLasVistas();
+            // Resetear radios si se cancela (opcional)
+        }
+    </script>
+</body>
+</html>
