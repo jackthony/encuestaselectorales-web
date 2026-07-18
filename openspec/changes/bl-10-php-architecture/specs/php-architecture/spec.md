@@ -55,13 +55,30 @@ Public page files SHALL be flat `kebab-case.php` at the repository root, with Sp
 - **THEN** `metodologia.php` and `quienes-somos.php` exist
 - **AND** no filename contains a `_` standing in for a lost accented character
 
+### Requirement: Legal scrub of fabricated attribution
+No page SHALL attribute invented poll figures to a real pollster, and no content SHALL fall outside the Lima Metropolitana district scope lock. Authorized by owner, 2026-07-18.
+
+#### Scenario: No real pollster is named on fabricated data
+- **WHEN** the views are searched for `Ipsos`, `Datum`, `CPI` or `IEP` in any heading, title or attribution attached to a demo figure
+- **THEN** no matches are returned
+- **AND** the attribution reads the `ejemplo` entry from `data/encuestadora.json` — "Encuestadora de ejemplo (dato ficticio, no es una institución real)"
+
+#### Scenario: Real pollsters remain listed where the listing is factual
+- **WHEN** `encuestadoras.php` renders the pollster directory
+- **THEN** real institutional pollsters MAY be named, because listing that a firm exists and is JNE-registered is a fact, not a fabricated figure
+- **AND** no poll result is attributed to any of them
+
+#### Scenario: Out-of-scope geography is removed
+- **WHEN** the views are searched for any regional government (GORE) or non-Lima-Metropolitana territory
+- **THEN** no matches are returned
+
 ### Requirement: Structural refactor only
-This change SHALL NOT alter copy, add features, connect to a database, or create any `/api/` endpoint.
+Apart from the palette reconciliation and the legal scrub above, this change SHALL NOT alter copy, add features, connect to a database, or create any `/api/` endpoint.
 
 #### Scenario: No backend surface is introduced
 - **WHEN** the tree is inspected after the change
 - **THEN** no `/api/` directory exists, no `PDO` instantiation appears, and `config/` holds no credentials
 
-#### Scenario: Content is relocated, not rewritten
-- **WHEN** the visible text of each PHP page is compared to its prototype
+#### Scenario: Content is otherwise relocated, not rewritten
+- **WHEN** the visible text of each PHP page is compared to its prototype, excluding the pollster attributions and GORE entries above
 - **THEN** it is identical

@@ -30,16 +30,23 @@ Sequence is binding. Task 1 writes the failing check before any refactor exists.
 - [ ] 5.2 Hardcoded content stays hardcoded (BL-16 wires data). Relocate, don't rewrite.
 - [ ] 5.3 Fix internal links to the new `.php` names.
 
-## 6. Green
-- [ ] 6.1 Run `scripts/check-refactor.php`. All 8 pass.
-- [ ] 6.2 `php -S localhost:8000`, load all 8, browser console clean (zero errors).
-- [ ] 6.3 Commit the refactor.
+## 6. Legal scrub (authorized by owner 2026-07-18)
+- [ ] 6.1 `encuesta.php`: retitle "Estudio Ipsos Agosto 2026" → attribute to the `ejemplo` entry in `data/encuestadora.json`. Same for any other demo figure attributed to Ipsos / Datum / CPI / IEP.
+- [ ] 6.2 `encuestadoras.php`: real pollsters STAY. Listing that a firm exists and is JNE-registered is factual and is the directory's whole purpose. Only remove a fabricated *result* attributed to one.
+- [ ] 6.3 Remove GORE Ucayali and any non-Lima-Metropolitana territory from `index.php`.
+- [ ] 6.4 Grep the tree for `Ipsos|Datum|CPI|IEP` and confirm every surviving hit is a factual listing, not an attributed figure.
 
-## 7. Cleanup (last, only after 6 is committed)
-- [ ] 7.1 Delete `canvas-gemini/`. Recoverable at commit `2a6e18f`.
-- [ ] 7.2 Point `scripts/check-refactor.php` at that commit's blobs (`git show 2a6e18f:canvas-gemini/...`) so the check survives the deletion.
-- [ ] 7.3 Update `docs/backlog.md`: BL-10 → `done`.
+## 7. Green
+- [ ] 7.1 Run `scripts/check-refactor.php`. All 8 pass.
+- [ ] 7.2 `php -S localhost:8000`, load all 8, browser console clean (zero errors).
+- [ ] 7.3 Commit the refactor.
+
+## 8. Cleanup (last, only after 7 is committed)
+- [ ] 8.1 Delete `canvas-gemini/`. Recoverable at commit `2a6e18f`.
+- [ ] 8.2 Point `scripts/check-refactor.php` at that commit's blobs (`git show 2a6e18f:canvas-gemini/...`) so the check survives the deletion.
+- [ ] 8.3 Update `docs/backlog.md`: BL-10 → `done`.
 
 ## Notes carried forward (do not fix here)
-- Prototypes contradict `canvas-gemini/PROMPT-portal.md`: `encuesta.php` is titled "Estudio Ipsos Agosto 2026" with invented numbers, `encuestadoras.php` lists real JNE pollsters, `index.php` includes GORE Ucayali (a region, out of the Lima-districts scope lock). Publishing invented figures under a real pollster's name is the legal exposure CLAUDE.md flags. **Blocks going live, not this refactor** — file as BL-11 or earlier.
 - `perfil_de_candidato.html` loads Chart.js from jsDelivr with no version pin — a breaking upstream release breaks the page silently. Pin it in BL-11.
+- The GPS widget's `alert()` on permission denial is hostile UX and blocks users whose GPS legitimately fails (indoor, desktop, hardware off). BL-11 owns the fix; BL-10 preserves current behavior.
+- `data/*.json` shapes may not cover everything the prototypes hardcode. Log gaps here as found; BL-16 wires the data.
