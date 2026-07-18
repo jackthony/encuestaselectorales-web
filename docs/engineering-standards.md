@@ -1,150 +1,45 @@
-# Engineering standards — encuestaselectorales-web (mandatory)
+# Engineering & Coding Standards
 
-> How this project gets built, mechanically. English on purpose — every doc under `docs/` is English for LLM determinism (see `CLAUDE.md`). Domain/data values (district names, party names, JNE terms) stay in Spanish since they're real-world Peruvian entities, not prose.
+This document defines the strict architecture rules and API contracts for the Encuestas Electorales MVP.
 
----
+## 1. Clean Architecture (MVC-Lite in PHP)
+- **Views (Presentation):** Files like `distrito.php` only contain HTML and `echo` statements. No direct database queries here.
+- **Controllers/API:** Files in `/api/` (e.g., `votar.php`) handle incoming requests, validate input, and return JSON.
+- **Services:** Logic like GPS Triangulation must be decoupled into `/includes/` or `/services/`.
+- **Data Access:** All MySQL `PDO` queries must use Prepared Statements.
 
-## 0. File & folder layout (ponytail: flattest structure that works, extend only when 2+ pages actually need it)
+## 2. API Contracts (Backend ↔ Frontend)
 
-```
-/index.html                  landing (placeholder today, BL-10 replaces it)
-/politica-editorial.html     BL-02 — one file per public page, flat, matches index.html precedent
-/<slug>.html                 future single pages (BL-03 privacy, BL-05 legal, BL-06 methodology/about...)
-/distritos/<slug>.html       future per-district pages (BL-11+) — only district content nests, everything else stays flat
-/styles.css                  ONE shared stylesheet: design tokens (CSS custom properties, §6) + base rules. Split into more files only when styles.css is demonstrably too large to navigate — not preemptively.
-/data/*.json                 hand-written data (distrito.json, partido.json, candidato.json, encuesta.json, encuestadora.json — shapes in docs/data-model.md)
-/img/                        candidate photos, logos (added when BL-09/BL-11 need them)
-/scripts/validate-data.js    BL-21 CI check — plain node, no dependencies
-```
+Frontend Vanilla JS and Backend PHP communicate strictly via JSON.
 
-No `src/`, no build output folder, no component/framework directory — there's no build step (`CLAUDE.md` Stack), so there's nothing to compile into anything. One folder nests (`/distritos/`) because 43 pages sharing a pattern genuinely need it; nothing else does yet. Don't add `/pages/`, `/components/`, `/assets/` subdivisions ahead of a second thing that would go in them — extend this list in the same PR that first needs the new location, not before.
+### Contract for `/api/votar.php`
 
-```
-main  (protected: PR required, no force-push, no delete)
-  |     auto-deploys to Hostinger public_html on every merge
-  |
-  +-- feat/bl-xx-slug   1 per backlog item, short-lived, deleted after merge
-  +-- fix/...           bug fixes outside a BL item
-  +-- chore/...         maintenance, no spec (deploy config, etc.)
+**Request:**
+
+```json
+{
+  "candidato_id": "uuid-1234",
+  "distrito_id": "miraflores",
+  "gps_lat": -12.12110000,
+  "gps_lng": -77.02980000,
+  "interaction_time_ms": 4500
+}
 ```
 
-- **Trunk-based, single environment.** No `develop`, no release branches — `main` IS production (Hostinger auto-deploy from `main`, per `CLAUDE.md`). PR review is the only gate before prod.
-- Branch name = same slug as `openspec/changes/bl-xx-slug/` = same id as the PR title. One chain: backlog item → spec → branch → PR → merge → deploy.
-- Branch lives exactly as long as its `BL-xx`. No stacking multiple items on one branch.
+**Response:**
 
-## 2. Session protocol — so every session lands precisely on task
-
-At the start of any session touching this repo:
-
-1. Read `docs/backlog.md` **Status** column. Pick the first `not-started` item whose `depends on` are all `done`.
-1b. Check `git config user.email` — must be the GitHub noreply address, not a personal/work email (repo is public). Fix before the first commit if it's wrong. Detail: `docs/devsecops.md` §Git identity.
-2. Check current git branch. If already on `feat/bl-xx-*` mid-work, resume that item — don't start a new one.
-3. Confirm `openspec/changes/bl-xx-slug/` exists for the item. If not, propose it first (spec-before-code is mandatory, see `~/.claude/OPENSPEC.md`).
-4. Stay inside that branch/spec scope. One `BL-xx` per session unless the user explicitly asks for more.
-5. On completion: mark the item `done` in `docs/backlog.md`, open the PR, stop — don't auto-start the next item.
-
-`docs/backlog.md` Status column is the single source of truth for "where are we." No separate state file, no reconstructing progress from git log each session.
-
-## 3. Commits
-
-Conventional Commits, referencing the BL id:
-
-```
-feat(bl-06): 43 Lima district catalog
-fix(bl-12): margin of error not shown when 0
-docs(backlog): renumber items in execution order
-chore: .gitignore config
+```json
+{
+  "status": "success",
+  "message": "Voto registrado y encriptado correctamente."
+}
 ```
 
-Types: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`. No `--no-verify`, no amending pushed commits.
+## 3. Testing Strategy (QA)
+- **Backend QA:** Every API endpoint must strictly validate inputs using PHP's `filter_var()`. Throw 400 Bad Request immediately if inputs are malformed.
+- **Frontend QA:** All JS DOM interactions must fail gracefully (`if (!document.getElementById('map')) return;`) to prevent console errors.
 
-## 4. Pull requests
-
-- 1 PR per `BL-xx` (same scope as its spec — if the PR grows bigger than the spec, the spec was cut wrong).
-- Mandatory description: what changes, which `BL-xx`/spec it references, how it was tested (the backlog "done when" criterion + the spec's deterministic test).
-- No direct merge to `main` (already blocked by branch protection) — always via PR, always reviewed before approval.
-
-## 5. Tests — test-first where there's logic, checklist where there's content
-
-Two kinds of `BL-xx`, two rules. Don't blur them (`CLAUDE.md` constraint 7).
-
-**Logic items** (data validation, % math, parsing, a script, a component with behavior) — genuine TDD, no exceptions:
-
-```
-1. Take the spec's "done when" criterion
-2. Write the check FIRST — it must FAIL (red), because the feature doesn't exist yet
-3. Implement the minimum that makes it pass (green)
-4. PR states both: what the red check was, what made it green
-```
-
-If a logic item's "done when" can't be turned into a failing check before the code, the spec wasn't concrete enough — fix the spec, don't skip the test.
-
-**Content items** (a Methodology page, About copy, a policy page — BL-02/03/04/05) — there is no meaningful "failing test" for prose. They ship against an explicit **checklist**, not a fake red test: the "done when" criterion is met + accessibility (§below) + responsive (§7) + any required links resolve. Writing `assert(pageExists)` for an HTML page is theater — don't. The honesty of "no exceptions" depends on not pretending content is logic.
-
-Static site, no build → lightweight checks, no heavy framework (Jest/Vitest would need Node+build tooling that doesn't exist and isn't justified for plain HTML/CSS/JS). TDD is about the ORDER (test before code), which a plain node script satisfies fine:
-
-| What's checked | How (no new dependencies) | Kind |
-|---|---|---|
-| Data shape (`distrito.json`, `partido.json`, `candidato.json`, `encuesta.json`) | `scripts/validate-data.js` (pure `node`, no libs) — required fields, unique ids, cross-refs (`encuestadoraId` in catalog, `distritoId` exists). `node scripts/validate-data.js` | **Logic — test-first**: write the check for the new field/ref before the JSON has it, watch it fail, then add data |
-| % math / parsing in any JS (e.g. BL-13 chart, BL-15 trend delta) | `assert`-based mini-test next to the function | **Logic — test-first** |
-| Base accessibility (BL-20) | axe DevTools on every new page | Checklist (not a red/green test) |
-| Responsive (§7) | Manual check at the 3 breakpoints | Checklist |
-| Valid HTML | W3C Validator (or one-off `npx html-validate`) | Checklist |
-
-Ponytail rule on tooling: mini-tests stay `assert`-based and framework-free until logic volume actually justifies Jest/Vitest. The discipline is the ORDER, not the framework — "no framework yet" is never an excuse to skip writing a logic check first.
-
-## 6. UX/UI
-
-- **Mobile-first**: CSS defaults to mobile, widens via `min-width` media queries — never the reverse.
-- **Design tokens as CSS custom properties** (`:root { --color-... }`), no repeated hardcoded values. Neutral palette for site chrome (nav, background, text) — **party colors live only in the data** (`partido.color`), never in layout, same principle as simulatuvoto's `columna-tokens.ts` (keep political brand color separate from UI color).
-
-### Visual identity (BL-04) — concrete values, `styles.css`
-
-Source: harness `dataviz` skill's validated reference palette (`references/palette.md`), light theme. Not invented hex.
-
-| Token | Hex | Role |
-|---|---|---|
-| `--bg` | `#f9f9f7` | page plane |
-| `--surface` | `#fcfcfb` | card/surface |
-| `--text` | `#0b0b0b` | primary ink (18.67:1 on `--bg`) |
-| `--muted` | `#52514e` | secondary ink / body text (7.53:1 on `--bg`) |
-| `--muted-2` | `#898781` | reserved, lower-emphasis text |
-| `--accent` | `#2a78d6` | non-text only (borders/tints, 3:1 bar) — **fails 4.5:1 as flat text (4.19:1, measured)**. == future chart categorical slot 1 (BL-13 continuity) |
-| `--accent-text` | `#256abf` | accent used AS text/bullets/links — same hue, ramp step 500 (5.12:1 on `--bg`, passes AA) |
-| `--border` | `rgba(11,11,11,0.10)` | hairline |
-
-Status colors (reserved, not applied on any page yet — for `BL-14`/`BL-24`): `--status-good #0ca30c`, `--status-warning #fab219`, `--status-serious #ec835a`, `--status-critical #d03b3b`.
-
-**Rule**: never use `--accent` where text renders on it directly (link color, label color, bullet glyphs) — always `--accent-text` for that. `--accent` is for borders/background tints/future chart series only. This distinction exists because the reference palette's slot-1 blue was validated for UI/chart non-text contrast (≥3:1), not the stricter 4.5:1 required for body-sized text — verify contrast per use, don't assume a palette value that passes for one role passes for all roles.
-
-**Typography**: headings `ui-serif, Georgia, "Times New Roman", serif` (editorial character, zero webfonts/external requests). Body `system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`.
-
-- Charts (BL-13, trend): follow the `dataviz` skill before picking colors/shapes — already available in the harness, use it when building that component. Reuse `--accent` as categorical slot 1 for continuity with site chrome.
-- No JS framework dependency — vanilla JS, same criterion as the already-locked stack decision.
-
-## 7. Responsive
-
-Same breakpoints as simulatuvoto (same author/agency, consistent with a pattern already proven in production — that repo's `docs/ARQUITECTURA.md`):
-
-| Breakpoint | Range | Layout |
-|---|---|---|
-| Mobile | < 768px | 1 column, simplified nav (no full dropdown) |
-| Tablet | 768–1199px | 2 columns where applicable (e.g. candidate list + fact sheet) |
-| Desktop | ≥ 1200px | Full layout, nav with district dropdown visible |
-
-Manual checklist per new page: test all 3 widths before merging the PR (part of every `BL-xx`'s "done when" criterion).
-
----
-
-## Full flow per BL-xx
-
-```
-read docs/backlog.md status -> pick next unblocked item
-  -> openspec propose bl-xx (spec first)
-  -> branch feat/bl-xx-slug
-  -> conventional commits
-  -> deterministic test (validate-data.js or equivalent)
-  -> responsive checklist (3 breakpoints) + base accessibility
-  -> PR (description: BL-xx + how it was tested) -> review -> merge to main -> auto-deploy
-  -> mark BL-xx "done" in docs/backlog.md
-```
+## 4. Naming Conventions
+- **MySQL:** `snake_case` (`trust_score`, `gps_lng`).
+- **PHP:** `camelCase` for vars/functions, `PascalCase` for classes.
+- **CSS/DOM IDs:** `kebab-case`.

@@ -1,19 +1,25 @@
+# Claude Code local (private, never commit)
 CLAUDE.local.md
 .claude/settings.local.json
 
-# OS
+# Configuration & Secrets
+/config/db.php
+/config/security.php
+.env
+*.env
+
+# Dependencies
+/node_modules/
+/vendor/
+
+# OS generated files
 .DS_Store
 Thumbs.db
 
-# Editor
-.vscode/
+# IDEs and Editors
 .idea/
+.vscode/
+*.swp
 
-# Env / secrets (Track E backend, when it lands)
-.env
-.env.local
-.env*.local
-
-# Node (BL-21 CI tooling, when it lands)
-node_modules/
-npm-debug.log*
+# Logs
+*.log
