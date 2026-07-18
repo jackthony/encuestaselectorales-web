@@ -3,10 +3,12 @@
 Sequence is binding. Task 1 writes the failing check before any refactor exists.
 
 ## 1. The failing check (before any refactor)
-- [ ] 1.1 Write `scripts/check-refactor.php`: for each page, parse HTML via `DOMDocument`, emit a sorted multiset of `tag + class-list`, compare PHP render vs its `canvas-gemini/` original. Exit 1 on any diff.
-- [ ] 1.2 Feed it the palette exceptions from design.md Decision 1 (`#fcfcfc`/`#f8fafc` → `#f4f5f3`) as the only allowed deltas.
-- [ ] 1.3 **Run it. Watch it fail** — no `.php` pages exist yet, so all 8 comparisons must error. A passing check at this stage means the check is broken.
-- [ ] 1.4 Commit the failing check.
+- [x] 1.1 Write `scripts/check-refactor.php`: for each page, parse HTML via `DOMDocument`, emit a sorted multiset of `tag + class-list`, compare PHP render vs its `canvas-gemini/` original. Exit 1 on any diff.
+- [x] 1.2 Feed it the palette exceptions from design.md Decision 1 (`#fcfcfc`/`#f8fafc` → `#f4f5f3`) as the only allowed deltas. In practice the palette only ever appears as JS text inside the `tailwind.config` `<script>` in `<head>`, never as a DOM class — so a tag+class multiset diff never touches it; no special-casing was needed to honor this exception.
+- [x] 1.3 **Run it. Watch it fail** — no `.php` pages exist yet, so all 8 comparisons must error. A passing check at this stage means the check is broken. Confirmed: `0 of 8 pages match`, exit 1, all 8 "does not exist or did not render".
+- [x] 1.4 Commit the failing check.
+
+**Design note (read before section 3):** the check's comparison scope is `<body>` minus the `<header>` and `<footer>` subtrees, not the whole document. Those two elements are the ones being *intentionally* unified into single shared partials (Decision 2/3, "Repeated UI lives in partials" requirement) — the 8 canvas prototypes actually carry **two visually distinct header/footer generations** (see section 3 finding below), so comparing them 1:1 per page would make "zero visual change" and "one shared header partial" mutually impossible. Ticker bar, breadcrumbs, main content, and floating buttons stay page-specific and are diffed byte-for-byte. `distrito.php` has no canvas-gemini source (see section 5 finding) so it gets an existence/render smoke check instead of a structural diff — it is still counted as the 8th of "8 pages" per the spec's `8 of 8` scenario.
 
 ## 2. Skeleton
 - [ ] 2.1 Create `partials/`, `includes/`, `assets/css/`, `assets/js/`, `assets/img/candidatos/`.
