@@ -274,4 +274,140 @@ foreach ($results as $r) {
 
 echo "\n{$passed} of {$total} pages match.\n";
 
+/**
+ * Compensatory check: excluding <header>/<footer> from the per-page diff
+ * (above) means a broken partials/header.php or partials/footer.php could
+ * pass the whole suite silently. This verifies two things instead of
+ * trusting the exclusion blindly:
+ *   1. Every page that includes the partial renders the *same* header (and
+ *      the same footer) as every other page — proves there is truly one
+ *      shared source, not accidental per-page drift.
+ *   2. That shared header/footer matches, tag-for-tag and class-for-class,
+ *      the canvas prototype tasks.md 3.1/3.2 name as the source of truth:
+ *      portal_de_sondeos_ciudadanos.html (picked because it's the newest/
+ *      most complete "cluster B" header — the one design.md itself
+ *      describes as "nav + Distritos de Lima dropdown" — and reused for
+ *      the footer for internal consistency, tasks.md section 3).
+ * This does NOT relax to "close enough" if the diff isn't exact — a real
+ * mismatch here is reported and fails the run, same as any other check.
+ */
+/**
+ * partials/header.php parameterizes which nav item is "active" per page
+ * (an intentional design.md-consistent choice — see the partial's own
+ * docblock: callers set $activeNav so the right item is highlighted,
+ * matching what each canvas original did for its own page). That makes
+ * the *only* legitimate difference between any two pages' rendered
+ * headers the active/inactive class pair on one nav `<a>`. Normalized to
+ * a single canonical token here so the cross-page consistency check
+ * (below) isn't fooled by this known, documented, expected variance while
+ * still catching every other kind of drift.
+ */
+const NAV_LINK_STATE_VARIANTS = [
+    'text-brand-green border-b-2 border-brand-green pb-1',
+    'hover:text-brand-blue/70 transition-colors',
+    'block px-6 py-4 bg-brand-surface text-brand-green',
+    'block px-6 py-4 hover:bg-brand-surface',
+];
+
+function extractSubtree(string $html, string $tag): array
+{
+    $doc = new DOMDocument();
+    libxml_use_internal_errors(true);
+    $doc->loadHTML('<?xml encoding="utf-8" ?>' . $html, LIBXML_NOWARNING | LIBXML_NOERROR);
+    libxml_clear_errors();
+
+    $node = $doc->getElementsByTagName($tag)->item(0);
+    $tokens = [];
+    if (!$node) {
+        return $tokens;
+    }
+
+    $walk = function (DOMNode $n) use (&$walk, &$tokens) {
+        foreach ($n->childNodes as $child) {
+            if ($child->nodeType !== XML_ELEMENT_NODE) {
+                continue;
+            }
+            /** @var DOMElement $child */
+            if (strtolower($child->tagName) === 'script') {
+                $walk($child);
+                continue;
+            }
+            $classAttr = trim($child->getAttribute('class'));
+            if (strtolower($child->tagName) === 'a' && in_array($classAttr, NAV_LINK_STATE_VARIANTS, true)) {
+                $classAttr = 'nav-link-active-state';
+            }
+            $classes = preg_split('/\s+/', $classAttr);
+            $classes = array_values(array_filter($classes, fn($c) => $c !== ''));
+            sort($classes);
+            $token = strtolower($child->tagName) . (count($classes) ? '.' . implode('.', $classes) : '');
+            $tokens[$token] = ($tokens[$token] ?? 0) + 1;
+            $walk($child);
+        }
+    };
+    // Include the root tag itself (its own class list matters too).
+    $rootClasses = preg_split('/\s+/', trim($node->getAttribute('class')));
+    $rootClasses = array_values(array_filter($rootClasses, fn($c) => $c !== ''));
+    sort($rootClasses);
+    $rootToken = strtolower($tag) . (count($rootClasses) ? '.' . implode('.', $rootClasses) : '');
+    $tokens[$rootToken] = ($tokens[$rootToken] ?? 0) + 1;
+    $walk($node);
+
+    return $tokens;
+}
+
+$chromeSourceFile = 'portal_de_sondeos_ciudadanos.html'; // tasks.md 3.1/3.2: newest/most-complete header wins
+$chromeSourceHtml = readCanvasSource($root, $canvasDir, $canvasRef, $chromeSourceFile);
+$chromeFailures = 0;
+
+foreach (['header', 'footer'] as $chromeTag) {
+    if ($chromeSourceHtml === null) {
+        echo "FAIL  partials/{$chromeTag}.php: cannot read source $chromeSourceFile\n";
+        $chromeFailures++;
+        continue;
+    }
+    $expectedTokens = extractSubtree($chromeSourceHtml, $chromeTag);
+
+    $perPageTokens = [];
+    foreach (array_keys($pages) as $page) {
+        $html = renderPhpPage($root, $page);
+        if ($html === null) {
+            continue;
+        }
+        $perPageTokens[$page] = extractSubtree($html, $chromeTag);
+    }
+
+    // 1. All pages agree with each other.
+    $reference = reset($perPageTokens);
+    $referencePage = array_key_first($perPageTokens);
+    $inconsistentPages = [];
+    foreach ($perPageTokens as $page => $tokens) {
+        if ($tokens !== $reference) {
+            $inconsistentPages[] = $page;
+        }
+    }
+
+    // 2. The shared version matches the chosen canvas source exactly.
+    $diffVsSource = diffMultisets($expectedTokens, $reference ?: []);
+
+    if (empty($inconsistentPages) && empty($diffVsSource['missing']) && empty($diffVsSource['extra'])) {
+        echo "PASS  partials/{$chromeTag}.php (matches {$chromeSourceFile}, identical across all pages that render it)\n";
+    } else {
+        $chromeFailures++;
+        echo "FAIL  partials/{$chromeTag}.php\n";
+        if (!empty($inconsistentPages)) {
+            echo "        inconsistent vs {$referencePage} on: " . implode(', ', $inconsistentPages) . "\n";
+        }
+        foreach ($diffVsSource['missing'] as $token => $count) {
+            echo "        missing vs {$chromeSourceFile} x{$count}: {$token}\n";
+        }
+        foreach ($diffVsSource['extra'] as $token => $count) {
+            echo "        extra vs {$chromeSourceFile} x{$count}: {$token}\n";
+        }
+    }
+}
+
+if ($chromeFailures > 0) {
+    $failures += $chromeFailures;
+}
+
 exit($failures > 0 ? 1 : 0);
