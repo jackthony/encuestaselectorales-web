@@ -28,7 +28,7 @@ $activeNav = 'inicio';
 <body class="antialiased font-sans">
 
     <!-- BARRA SUPERIOR (Ticker en Tiempo Real) -->
-    <div class="bg-brand-green text-white text-[11px] md:text-xs font-semibold py-2 px-4 w-full relative z-20 shadow-sm">
+    <div class="bg-brand-green text-white text-[11px] md:text-xs font-semibold py-2 px-4 w-full relative z-20">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div id="reloj" class="flex items-center gap-2 tracking-wide font-mono" aria-live="polite">
                 <i class="far fa-clock"></i> --/--/---- --:--:--
