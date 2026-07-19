@@ -2,10 +2,12 @@ const fs = require('fs');
 const path = require('path');
 
 const DATA_PATH = path.join(__dirname, '..', 'data', 'encuestadora.json');
-const EXPECTED_COUNT = 6;
+// 5 real pollsters (bl-11c-purge-datos-ficticios removed the "ejemplo"
+// placeholder permanently — it must never reappear in production data).
+const EXPECTED_COUNT = 5;
 const REQUIRED_FIELDS = ['id', 'nombre', 'tipo'];
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-const VALID_TIPOS = ['institucional', 'propia', 'ejemplo'];
+const VALID_TIPOS = ['institucional', 'propia'];
 
 function fail(message) {
   console.error(`FAIL: ${message}`);
@@ -48,12 +50,8 @@ function main() {
       fail(`record at index ${index} has invalid tipo "${record.tipo}" (expected one of ${VALID_TIPOS.join(', ')})`);
     }
 
-    if (record.tipo !== 'ejemplo') {
-      if (typeof record.web !== 'string' || record.web.trim() === '') {
-        fail(`record at index ${index} (${JSON.stringify(record)}) missing required field "web"`);
-      }
-    } else if (record.web !== null && (typeof record.web !== 'string' || record.web.trim() === '')) {
-      fail(`record at index ${index} has invalid "web" (must be null or a non-empty string for tipo "ejemplo")`);
+    if (typeof record.web !== 'string' || record.web.trim() === '') {
+      fail(`record at index ${index} (${JSON.stringify(record)}) missing required field "web"`);
     }
   });
 
