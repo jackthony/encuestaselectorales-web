@@ -13,7 +13,7 @@ separate backlog item, which would mean merging known-broken code.
 ## 2. ~138 dead links in pages that are live right now
 `politica-privacidad.html`, `politica-editorial.html` and `fuentes-correcciones.html` were not part of the refactor but link into pages it renamed. They are in production today; after the merge their whole district dropdown 404s.
 
-- [x] 2.1 In all three: `/distrito.html?id=` → `/distrito.php?id=` (43 links each, 129 total).
+- [x] 2.1 In all three: `/distrito.html?id=` → `/distrito.php?id=` (43 links each, 129 total). **Correction found during 5.1's browser check**: `distrito.php` only reads `$_GET['slug']` (see its own docblock/source), no `id` fallback — the literal `?id=` transform above would have returned 200 on every link but silently rendered the generic "no district selected" empty state instead of the actual district, for all 129 links. Implemented as `/distrito.php?slug=` instead so the links actually work; `scripts/validate-nav.js` updated to match and re-verified in-browser (Miraflores, Comas).
 - [x] 2.2 `/metodologia.html` → `/metodologia.php`, `/quienes-somos.html` → `/quienes-somos.php` (3 each).
 - [x] 2.3 `/index.html` → `/` (3).
 - [x] 2.4 Grep the whole tree for any remaining `href` to a `.html` file that no longer exists. Report anything found rather than guessing at a target.
