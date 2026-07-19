@@ -1,0 +1,33 @@
+name: checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: PHP refactor regression check
+        run: php scripts/check-refactor.php
+
+      - name: JS data/content validators
+        run: |
+          set -e
+          for f in scripts/validate-*.js; do
+            echo "=== $f ==="
+            node "$f"
+          done

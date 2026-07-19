@@ -1,0 +1,39 @@
+# BL-10b deploy readiness (openspec/changes/bl-10-deploy-readiness/tasks.md).
+#
+# Explicit DirectoryIndex order: index.php must resolve before index.html.
+# Apache's compiled-in default DirectoryIndex commonly lists index.html
+# before index.php, which would silently keep serving the old static home
+# page after this refactor's index.php ships — no error, no log entry. The
+# working copy of index.html is deleted (task 1.2); this directive is
+# belt-and-braces so the order stays correct even if a stray .html file
+# reappears (task 1.3).
+DirectoryIndex index.php index.html
+
+# Don't expose directory contents when no index file is present (task 3.2).
+Options -Indexes
+
+# includes/ and partials/ hold PHP fragments meant to be `require`d by the
+# page scripts, never requested directly over HTTP. Verified before adding
+# this (task 3.3): no client-side JS in assets/js/ or any inline <script>
+# fetches these paths — includes/data.php reads data/*.json server-side
+# only (file_get_contents), so blocking direct access breaks nothing.
+<IfModule mod_authz_core.c>
+    <FilesMatch "\.php$">
+        Require all granted
+    </FilesMatch>
+</IfModule>
+
+RewriteEngine On
+RewriteRule ^includes/ - [F,L]
+RewriteRule ^partials/ - [F,L]
+
+# data/*.json — checked (task 3.4): grepped assets/js/ and every inline
+# <script> in the .php pages for fetch()/XMLHttpRequest/axios/$.ajax
+# against data/. None exists; includes/data.php is the only reader and it
+# runs server-side. Nothing in the browser depends on data/ being publicly
+# fetchable, so it is safe to deny direct HTTP access here too.
+RewriteRule ^data/ - [F,L]
+
+# Security headers, HTTPS redirects and origin locking are explicitly out
+# of scope here (task 3.5) — that's BL-12 and depends on Cloudflare being
+# in front, which it is not yet.
