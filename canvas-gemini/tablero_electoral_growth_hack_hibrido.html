@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comas - Encuestas Electorales (Tablero Maestro)</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Noto Serif', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#102f86',
+                            green: '#15ba75',      
+                            greenText: '#0f7a4a',  
+                            bg: '#f4f5f3',
+                            surface: '#f4f5f3',
+                            card: '#ffffff',
+                            border: '#e2e8f0',
+                            text: '#0f172a',
+                            textMuted: '#475569'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: theme('colors.brand.bg'); color: theme('colors.brand.text'); }
+        .data-bar { animation: fillBar 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; transform-origin: left; transform: scaleX(0); }
+        @keyframes fillBar { to { transform: scaleX(1); } }
+    </style>
+</head>
+<body class="antialiased font-sans flex flex-col min-h-screen">
+
+    <!-- Header Escalable (Preparado para UBIGEO Nacional) -->
+    <header class="bg-brand-card w-full border-b border-brand-border sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-6">
+            <a href="index.html" class="flex flex-col cursor-pointer group shrink-0" aria-label="Ir al inicio">
+                <div class="text-2xl md:text-3xl font-extrabold tracking-tight leading-none mb-0.5">
+                    <span class="text-brand-blue">Encuestas</span><span class="text-brand-text">electorales</span><span class="text-brand-green">.pe</span>
+                </div>
+            </a>
+
+            <!-- Buscador Global UBIGEO -->
+            <div class="hidden md:block flex-grow max-w-xl relative">
+                <input type="text" placeholder="Buscar región, provincia o distrito..." class="w-full bg-brand-surface border border-brand-border rounded-full py-2.5 pl-12 pr-4 text-sm focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-colors">
+                <i class="fas fa-search absolute left-5 top-3.5 text-brand-textMuted"></i>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-6 text-[13px] font-bold text-brand-blue tracking-widest uppercase shrink-0">
+                <a href="#" class="hover:text-brand-greenText transition-colors">Directorio JNE</a>
+                <a href="#" class="hover:text-brand-greenText transition-colors">Metodología</a>
+            </nav>
+
+            <button class="md:hidden text-brand-blue text-2xl p-2"><i class="fas fa-search"></i></button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 w-full flex-grow">
+        
+        <!-- Migas de pan geográficas -->
+        <nav class="text-[11px] font-bold text-brand-textMuted uppercase tracking-wider mb-6">
+            <a href="#" class="hover:text-brand-greenText transition-colors">Perú</a> <span class="mx-2 text-gray-300">/</span> 
+            <a href="#" class="hover:text-brand-greenText transition-colors">Región Lima</a> <span class="mx-2 text-gray-300">/</span> 
+            <a href="#" class="hover:text-brand-greenText transition-colors">Lima Metropolitana</a>
+        </nav>
+
+        <header class="mb-8 border-b border-brand-border pb-6">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-brand-blue tracking-tight leading-none mb-3">
+                Comas
+            </h1>
+            <p class="text-brand-textMuted text-lg font-medium">Tablero Electoral Municipal 2026</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+            
+            <!-- COLUMNA PRINCIPAL (Interacción y Tendencias) -->
+            <div class="lg:col-span-8 space-y-10">
+                
+                <!-- =========================================================
+                     ESTADO 1: GROWTH HACK WHATSAPP (Aún no hay candidatos)
+                     ========================================================= -->
+                <section class="bg-brand-card border-2 border-dashed border-brand-green/40 rounded-2xl p-6 md:p-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-brand-green text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest rounded-bl-lg">
+                        Encuesta Online - Semana 1
+                    </div>
+                    
+                    <div class="flex items-start gap-5">
+                        <div class="w-14 h-14 bg-[#e6f8f0] text-brand-greenText rounded-full flex items-center justify-center text-2xl shrink-0">
+                            <i class="fas fa-users-viewfinder"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-serif font-bold text-brand-blue mb-2">Abre la votación en Comas</h2>
+                            <p class="text-brand-textMuted leading-relaxed mb-6">
+                                La encuesta ciudadana de esta semana <strong>cierra el domingo a las 23:59 hrs</strong>. Aún no tenemos candidatos propuestos por la comunidad para este distrito.
+                            </p>
+                            
+                            <div class="bg-brand-surface border border-brand-border rounded-xl p-5 mb-6">
+                                <h3 class="font-bold text-brand-text mb-2 text-sm">¿Tu candidato no está en la lista?</h3>
+                                <p class="text-xs text-brand-textMuted mb-4">Ayúdanos a armar la contienda. Escríbenos para incluirlo y habilitemos el widget de votación segura por GPS en este distrito.</p>
+                                
+                                <a href="https://wa.me/51999999999?text=Hola,%20quiero%20agregar%20a%20mi%20candidato%20en%20Comas" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold py-3 px-6 rounded-xl hover:bg-[#20bd5a] transition-colors w-full sm:w-auto shadow-sm">
+                                    <i class="fab fa-whatsapp text-lg"></i> Proponer candidato por WhatsApp
+                                </a>
+                            </div>
+                            <div class="text-[10px] text-gray-400 font-medium"><i class="fas fa-shield-alt mr-1"></i> Cada voto exige validación de ubicación en el navegador. No aceptamos votos sin ella.</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- =========================================================
+                     ESTADO 2: WIDGET DE VOTACIÓN ACTIVO (Cuando ya hay data)
+                     ========================================================= -->
+                <section class="bg-brand-card border border-brand-border rounded-2xl p-6 shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center gap-2">
+                            <span class="relative flex h-2.5 w-2.5">
+                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-green opacity-75"></span>
+                              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-green"></span>
+                            </span>
+                            <span class="text-[10px] font-bold text-brand-greenText uppercase tracking-widest">Sondeo Interactivo Abierto</span>
+                        </div>
+                        <span class="text-xs font-bold text-brand-textMuted bg-brand-surface px-2 py-1 rounded">Semana 2</span>
+                    </div>
+
+                    <h3 class="font-serif font-bold text-xl text-brand-blue leading-snug mb-5">
+                        ¿Por quién votarías para la Alcaldía de Comas?
+                    </h3>
+
+                    <form class="space-y-3 mb-5">
+                        <label class="flex items-center p-3 border border-brand-border rounded-xl hover:bg-brand-surface cursor-pointer transition-colors group">
+                            <input type="radio" name="candidato" class="w-4 h-4 text-brand-blue border-gray-300 focus:ring-brand-blue accent-brand-blue">
+                            <div class="ml-3 flex-grow">
+                                <div class="text-sm font-bold text-brand-text">Candidato A (Ejemplo)</div>
+                                <div class="text-[10px] text-brand-textMuted uppercase tracking-wider">Partido ABC</div>
+                            </div>
+                        </label>
+                        <button type="button" class="w-full mt-4 bg-brand-blue text-white font-bold py-3.5 rounded-xl hover:bg-[#0a2060] transition-colors shadow-sm">
+                            Votar y validar mi ubicación
+                        </button>
+                    </form>
+                    <p class="text-[10px] text-gray-400 text-center">Protegido por verificación GPS y rate-limiting en servidor.</p>
+                </section>
+
+                <!-- =========================================================
+                     HISTÓRICO: LÍNEA DE TIEMPO (Evolución Online)
+                     ========================================================= -->
+                <section>
+                    <h2 class="text-2xl font-serif font-bold text-brand-blue mb-4">Evolución del Voto Online</h2>
+                    <div class="bg-brand-card border border-brand-border rounded-2xl p-6 shadow-sm">
+                        <div class="relative w-full h-[300px]">
+                            <canvas id="evolucionChart"></canvas>
+                        </div>
+                        <p class="text-xs text-brand-textMuted mt-4 text-center italic">* Basado exclusivamente en nuestro sondeo digital con validación GPS. No representa muestras probabilísticas de campo.</p>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- COLUMNA LATERAL (Estudios de Campo Oficiales) -->
+            <aside class="lg:col-span-4 space-y-6">
+                
+                <h2 class="text-xl font-serif font-bold text-brand-blue flex items-center gap-2 border-b border-brand-border pb-3">
+                    <i class="fas fa-clipboard-check text-brand-textMuted"></i> Encuestas de Campo
+                </h2>
+                
+                <p class="text-xs text-brand-textMuted leading-relaxed">
+                    Estudios de opinión probabilísticos y de solo lectura realizados por empresas inscritas en el REE-JNE.
+                </p>
+
+                <!-- Tarjeta de Encuesta de Campo (Solo lectura, disclaimer legal) -->
+                <article class="bg-brand-card border border-brand-border rounded-xl shadow-sm overflow-hidden relative group">
+                    <div class="p-4 border-b border-gray-100 bg-gray-50/50">
+                        <div class="text-[10px] font-bold text-brand-textMuted uppercase tracking-widest mb-1">Encuestadora de Ejemplo</div>
+                        <h3 class="font-bold text-brand-blue text-sm leading-tight mb-2">Simulacro de Votación (Dato Ficticio)</h3>
+                        <div class="text-xs text-brand-textMuted flex items-center gap-1.5"><i class="far fa-calendar-alt"></i> 10 al 12 Ago 2026</div>
+                    </div>
+                    
+                    <div class="p-4 space-y-4">
+                        <!-- Barras de resultado -->
+                        <div>
+                            <div class="flex justify-between items-baseline mb-1">
+                                <div class="text-xs font-bold text-brand-text">Candidato Ficticio 1</div>
+                                <div class="text-sm font-extrabold text-brand-blue tabular-nums">28.5%</div>
+                            </div>
+                            <div class="w-full bg-brand-surface h-1.5 rounded-full overflow-hidden">
+                                <div class="h-full rounded-full bg-brand-blue data-bar" style="width: 28.5%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-baseline mb-1">
+                                <div class="text-xs font-bold text-brand-text">Candidato Ficticio 2</div>
+                                <div class="text-sm font-extrabold text-brand-blue tabular-nums">19.2%</div>
+                            </div>
+                            <div class="w-full bg-brand-surface h-1.5 rounded-full overflow-hidden">
+                                <div class="h-full rounded-full bg-brand-textMuted data-bar" style="width: 19.2%"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Disclaimer Ficticio Obligatorio -->
+                        <div class="mt-4 pt-3 border-t border-dashed border-gray-200 text-[9px] text-red-600 font-semibold leading-tight bg-red-50 p-2 rounded">
+                            <i class="fas fa-exclamation-triangle mr-1"></i> Esta es una estructura de demostración. No contiene datos reales ni adjudicables a una firma encuestadora en particular.
+                        </div>
+                    </div>
+                </article>
+
+            </aside>
+        </div>
+    </main>
+
+    <!-- Footer base (Partial) -->
+    <footer class="bg-[#0b1221] text-gray-300 py-8 mt-auto border-t-[5px] border-brand-green">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="text-xl font-extrabold tracking-tight leading-none mb-4 text-white">
+                <span class="text-white">Encuestas</span>electorales<span class="text-brand-green">.pe</span>
+            </div>
+            <p class="text-xs text-gray-500 font-medium">© 2026 Plataforma de medición cívica.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Inicializar gráfico de evolución online (Chart.js)
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('evolucionChart');
+            if(!ctx) return;
+            
+            new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+                    datasets: [{
+                        label: 'Candidato A',
+                        data: [10, 15, 22, 28],
+                        borderColor: '#102f86',
+                        backgroundColor: 'rgba(16, 47, 134, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#102f86',
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#e2e8f0', borderDash: [5, 5] }, ticks: { font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

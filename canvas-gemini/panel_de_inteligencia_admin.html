@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Comando - EncuestasElectorales.pe</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet (Mapas) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet.heat (Plugin para Mapa de Calor) -->
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        dash: {
+                            bg: '#0f172a',      // Slate 900
+                            panel: '#1e293b',   // Slate 800
+                            border: '#334155',  // Slate 700
+                            text: '#f8fafc',
+                            muted: '#94a3b8',
+                            accent: '#3b82f6',  // Blue 500
+                            success: '#10b981', // Emerald 500
+                            warning: '#f59e0b', // Amber 500
+                            danger: '#ef4444'   // Red 500
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: theme('colors.dash.bg'); color: theme('colors.dash.text'); }
+        /* Custom scrollbar para paneles oscuros */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: theme('colors.dash.bg'); }
+        ::-webkit-scrollbar-thumb { background: theme('colors.dash.border'); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: theme('colors.dash.muted'); }
+        
+        /* Map dark mode filter */
+        .map-dark { filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7); }
+    </style>
+</head>
+<body class="antialiased font-sans h-screen flex overflow-hidden selection:bg-dash-accent selection:text-white">
+
+    <aside class="w-64 bg-dash-panel border-r border-dash-border flex flex-col hidden md:flex shrink-0 z-20 shadow-xl relative">
+        <!-- Logo Area -->
+        <div class="h-16 flex items-center px-6 border-b border-dash-border">
+            <div class="font-bold text-lg tracking-tight flex items-center gap-2">
+                <i class="fas fa-satellite-dish text-dash-accent"></i>
+                <span>Data<span class="text-dash-muted font-normal">Command</span></span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-grow p-4 space-y-1 overflow-y-auto">
+            <div class="text-xs font-bold text-dash-muted uppercase tracking-wider mb-2 mt-4 px-3">Inteligencia</div>
+            <a href="#" class="flex items-center gap-3 px-3 py-2.5 bg-dash-accent/10 text-dash-accent rounded-lg font-medium border border-dash-accent/20">
+                <i class="fas fa-chart-line w-5"></i> Dashboard Global
+            </a>
+            <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-dash-muted hover:text-dash-text hover:bg-dash-border/50 rounded-lg font-medium transition-colors">
+                <i class="fas fa-map-marked-alt w-5"></i> Cartografía GPS
+            </a>
+            <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-dash-muted hover:text-dash-text hover:bg-dash-border/50 rounded-lg font-medium transition-colors">
+                <i class="fas fa-shield-alt w-5"></i> Monitor de Fraude
+            </a>
+
+            <div class="text-xs font-bold text-dash-muted uppercase tracking-wider mb-2 mt-6 px-3">Base de Datos</div>
+            <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-dash-muted hover:text-dash-text hover:bg-dash-border/50 rounded-lg font-medium transition-colors">
+                <i class="fas fa-table w-5"></i> Matriz de Votos
+            </a>
+            <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-dash-muted hover:text-dash-text hover:bg-dash-border/50 rounded-lg font-medium transition-colors">
+                <i class="fas fa-users w-5"></i> Perfiles UTM / Referrers
+            </a>
+        </nav>
+
+        <!-- Footer Sidebar -->
+        <div class="p-4 border-t border-dash-border">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-dash-accent to-purple-500 flex items-center justify-center text-sm font-bold shadow-lg">AD</div>
+                <div>
+                    <div class="text-sm font-bold">Admin Root</div>
+                    <div class="text-[10px] text-dash-muted font-mono">IP: 192.168.1.1</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-grow flex flex-col h-screen overflow-hidden bg-dash-bg relative z-10">
+        
+        <!-- Header Topbar -->
+        <header class="h-16 bg-dash-panel/80 backdrop-blur-md border-b border-dash-border flex items-center justify-between px-6 shrink-0">
+            <div class="flex items-center gap-4">
+                <button class="md:hidden text-dash-muted hover:text-dash-text"><i class="fas fa-bars text-xl"></i></button>
+                <h1 class="text-lg font-bold">Lima Metropolitana - Estado en Vivo</h1>
+                <span class="hidden lg:inline-flex items-center gap-1.5 bg-dash-success/10 text-dash-success border border-dash-success/20 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest font-mono">
+                    <span class="w-1.5 h-1.5 rounded-full bg-dash-success animate-pulse"></span> DB Syncing
+                </span>
+            </div>
+            <div class="flex items-center gap-6">
+                <div id="reloj-admin" class="font-mono text-xs text-dash-muted tracking-wider">--:--:--</div>
+                <div class="w-px h-6 bg-dash-border"></div>
+                <button class="text-dash-muted hover:text-dash-text relative">
+                    <i class="fas fa-bell"></i>
+                    <span class="absolute -top-1 -right-1 w-2 h-2 bg-dash-danger rounded-full animate-ping opacity-75"></span>
+                    <span class="absolute -top-1 -right-1 w-2 h-2 bg-dash-danger rounded-full"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Contenido Scrolleable -->
+        <div class="flex-grow p-6 overflow-y-auto">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <!-- KPI 1 -->
+                <div class="bg-dash-panel border border-dash-border rounded-xl p-5 shadow-sm">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="text-xs font-bold text-dash-muted uppercase tracking-wider">Votos Validados</div>
+                        <i class="fas fa-check-circle text-dash-success/70"></i>
+                    </div>
+                    <div class="text-3xl font-bold font-mono text-dash-text mb-1">14,284</div>
+                    <div class="text-xs font-medium text-dash-success flex items-center gap-1">
+                        <i class="fas fa-arrow-up"></i> 124 última hora
+                    </div>
+                </div>
+
+                <!-- KPI 2 -->
+                <div class="bg-dash-panel border border-dash-border rounded-xl p-5 shadow-sm">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="text-xs font-bold text-dash-muted uppercase tracking-wider">Precisión GPS</div>
+                        <i class="fas fa-map-marker-alt text-dash-accent/70"></i>
+                    </div>
+                    <div class="text-3xl font-bold font-mono text-dash-text mb-1">82.4%</div>
+                    <div class="text-xs font-medium text-dash-muted">Muestra con geo-coordenadas</div>
+                </div>
+
+                <!-- KPI 3 -->
+                <div class="bg-dash-panel border border-dash-border rounded-xl p-5 shadow-sm relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-dash-warning/5 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+                    <div class="flex justify-between items-start mb-2 relative z-10">
+                        <div class="text-xs font-bold text-dash-muted uppercase tracking-wider">Smart Mismatch</div>
+                        <i class="fas fa-exchange-alt text-dash-warning/70"></i>
+                    </div>
+                    <div class="text-3xl font-bold font-mono text-dash-text mb-1 relative z-10">342</div>
+                    <div class="text-xs font-medium text-dash-warning flex items-center gap-1 relative z-10">
+                        <i class="fas fa-exclamation-triangle"></i> Votan en distrito distinto al físico
+                    </div>
+                </div>
+
+                <!-- KPI 4 -->
+                <div class="bg-dash-panel border border-dash-danger/30 rounded-xl p-5 shadow-[0_0_15px_rgba(239,68,68,0.05)] relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-1 h-full bg-dash-danger"></div>
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="text-xs font-bold text-dash-danger uppercase tracking-wider">Bloqueos / Spoofing</div>
+                        <i class="fas fa-shield-virus text-dash-danger/70"></i>
+                    </div>
+                    <div class="text-3xl font-bold font-mono text-dash-text mb-1">1,059</div>
+                    <div class="text-xs font-medium text-dash-muted">Trust Score < 50 (Descartados)</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                
+                <!-- Mapa de Calor Leaflet -->
+                <div class="lg:col-span-2 bg-dash-panel border border-dash-border rounded-xl shadow-sm flex flex-col h-[450px]">
+                    <div class="px-5 py-4 border-b border-dash-border flex justify-between items-center bg-dash-panel rounded-t-xl z-10 relative">
+                        <h2 class="font-bold text-sm uppercase tracking-wider flex items-center gap-2">
+                            <i class="fas fa-fire text-dash-warning"></i> Heatmap Electoral (En Vivo)
+                        </h2>
+                        <div class="flex gap-2">
+                            <select class="bg-dash-bg border border-dash-border text-xs rounded px-2 py-1 outline-none focus:border-dash-accent text-white">
+                            <option>Todo Lima</option>
+                            <option>Miraflores</option>
+                            <option>San Isidro</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Contenedor del Mapa -->
+                <div id="heatmapContainer" class="flex-grow w-full min-h-[350px] rounded-b-xl z-0 map-dark"></div>
+            </div>
+
+            <!-- Gráfico Trust Score -->
+                <div class="bg-dash-panel border border-dash-border rounded-xl p-5 shadow-sm flex flex-col">
+                    <h2 class="font-bold text-sm uppercase tracking-wider mb-4 border-b border-dash-border pb-3">Calidad de Muestra (Trust Score)</h2>
+                    <div class="flex-grow relative flex items-center justify-center min-h-[250px]">
+                        <canvas id="trustChart"></canvas>
+                        <!-- Texto Central Doughnut -->
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-2">
+                            <span class="text-3xl font-bold font-mono">92%</span>
+                            <span class="text-[10px] text-dash-muted uppercase tracking-wider">Limpios</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-[11px] text-dash-muted leading-relaxed">
+                        Evaluación algorítmica basada en latencia de red, validación de huso horario, concordancia IP-GPS y análisis de huella (fingerprinting).
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="bg-dash-panel border border-dash-border rounded-xl shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-dash-border flex justify-between items-center bg-dash-bg/50">
+                    <h2 class="font-bold text-sm uppercase tracking-wider">Ingesta de Votos (Últimos 10)</h2>
+                    <button class="text-xs text-dash-accent hover:underline font-mono">Ver todos (SQL) -></button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-dash-panel text-dash-muted text-[10px] uppercase tracking-wider font-bold">
+                            <tr>
+                                <th class="px-5 py-3 border-b border-dash-border">ID Voto (Hash)</th>
+                                <th class="px-5 py-3 border-b border-dash-border">Fecha / Hora</th>
+                                <th class="px-5 py-3 border-b border-dash-border">Distrito (IP vs GPS)</th>
+                                <th class="px-5 py-3 border-b border-dash-border">Candidato Sel.</th>
+                                <th class="px-5 py-3 border-b border-dash-border text-center">Score</th>
+                                <th class="px-5 py-3 border-b border-dash-border">Estado Red</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-dash-border text-xs font-mono" id="tabla-votos">
+                            <!-- Filas inyectadas vía JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // 1. Reloj Server Time (Simulado)
+        setInterval(() => {
+            document.getElementById('reloj-admin').textContent = new Date().toLocaleTimeString('en-US', {hour12:false}) + ' UTC';
+        }, 1000);
+
+        // 2. Datos Mock para la Tabla SQL
+        const mockVotes = [
+            { id: "e4a2...b9f1", time: "10:35:12", dist: "Miraflores", cand: "Carlos Canales (RP)", score: 98, status: "CLEAN", sColor: "text-dash-success" },
+            { id: "d1c5...4a7e", time: "10:34:55", dist: "Miraflores", cand: "Blanco / Viciado", score: 85, status: "CLEAN", sColor: "text-dash-success" },
+            { id: "f8b9...22dc", time: "10:34:10", dist: "San Isidro", cand: "Candidato B (PP)", score: 65, status: "MISMATCH", sColor: "text-dash-warning", note: "GPS: Lince" },
+            { id: "a3f0...9c8b", time: "10:33:42", dist: "Miraflores", cand: "Carlos Canales (RP)", score: 12, status: "BLOCKED", sColor: "text-dash-danger", note: "IP DataCenter detectada" },
+            { id: "7e2a...11f4", time: "10:32:15", dist: "Barranco", cand: "Candidato C (AVP)", score: 95, status: "CLEAN", sColor: "text-dash-success" },
+        ];
+
+        const tbody = document.getElementById('tabla-votos');
+        tbody.innerHTML = mockVotes.map(v => `
+            <tr class="hover:bg-dash-bg/50 transition-colors">
+                <td class="px-5 py-3 text-dash-muted">${v.id}</td>
+                <td class="px-5 py-3">${v.time}</td>
+                <td class="px-5 py-3 text-white font-sans font-medium">${v.dist}</td>
+                <td class="px-5 py-3 text-dash-muted">${v.cand}</td>
+                <td class="px-5 py-3 text-center">
+                    <span class="inline-flex items-center justify-center px-2 py-0.5 rounded text-[10px] font-bold border ${v.score > 80 ? 'border-dash-success/30 text-dash-success bg-dash-success/10' : (v.score > 50 ? 'border-dash-warning/30 text-dash-warning bg-dash-warning/10' : 'border-dash-danger/30 text-dash-danger bg-dash-danger/10')}">
+                        ${v.score}
+                    </span>
+                </td>
+                <td class="px-5 py-3">
+                    <div class="${v.sColor} font-bold text-[10px] uppercase tracking-widest">${v.status}</div>
+                    ${v.note ? `<div class="text-[9px] text-dash-muted mt-0.5">${v.note}</div>` : ''}
+                </td>
+            </tr>
+        `).join('');
+
+        // 3. Inicialización del Mapa de Calor (Leaflet + Heat)
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Retardo para asegurar dimensiones correctas en iframes antes de inicializar Leaflet
+            setTimeout(() => {
+                // Centrado en Lima Metropolitana
+                const map = L.map('heatmapContainer', {
+                    zoomControl: false,
+                    attributionControl: false
+                }).setView([-12.0464, -77.0428], 11);
+
+                // Capa base en blanco y negro (se invierte con CSS a dark mode)
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 19
+                }).addTo(map);
+
+                // Generador de coordenadas falsas (Simulando clusters en Lima Centro, Miraflores, Surco)
+                function generateMockHeatPoints(count, centerLat, centerLng, spread) {
+                    const points = [];
+                    for (let i = 0; i < count; i++) {
+                        const lat = centerLat + (Math.random() - 0.5) * spread;
+                        const lng = centerLng + (Math.random() - 0.5) * spread;
+                        const intensity = Math.random(); // 0.1 a 1.0
+                        points.push([lat, lng, intensity]);
+                    }
+                    return points;
+                }
+
+                const heatData = [
+                    ...generateMockHeatPoints(200, -12.1211, -77.0298, 0.05), // Miraflores
+                    ...generateMockHeatPoints(150, -12.0984, -77.0345, 0.04), // San Isidro
+                    ...generateMockHeatPoints(300, -12.1419, -76.9942, 0.08), // Surco
+                    ...generateMockHeatPoints(100, -12.0431, -77.0282, 0.06), // Cercado
+                ];
+
+                // Plugin de Calor
+                L.heatLayer(heatData, {
+                    radius: 20,
+                    blur: 15,
+                    maxZoom: 12,
+                    gradient: {0.4: 'blue', 0.6: 'cyan', 0.7: 'lime', 0.8: 'yellow', 1.0: 'red'}
+                }).addTo(map);
+                
+                // Forzar recalculado de dimensiones por seguridad
+                map.invalidateSize();
+            }, 150);
+
+            // 4. Gráfico de Trust Score (Chart.js)
+            const ctx = document.getElementById('trustChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Voto Limpio (>80)', 'Mismatch Geográfico', 'Bot/Spoofing (<50)'],
+                    datasets: [{
+                        data: [92, 5, 3],
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#94a3b8',
+                                font: { family: 'Inter', size: 10 },
+                                usePointStyle: true,
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#f8fafc',
+                            borderColor: '#334155',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

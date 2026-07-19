@@ -44,14 +44,40 @@ $canvasRef  = '2a6e18f'; // commit the canvas prototypes are snapshotted at (tas
  * checkWidgetGps() below, since it is consolidated into partials/widget-gps.php
  * rather than becoming a standalone page.)
  */
+/**
+ * sondeos.php, encuesta.php, candidato.php, and encuestadoras.php were exact
+ * structural matches against their Canvas source until
+ * bl-11c-purge-datos-ficticios (2026-07-19) deliberately, permanently
+ * changed their DOM: real data-driven empty states replacing fabricated
+ * poll/candidate content attributed to real named people (Carlos Canales,
+ * Daniel Urresti, Francis Allison), and a wholly invented "Encuestadora X /
+ * Ejemplo de Suspensión S.A.C." card removed from the pollster directory —
+ * see that change's design.md. An exact multiset diff against the original
+ * prototype would now always fail by design, so these four get a smoke
+ * check (checkRewrittenPage() below) instead of the structural diff the
+ * other 3 still get.
+ */
 $pages = [
-    'index.php'          => 'portal_de_encuestas.html',
-    'sondeos.php'         => 'portal_de_sondeos_ciudadanos.html',
-    'encuesta.php'        => 'detalle_de_encuesta.html',
-    'candidato.php'       => 'perfil_de_candidato.html',
-    'encuestadoras.php'   => 'directorio_de_encuestadoras.html',
     'metodologia.php'     => 'metodolog_a.html',
     'quienes-somos.php'   => 'qui_nes_somos_autoridad.html',
+];
+
+/**
+ * index.php moved here 2026-07-19 (bl-11b-portal-nacional-home): rebuilt
+ * from canvas-gemini/portal_nacional_home.html (national scope, replacing
+ * the Lima-only portal_de_encuestas.html source), which — like
+ * tablero_electoral_growth_hack_hibrido.html — shows one example card per
+ * hub column for design reference. The real page shows each column's own
+ * empty state instead (zero online rounds open, zero real campo studies
+ * today), so an exact structural diff against the prototype would always
+ * fail by design. Same reasoning as the bl-11c pages below.
+ */
+$rewrittenPages = [
+    'index.php',
+    'sondeos.php',
+    'encuesta.php',
+    'candidato.php',
+    'encuestadoras.php',
 ];
 
 /** Reads a canvas-gemini source file, falling back to the git blob at
@@ -76,15 +102,38 @@ function readCanvasSource(string $root, string $canvasDir, string $canvasRef, st
     return implode("\n", $out);
 }
 
-/** Renders a PHP page via CLI and returns its stdout, or null on failure. */
+/**
+ * Renders a PHP page via CLI and returns its stdout, or null on failure.
+ * `$page` may carry a query string (e.g. `distrito.php?slug=comas`) — the
+ * PHP CLI SAPI does not populate $_GET from QUERY_STRING on its own (that's
+ * an `php -S`/php-cgi behavior), so a query string routes through `-r` to
+ * populate $_GET before including the real file; a plain page path still
+ * uses the direct `-f` path unchanged.
+ */
 function renderPhpPage(string $root, string $page): ?string
 {
-    $path = $root . '/' . $page;
+    $php = PHP_BINARY !== '' ? PHP_BINARY : 'php';
+    [$file, $query] = array_pad(explode('?', $page, 2), 2, '');
+
+    $path = $root . '/' . $file;
     if (!is_file($path)) {
         return null;
     }
-    $php = PHP_BINARY !== '' ? PHP_BINARY : 'php';
-    $cmd = sprintf('%s -f %s 2>&1', escapeshellarg($php), escapeshellarg($path));
+
+    if ($query === '') {
+        $cmd = sprintf('%s -f %s 2>&1', escapeshellarg($php), escapeshellarg($path));
+        $out = shell_exec($cmd);
+        return $out === null ? null : $out;
+    }
+
+    $bootstrap = 'parse_str($argv[1], $_GET); include $argv[2];';
+    $cmd = sprintf(
+        '%s -r %s -- %s %s 2>&1',
+        escapeshellarg($php),
+        escapeshellarg($bootstrap),
+        escapeshellarg($query),
+        escapeshellarg($path)
+    );
     $out = shell_exec($cmd);
     return $out === null ? null : $out;
 }
@@ -220,13 +269,169 @@ foreach ($pages as $page => $canvasFile) {
 }
 
 /**
- * 8th check: partials/widget-gps.php must render the same modal-overlay
- * structure (#modal-overlay and its 4 steps) as flujo_de_votaci_n_gps.html,
- * wherever it is included. distrito.php has no canvas source (logged in
- * tasks.md) so it gets an existence + render smoke check instead of a
- * structural diff.
+ * Smoke check for the 3 pages bl-11c-purge-datos-ficticios rewrote away from
+ * an exact Canvas match (see the `$rewrittenPages` comment above): exists,
+ * lints, renders non-empty, has header+footer. Structural fidelity to the
+ * original prototype is no longer the goal for these three.
  */
-function checkDistrito(string $root): array
+function checkRewrittenPage(string $root, string $page): array
+{
+    $path = $root . '/' . $page;
+    if (!is_file($path)) {
+        return ['page' => $page, 'ok' => false, 'reason' => 'file does not exist'];
+    }
+    $php = PHP_BINARY !== '' ? PHP_BINARY : 'php';
+    $lint = shell_exec(sprintf('%s -l %s 2>&1', escapeshellarg($php), escapeshellarg($path)));
+    if (strpos($lint ?? '', 'No syntax errors') === false) {
+        return ['page' => $page, 'ok' => false, 'reason' => trim($lint ?? 'lint failed')];
+    }
+    $out = renderPhpPage($root, $page);
+    if ($out === null || trim($out) === '') {
+        return ['page' => $page, 'ok' => false, 'reason' => 'rendered empty output'];
+    }
+    if (strpos($out, '<header') === false || strpos($out, '<footer') === false) {
+        return ['page' => $page, 'ok' => false, 'reason' => 'missing shared header/footer partials'];
+    }
+    return ['page' => $page, 'ok' => true, 'reason' => 'rewritten away from exact Canvas match — smoke check only'];
+}
+
+foreach ($rewrittenPages as $page) {
+    $r = checkRewrittenPage($root, $page);
+    $results[] = $r;
+    if (!$r['ok']) {
+        $failures++;
+    }
+}
+
+/**
+ * bl-11c-purge-datos-ficticios task 1: fails if any fabricated-data marker
+ * is actually visible to a visitor. Checks RENDERED HTML output for every
+ * root page (a browser never sees a PHP comment explaining the historical
+ * fix, so source-level comments referencing "ejemplo" for documentation
+ * don't count and shouldn't fail this) plus every data/*.json file directly
+ * (JSON has no comment concept, so raw-file content is the right thing to
+ * check there).
+ */
+function checkNoFictitiousData(string $root): array
+{
+    $markers = ['ejemplo', 'dato ficticio'];
+    $hits = [];
+
+    $phpFiles = glob($root . '/*.php') ?: [];
+    foreach ($phpFiles as $file) {
+        $page = basename($file);
+        $rendered = renderPhpPage($root, $page);
+        if ($rendered === null) {
+            continue;
+        }
+        foreach ($markers as $marker) {
+            if (stripos($rendered, $marker) !== false) {
+                $hits[] = "$page (rendered output) contains \"$marker\"";
+            }
+        }
+    }
+
+    $jsonFiles = glob($root . '/data/*.json') ?: [];
+    foreach ($jsonFiles as $file) {
+        $contents = file_get_contents($file);
+        if ($contents === false) {
+            continue;
+        }
+        foreach ($markers as $marker) {
+            if (stripos($contents, $marker) !== false) {
+                $hits[] = basename($file) . ' contains "' . $marker . '"';
+            }
+        }
+    }
+
+    if (empty($hits)) {
+        return ['page' => 'no-fictitious-data', 'ok' => true, 'reason' => 'no "ejemplo"/"dato ficticio" markers in any rendered page or data/*.json file'];
+    }
+    return ['page' => 'no-fictitious-data', 'ok' => false, 'reason' => 'fictitious-data markers found: ' . implode('; ', $hits)];
+}
+
+$fictitiousResult = checkNoFictitiousData($root);
+$results[] = $fictitiousResult;
+if (!$fictitiousResult['ok']) {
+    $failures++;
+}
+
+/**
+ * Extracts the tag+class multiset for the first element under <body> whose
+ * `class` attribute contains a given substring — used to diff one hybrid
+ * block (e.g. the growth-hack CTA `<section>`) against its Canvas source,
+ * without requiring the two files to match tag-for-tag in full (they can't:
+ * the Canvas file draws every state stacked for comparison, the live page
+ * renders only the blocks that apply to the requested district — see
+ * bl-11-responsive-wcag design.md "Priority 0").
+ *
+ * @return array<string,int> token => count
+ */
+function extractByClassSubstring(string $html, string $classSubstring): array
+{
+    $doc = new DOMDocument();
+    libxml_use_internal_errors(true);
+    $doc->loadHTML('<?xml encoding="utf-8" ?>' . $html, LIBXML_NOWARNING | LIBXML_NOERROR);
+    libxml_clear_errors();
+
+    $xpath = new DOMXPath($doc);
+    $matches = $xpath->query(sprintf('//*[contains(@class, "%s")]', $classSubstring));
+    if ($matches->length === 0) {
+        return [];
+    }
+    $root = $matches->item(0);
+
+    $tokens = [];
+    $walk = function (DOMNode $node) use (&$walk, &$tokens) {
+        foreach ($node->childNodes as $child) {
+            if ($child->nodeType !== XML_ELEMENT_NODE) {
+                continue;
+            }
+            /** @var DOMElement $child */
+            if (strtolower($child->tagName) === 'script') {
+                $walk($child);
+                continue;
+            }
+            $classAttr = trim($child->getAttribute('class'));
+            $classes = array_values(array_filter(preg_split('/\s+/', $classAttr), fn($c) => $c !== ''));
+            sort($classes);
+            $token = strtolower($child->tagName) . (count($classes) ? '.' . implode('.', $classes) : '');
+            $tokens[$token] = ($tokens[$token] ?? 0) + 1;
+            $walk($child);
+        }
+    };
+    $rootClasses = array_values(array_filter(preg_split('/\s+/', trim($root->getAttribute('class'))), fn($c) => $c !== ''));
+    sort($rootClasses);
+    $rootToken = strtolower($root->tagName) . (count($rootClasses) ? '.' . implode('.', $rootClasses) : '');
+    $tokens[$rootToken] = ($tokens[$rootToken] ?? 0) + 1;
+    $walk($root);
+
+    return $tokens;
+}
+
+/**
+ * distrito.php (bl-11-responsive-wcag, rebuilt 2026-07-19 from
+ * canvas-gemini/tablero_electoral_growth_hack_hibrido.html) is a hybrid
+ * template: independently-toggling blocks, not a 1:1 static page like the
+ * other 8. A whole-body structural diff against the Canvas file (which
+ * shows every block stacked for comparison, e.g. both "no candidates" and
+ * "vote widget active" at once) would always fail against the live page
+ * (which shows only the block that applies to the requested district), so
+ * this checks two things a whole-page diff can't:
+ *
+ *   1. Existence/lint/render smoke check (unchanged from the pre-hybrid version).
+ *   2. The growth-hack CTA block — the one nearly every district hits today —
+ *      structurally matches the Canvas source's equivalent block, for a real
+ *      district with zero candidates.
+ *
+ * The candidate-roster block (Miraflores) is deliberately NOT diffed against
+ * the hybrid file here: design.md's "Priority 0" specifies it reuses
+ * distrito.html's card markup (initials-avatar-on-party-color), not the
+ * hybrid file's plainer rows — diffing against the hybrid would be a false
+ * failure for an intentional, documented substitution. It gets an existence
+ * check instead (candidate cards actually render).
+ */
+function checkDistrito(string $root, string $canvasDir, string $canvasRef): array
 {
     $path = $root . '/distrito.php';
     if (!is_file($path)) {
@@ -237,6 +442,7 @@ function checkDistrito(string $root): array
     if (strpos($lint ?? '', 'No syntax errors') === false) {
         return ['page' => 'distrito.php', 'ok' => false, 'reason' => trim($lint ?? 'lint failed')];
     }
+
     $out = renderPhpPage($root, 'distrito.php');
     if ($out === null || trim($out) === '') {
         return ['page' => 'distrito.php', 'ok' => false, 'reason' => 'rendered empty output'];
@@ -244,10 +450,53 @@ function checkDistrito(string $root): array
     if (strpos($out, '<header') === false || strpos($out, '<footer') === false) {
         return ['page' => 'distrito.php', 'ok' => false, 'reason' => 'missing shared header/footer partials'];
     }
-    return ['page' => 'distrito.php', 'ok' => true, 'reason' => 'no canvas source — existence/render smoke check only'];
+
+    $canvasHtml = readCanvasSource($root, $canvasDir, $canvasRef, 'tablero_electoral_growth_hack_hibrido.html');
+    if ($canvasHtml === null) {
+        return ['page' => 'distrito.php', 'ok' => false, 'reason' => 'cannot read tablero_electoral_growth_hack_hibrido.html'];
+    }
+
+    // A district with zero candidato.json entries -> growth-hack CTA block.
+    $emptyOut = renderPhpPage($root, 'distrito.php?slug=comas');
+    if ($emptyOut === null || strpos($emptyOut, 'Aún no hay candidatos') === false) {
+        return ['page' => 'distrito.php', 'ok' => false, 'reason' => 'growth-hack CTA did not render for a candidate-less district (?slug=comas)'];
+    }
+    $expectedCta = extractByClassSubstring($canvasHtml, 'border-dashed');
+    // The Canvas source's "Encuesta Online - Semana 1" ribbon (identified by
+    // its distinctive `rounded-bl-lg` class) claims an open weekly round.
+    // No round has ever opened (VOTACION_EN_VIVO is false, no `tipo:
+    // online_propia` encuesta exists), so distrito.php deliberately omits it
+    // — showing it would be exactly the fictional-data problem
+    // bl-11c-purge-datos-ficticios exists to close. Excluded from the
+    // expected set rather than left as a permanent false failure.
+    foreach (array_keys($expectedCta) as $token) {
+        if (strpos($token, 'rounded-bl-lg') !== false) {
+            unset($expectedCta[$token]);
+        }
+    }
+    $actualCta = extractByClassSubstring($emptyOut, 'border-dashed');
+    $ctaDiff   = diffMultisets($expectedCta, $actualCta);
+    if (!empty($ctaDiff['missing']) || !empty($ctaDiff['extra'])) {
+        return [
+            'page' => 'distrito.php',
+            'ok' => false,
+            'reason' => 'growth-hack CTA block structural diff vs tablero_electoral_growth_hack_hibrido.html',
+            'missing' => $ctaDiff['missing'],
+            'extra' => $ctaDiff['extra'],
+        ];
+    }
+
+    // A district with candidato.json entries -> roster renders (existence
+    // check only, per this function's docblock).
+    $rosterOut = renderPhpPage($root, 'distrito.php?slug=miraflores');
+    if ($rosterOut === null || strpos($rosterOut, 'Candidatos a la Alcaldía Distrital') === false) {
+        return ['page' => 'distrito.php', 'ok' => false, 'reason' => 'candidate roster did not render for Miraflores (?slug=miraflores)'];
+    }
+
+    return ['page' => 'distrito.php', 'ok' => true, 'reason' => 'smoke check + growth-hack CTA structural diff green'];
 }
 
-$distritoResult = checkDistrito($root);
+$distritoResult = checkDistrito($root, $canvasDir, $canvasRef);
 $results[] = $distritoResult;
 if (!$distritoResult['ok']) {
     $failures++;
@@ -368,7 +617,11 @@ foreach (['header', 'footer'] as $chromeTag) {
     $expectedTokens = extractSubtree($chromeSourceHtml, $chromeTag);
 
     $perPageTokens = [];
-    foreach (array_keys($pages) as $page) {
+    // Every page that shares the partial, not just the ones still diffed
+    // exactly against their Canvas source — header/footer consistency is a
+    // cross-page guarantee, unaffected by bl-11c/bl-11b moving some pages
+    // to a smoke check for unrelated (content-fidelity) reasons.
+    foreach (array_merge(array_keys($pages), $rewrittenPages, ['distrito.php']) as $page) {
         $html = renderPhpPage($root, $page);
         if ($html === null) {
             continue;

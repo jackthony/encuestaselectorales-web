@@ -112,18 +112,22 @@ function findCandidato(int $id): ?array
     return null;
 }
 
-/** Looks up the "ejemplo" pollster record — the only attributable source for demo figures. */
-function encuestadoraEjemplo(): ?array
+/**
+ * First letter of a person's first and last name token, uppercased — the
+ * initials-on-party-color avatar fallback CLAUDE.md's image-handling rule
+ * requires when `foto` is null (candidato.json's photo field is null for
+ * every 2026 record so far — BRIEF-distrito-canvas.md).
+ */
+function iniciales(string $nombre): string
 {
-    static $encuestadoras = null;
-    if ($encuestadoras === null) {
-        $encuestadoras = require __DIR__ . '/data.php';
-        $encuestadoras = $encuestadoras['encuestadoras'];
+    $partes = array_values(array_filter(preg_split('/\s+/', trim($nombre)), fn($p) => $p !== ''));
+    if (count($partes) === 0) {
+        return '';
     }
-    foreach ($encuestadoras as $e) {
-        if ($e['id'] === 'ejemplo') {
-            return $e;
-        }
+    $primera = mb_strtoupper(mb_substr($partes[0], 0, 1));
+    if (count($partes) === 1) {
+        return $primera;
     }
-    return null;
+    $ultima = mb_strtoupper(mb_substr($partes[count($partes) - 1], 0, 1));
+    return $primera . $ultima;
 }

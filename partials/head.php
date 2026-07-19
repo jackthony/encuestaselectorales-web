@@ -45,6 +45,7 @@ $pageDescription = $pageDescription ?? null;
                         brand: {
                             blue: '#102f86',
                             green: '#15ba75',
+                            greenText: '#0f7a4a',
                             bg: '#f4f5f3',
                             surface: '#f4f5f3',
                             card: '#ffffff',

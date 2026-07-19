@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuestas Electorales Perú 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { 
+                        brand: { 
+                            blue: '#102f86', 
+                            green: '#15ba75', 
+                            greenText: '#0f7a4a', 
+                            bg: '#f4f5f3', 
+                            card: '#ffffff', 
+                            border: '#e2e8f0', 
+                            text: '#0f172a', 
+                            muted: '#475569' 
+                        } 
+                    },
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'], 
+                        serif: ['Noto Serif', 'serif'] 
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-brand-bg text-brand-text font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header Unificado -->
+    <header class="bg-brand-blue text-white sticky top-0 z-50 shadow-md">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="/" class="font-serif font-bold text-xl tracking-tight">EncuestasElectorales<span class="text-brand-green">.pe</span></a>
+            
+            <!-- Buscador secundario (solo Desktop) -->
+            <div class="hidden md:flex bg-white/10 rounded-lg px-3 py-1.5 items-center w-80 border border-white/20 transition-colors focus-within:bg-white/20 focus-within:border-white/40">
+                <i class="fas fa-search text-white/60 mr-2"></i>
+                <input type="text" placeholder="Buscar región, provincia o distrito..." class="bg-transparent text-white placeholder-white/60 text-sm focus:outline-none w-full">
+            </div>
+
+            <!-- Botón Menú Mobile -->
+            <button class="md:hidden text-white hover:text-brand-green transition-colors text-xl">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        
+        <!-- Hero Section Nacional -->
+        <section class="bg-brand-blue text-white pb-16 pt-12 px-4 relative overflow-hidden">
+            <!-- Patrón de fondo opcional -->
+            <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]"></div>
+            
+            <div class="max-w-4xl mx-auto text-center relative z-10">
+                <span class="inline-block py-1.5 px-4 rounded-full bg-brand-green/20 text-brand-green font-semibold text-[11px] uppercase tracking-widest mb-6 border border-brand-green/30">
+                    <span class="inline-block w-2 h-2 rounded-full bg-brand-green mr-1 animate-pulse"></span>
+                    Elecciones Regionales y Municipales 2026
+                </span>
+                
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 leading-tight tracking-tight">
+                    El pulso electoral de todo el Perú, <span class="text-brand-green">en tiempo real.</span>
+                </h1>
+                
+                <p class="text-lg md:text-xl text-white/80 mb-10 max-w-2xl mx-auto font-medium">
+                    Vota de forma segura, consulta las tendencias de tu distrito y revisa los últimos estudios de campo de las encuestadoras formales.
+                </p>
+                
+                <!-- Buscador Principal Hero (Grande) -->
+                <div class="bg-white rounded-xl p-2 md:p-3 max-w-3xl mx-auto shadow-2xl flex flex-col md:flex-row gap-2 transition-transform hover:scale-[1.01] duration-300">
+                    <div class="relative flex-grow flex items-center px-4 py-3 bg-gray-50 rounded-lg border border-gray-200 focus-within:border-brand-blue focus-within:ring-1 focus-within:ring-brand-blue transition-all">
+                        <i class="fas fa-map-marker-alt text-brand-blue mr-3 text-xl opacity-70"></i>
+                        <input type="text" placeholder="Escribe tu región, provincia o distrito..." class="w-full bg-transparent text-gray-800 focus:outline-none text-lg placeholder-gray-400">
+                    </div>
+                    <button class="bg-brand-blue text-white font-bold px-8 py-3.5 rounded-lg hover:bg-[#0c2466] transition-colors w-full md:w-auto shadow-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hub de Encuestas -->
+        <section class="max-w-6xl mx-auto px-4 py-12 md:py-16">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+                
+                <!-- Columna Izquierda: Actividad Online (Growth Hack) -->
+                <div class="space-y-6">
+                    <div class="border-b border-brand-border pb-3">
+                        <h2 class="text-2xl font-serif font-bold text-brand-blue flex items-center">
+                            <i class="fas fa-chart-line text-brand-green mr-2.5"></i> Encuestas Web Activas
+                        </h2>
+                        <p class="text-sm text-brand-muted mt-1">Sondeos ciudadanos en curso con validación GPS.</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <!-- Tarjeta de Distrito Activo -->
+                        <a href="/distrito.php?slug=miraflores" class="block bg-brand-card rounded-2xl p-6 border border-brand-border hover:shadow-lg hover:border-brand-blue/30 transition-all group">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 class="font-bold text-xl text-brand-blue group-hover:text-brand-green transition-colors">Miraflores</h3>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-brand-muted mt-0.5">Lima Metropolitana</p>
+                                </div>
+                                <span class="bg-[#e6f8f0] text-[#0f7a4a] text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest border border-[#15ba75]/30">
+                                    Ronda Abierta
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-4 text-sm text-gray-600">
+                                <span class="flex items-center gap-1.5"><i class="fas fa-users text-gray-400"></i> 5 candidatos</span>
+                                <span class="text-gray-300">|</span>
+                                <span class="flex items-center gap-1.5"><i class="fas fa-stopwatch text-gray-400"></i> Cierra el domingo</span>
+                            </div>
+                        </a>
+                        
+                        <!-- Empty State Global / CTA -->
+                        <div class="bg-blue-50/50 rounded-2xl p-8 border border-blue-100/50 text-center relative overflow-hidden group">
+                            <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-50"></div>
+                            <div class="relative z-10">
+                                <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center text-2xl text-brand-blue mx-auto mb-4 shadow-sm border border-blue-100">
+                                    <i class="fas fa-vote-yea"></i>
+                                </div>
+                                <h3 class="font-bold text-lg text-brand-blue mb-2">¿Quieres medir a tu distrito?</h3>
+                                <p class="text-sm text-brand-muted mb-6 max-w-sm mx-auto leading-relaxed">
+                                    Busca tu ubicación en la parte superior para ver a los candidatos o abre la contienda electoral de tu localidad.
+                                </p>
+                                <button class="bg-white text-brand-blue font-bold px-6 py-2.5 rounded-xl border border-gray-200 hover:border-brand-blue hover:text-brand-green transition-all shadow-sm text-sm">
+                                    <i class="fas fa-search mr-1.5"></i> Usar buscador global
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Estudios de Campo (Solo lectura) -->
+                <div class="space-y-6">
+                    <div class="border-b border-brand-border pb-3">
+                        <h2 class="text-2xl font-serif font-bold text-brand-blue flex items-center">
+                            <i class="fas fa-clipboard-check text-gray-400 mr-2.5"></i> Últimos Estudios de Campo
+                        </h2>
+                        <p class="text-sm text-brand-muted mt-1">Reportes oficiales de encuestadoras registradas (JNE).</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <!-- Tarjeta de Estudio (Con Disclaimer) -->
+                        <div class="bg-brand-card rounded-2xl p-6 border border-brand-border hover:shadow-md transition-shadow relative overflow-hidden">
+                            <!-- Borde superior decorativo -->
+                            <div class="absolute top-0 left-0 w-full h-1 bg-gray-200"></div>
+                            
+                            <div class="flex items-center space-x-3 mb-4">
+                                <span class="bg-gray-100 text-gray-600 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest border border-gray-200">
+                                    Histórico 2022
+                                </span>
+                                <span class="text-xs font-semibold text-brand-muted"><i class="far fa-calendar-alt mr-1"></i> Septiembre 2022</span>
+                            </div>
+                            
+                            <h3 class="font-bold text-lg text-brand-text mb-1">Simulacro de Votación: Miraflores</h3>
+                            <p class="text-sm text-brand-muted mb-4 font-medium">Encuestadora de Ejemplo (Dato Ficticio)</p>
+                            
+                            <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                                <div class="text-xs text-gray-500 font-medium"><i class="fas fa-shield-alt mr-1 opacity-50"></i> Entidad ficticia de demostración</div>
+                                <a href="#" class="text-sm text-brand-blue font-bold hover:text-brand-green transition-colors flex items-center gap-1">
+                                    Ver resultados <i class="fas fa-chevron-right text-[10px] mt-0.5"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Unificado -->
+    <footer class="bg-white border-t border-brand-border py-10 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <p class="mb-4 font-serif font-bold text-lg text-brand-blue">
+                EncuestasElectorales<span class="text-brand-green">.pe</span>
+            </p>
+            <p class="text-xs text-brand-muted max-w-2xl mx-auto leading-relaxed mb-6">
+                Esta plataforma aplica validación de ubicación (GPS) y score de confianza para proteger la integridad de los sondeos web. Los estudios de campo publicados en la sección de 'Solo Lectura' pertenecen a sus respectivos autores e instituciones, en cumplimiento de las normativas del Jurado Nacional de Elecciones (JNE).
+            </p>
+            <div class="flex justify-center gap-6 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                <a href="#" class="hover:text-brand-blue transition-colors">Privacidad</a>
+                <a href="#" class="hover:text-brand-blue transition-colors">Metodología</a>
+                <a href="#" class="hover:text-brand-blue transition-colors">Contacto</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

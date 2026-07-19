@@ -1,18 +1,1 @@
-[
-  {
-    "encuestaId": "2022-miraflores-alcaldia-ejemplo",
-    "actualizado": "2022-09-01T00:00:00Z",
-    "resultados": [
-      { "candidatoId": 1, "porcentaje": 24.5, "tendencia": "estable", "cambioPorcentaje": 0 },
-      { "candidatoId": 2, "porcentaje": 18.2, "tendencia": "estable", "cambioPorcentaje": 0 },
-      { "candidatoId": 3, "porcentaje": 14.0, "tendencia": "estable", "cambioPorcentaje": 0 },
-      { "candidatoId": 4, "porcentaje": 11.3, "tendencia": "estable", "cambioPorcentaje": 0 },
-      { "candidatoId": 5, "porcentaje": 9.0, "tendencia": "estable", "cambioPorcentaje": 0 },
-      { "candidatoId": 6, "porcentaje": 6.5, "tendencia": "estable", "cambioPorcentaje": 0 },
-      { "candidatoId": 7, "porcentaje": 4.0, "tendencia": "estable", "cambioPorcentaje": 0 },
-      { "candidatoId": 8, "porcentaje": 1.5, "tendencia": "estable", "cambioPorcentaje": 0 }
-    ],
-    "indecisos": 8.0,
-    "votoBlancoNulo": 3.0
-  }
-]
+[]

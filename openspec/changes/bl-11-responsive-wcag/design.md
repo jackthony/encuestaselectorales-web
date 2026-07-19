@@ -1,5 +1,27 @@
 # BL-11 — Design
 
+## Priority 0 — `distrito.php` as one hybrid template (added 2026-07-19)
+
+### Which Canvas file wins
+
+Two prototypes exist for the same page. `distrito.html` (2026-07-18) draws three full states stacked for comparison — empty / directory / results. `tablero_electoral_growth_hack_hibrido.html` (2026-07-18, later same evening) is the one `portal_nacional_home.html` actually links to (`/distrito.php?slug=miraflores`, shown with a "Ronda Abierta" badge), and it models the page as blocks that toggle independently rather than exclusive states. The hybrid file wins because it's the one the national home's information architecture already assumes. `distrito.html` is not discarded — its candidate-roster card (initials-avatar-on-party-color) and result-bar layout are the correct look for two of the hybrid's blocks, just not its page-level structure.
+
+### Independent blocks, not states
+
+| Block | Renders when |
+|---|---|
+| Growth-hack CTA (WhatsApp) | No `candidato.json` entries for this district |
+| Candidate roster | `candidato.json` entries exist |
+| Vote widget | Candidates exist **and** the feature flag in the next section is on |
+| Own-poll evolution chart | A closed `tipo='online_propia'` round with results exists |
+| Campo-studies sidebar | A `resultado.json`/campo entry exists, independent of every block above |
+
+A district can legitimately show the growth-hack CTA *and* the campo sidebar simultaneously (no online candidates yet, but a real Ipsos/Datum study exists for that district). Modeling this as three exclusive pages (the old design) cannot represent that case; modeling it as toggleable blocks can.
+
+### Vote widget gating (ships off, no exceptions)
+
+The vote widget renders conditionally on a single named flag, not on ad-hoc "does the form element exist" checks scattered across the template — e.g. `defined('VOTACION_EN_VIVO') && VOTACION_EN_VIVO === true` in `includes/data.php` or equivalent, defaulting to `false`. BL-14 flips it once `/api/votar.php`, rate limiting and GPS validation are deployed and verified in production — not before. This is deliberately a single switch: flipping it live is a one-line change, not a redeploy that touches unrelated content, and it makes "is voting live" independently auditable from the code itself rather than inferred from which markup happens to be commented out.
+
 ## Priority 1 — The permission-denied recovery modal
 
 With GPS mandatory (BL-13), the denial path is where most visitors stop. It is the highest-leverage conversion surface on the site, and the prototype ships it as `alert("Permiso denegado")`.

@@ -5,23 +5,25 @@ one audit (contrast) that touches everything already shipped. Sequence
 matters within each section; sections 1 and 2 can interleave, section 3
 needs both finished first since it audits the union of all 9 pages.
 
-## 1. Rebuild `distrito.php` from the Canvas prototype
+## 1. Rebuild `distrito.php` from the hybrid Canvas prototype (superseding update, 2026-07-19 — highest priority, ships before section 2)
 
-`canvas-gemini/distrito.html` exists (brief: `openspec/changes/bl-10-php-architecture/BRIEF-distrito-canvas.md`). It shows all 3 states stacked with labeled dividers for comparison — the live page shows exactly one, chosen at render time by what data exists for the requested district.
+`canvas-gemini/tablero_electoral_growth_hack_hibrido.html` is the target, not `distrito.html` (see design.md "Priority 0" for why). It models the page as independently toggling blocks, not exclusive states — the live page can show more than one block at once.
 
-- [ ] 1.1 Extend `scripts/check-refactor.php`'s comparison to `distrito.php` against `canvas-gemini/distrito.html`, same tag+class multiset diff BL-10 used for the other 8. **Run it, confirm it fails** against the current stub before touching the page — same discipline as BL-10 task 1.
-- [ ] 1.2 Normalize `#15BA75` → `#15ba75` in the prototype before diffing (BL-10 already fixed this casing everywhere else; the new file reintroduces it in a couple of spots per the 2026-07-18 audit).
-- [ ] 1.3 Split the prototype's 3 stacked states into 3 conditionally-rendered branches in `distrito.php`, driven by what `includes/data.php` returns for the requested `?id=`:
-  - No candidates for this district → empty state (JNE calendar, WhatsApp notify CTA)
-  - Candidates exist, no `resultado.json` entry for their poll → candidate directory state
-  - Both exist → results state with methodology attached to every number
-- [ ] 1.4 The empty state is the one nearly every district hits today (42 of 43). Verify it renders correctly for a district with zero `data/candidato.json` entries — not just for Miraflores, which is the one exception.
-- [ ] 1.5 The 2022 Miraflores candidates carry `"activo": false`. Render an explicit "candidatura 2022, no vigente para 2026" label — do not let a false-labeled historical candidate look current. This is a correctness requirement, not styling.
-- [ ] 1.6 Header/footer: confirm the prototype uses cluster B chrome (`portal_de_sondeos_ciudadanos.html`'s header — "Distritos de Lima ▾", search button). It does, per the 2026-07-18 audit. Reuse `partials/header.php`/`footer.php` verbatim; do not hand-copy markup from the prototype for these two regions.
-- [ ] 1.7 Include `partials/widget-gps.php` in the state where candidates exist (states 2 and 3). Do not include it in the empty state — there is nothing to vote for yet.
-- [ ] 1.8 Party colors via `includes/helpers.php`'s `partyColor()`, same as the rest of the site — no hardcoded hex.
-- [ ] 1.9 Legal scrub pass identical to BL-10 section 6: grep the new page for `Ipsos|Datum|CPI|IEP`; any hit outside `encuestadoras.php`-style factual listing gets attributed to the `ejemplo` entry.
-- [ ] 1.10 Run the check. Green.
+- [x] 1.1 Extend `scripts/check-refactor.php`'s comparison to `distrito.php` against `canvas-gemini/tablero_electoral_growth_hack_hibrido.html`, same tag+class multiset diff BL-10 used for the other 8. **Run it, confirm it fails** against the current stub before touching the page — same discipline as BL-10 task 1. *(Confirmed failing against the stub, then implemented — see 1.10.)*
+- [x] 1.2 Build each block as an independent conditional in `distrito.php`, driven by what `includes/data.php` returns for the requested `?slug=` (not `?id=` — `distrito.php` and `card-sondeo.php` already standardized on `?slug=`, per commit `2644a9e`; do not reintroduce `?id=`):
+  - Growth-hack CTA (WhatsApp `wa.me` link, copy per proposal.md) → no `candidato.json` entries for this district
+  - Candidate roster (reuse `distrito.html`'s initials-avatar-on-party-color card, not the hybrid's plain rows) → `candidato.json` entries exist
+  - Vote widget → candidates exist **and** `VOTACION_EN_VIVO` (design.md) is `true`. Build the markup, but the flag defaults `false` — verify it does not render with the flag off.
+  - Own-poll evolution chart (Chart.js, per hybrid file) → a closed `online_propia` round with results exists — none do yet, so this renders nothing today; verify it degrades to "nothing", not a broken empty chart
+  - Campo-studies sidebar (reuse `distrito.html`'s ficha-técnica + result-bar layout) → a real field-study result exists for this district, independent of every block above
+- [x] 1.3 Verify the growth-hack CTA and the campo sidebar can render together on the same request (no candidates yet, but a real field study exists) — this is the case the old 3-exclusive-states model couldn't represent; confirm the new one can. *(Verified by construction — the CTA and the sidebar are two independent `if` blocks, not an `elseif` chain. Not exercised with live data today: the only `data/encuesta.json` entry is the `ejemplo` placeholder, which `distrito.php` explicitly excludes — see 1.9. Re-verify with real data once a real campo study exists for a candidate-less district.)*
+- [x] 1.4 The growth-hack CTA is what nearly every district hits today (42 of 43 in Lima, effectively all of Peru outside it). Verify it renders correctly for a district with zero `data/candidato.json` entries — not just for Miraflores, which is the one exception. *(Verified with `?slug=comas`.)*
+- [x] 1.5 The 2022 Miraflores candidates carry `"activo": false`. Render an explicit "candidatura 2022, no vigente para 2026" label — do not let a false-labeled historical candidate look current. This is a correctness requirement, not styling. *(Verified with `?slug=miraflores`.)*
+- [x] 1.6 Header/footer: confirm the prototype uses cluster B chrome (`portal_de_sondeos_ciudadanos.html`'s header — "Distritos de Lima ▾", search button). It does, per the 2026-07-18 audit. Reuse `partials/header.php`/`footer.php` verbatim; do not hand-copy markup from the prototype for these two regions. *(Verified — check-refactor.php's header/footer consistency check stays green.)*
+- [x] 1.7 Include `partials/widget-gps.php` only when the vote widget block renders (i.e., only when `VOTACION_EN_VIVO` is `true` and candidates exist). Do not include it in the growth-hack CTA state — there is nothing to vote for yet, and rendering it with the flag off would be exactly the "form to nowhere" this item rules out. *(Verified: `modal-overlay`/`voto-gps.js` absent from rendered output while the flag is `false`.)*
+- [x] 1.8 Party colors via `includes/helpers.php`'s `partyColor()`, same as the rest of the site — no hardcoded hex.
+- [x] 1.9 Legal scrub pass identical to BL-10 section 6: grep the new page for `Ipsos|Datum|CPI|IEP`; any hit outside `encuestadoras.php`-style factual listing gets attributed to the `ejemplo` entry, and the whole `ejemplo` entry itself gets purged per `bl-11c-purge-datos-ficticios` (do not duplicate that work here, just don't reintroduce it). *(`distrito.php` explicitly excludes `encuestadoraId === 'ejemplo'` from its campo-study lookup, independent of whether `bl-11c` has landed yet — verified Miraflores shows the real "sin estudios" empty state, not the ejemplo record.)*
+- [x] 1.10 Run the check. Green. *(`php scripts/check-refactor.php` — 8 of 8 pages match, including `distrito.php`'s new growth-hack CTA structural diff.)*
 
 ## 2. GPS permission-denied recovery modal
 
