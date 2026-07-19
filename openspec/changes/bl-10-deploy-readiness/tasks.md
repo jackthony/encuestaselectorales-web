@@ -29,16 +29,16 @@ separate backlog item, which would mean merging known-broken code.
 ## 4. CI — nothing currently runs the checks
 `.github/workflows/` is empty. `scripts/check-refactor.php` and the eight `scripts/validate-*.js` scripts only run when someone remembers, which means they stop running.
 
-- [ ] 4.1 One workflow, triggered on `pull_request` and on `push` to `main`.
-- [ ] 4.2 Runs `php scripts/check-refactor.php` (PHP 8, `shivammathur/setup-php`) and every `scripts/validate-*.js` (Node, no dependencies to install).
-- [ ] 4.3 Fails the job on any non-zero exit. No `continue-on-error`.
-- [ ] 4.4 Verify it actually fails when it should: temporarily break one thing (drop a class from a page), confirm red, revert, confirm green. A CI job never observed failing is not known to work.
-- [ ] 4.5 Do not mark it a required status check in branch protection — that is a repo setting, owner's call, not a code change.
+- [x] 4.1 One workflow, triggered on `pull_request` and on `push` to `main`.
+- [x] 4.2 Runs `php scripts/check-refactor.php` (PHP 8, `shivammathur/setup-php`) and every `scripts/validate-*.js` (Node, no dependencies to install).
+- [x] 4.3 Fails the job on any non-zero exit. No `continue-on-error`.
+- [x] 4.4 Verify it actually fails when it should: temporarily break one thing (drop a class from a page), confirm red, revert, confirm green. A CI job never observed failing is not known to work.
+- [x] 4.5 Do not mark it a required status check in branch protection — that is a repo setting, owner's call, not a code change.
 
 ## 5. Verify
-- [ ] 5.1 `C:\xampp\php\php.exe -S localhost:8000` — load the 8 PHP pages plus the 3 legacy HTML pages. Every nav link resolves, zero 404s, console clean.
-- [ ] 5.2 `C:\xampp\php\php.exe scripts/check-refactor.php` still 8/8 plus both partial checks.
-- [ ] 5.3 Confirm `/` serves the new `index.php` content, not the old page.
+- [x] 5.1 `C:\xampp\php\php.exe -S localhost:8000` — load the 8 PHP pages plus the 3 legacy HTML pages. Every nav link resolves, zero 404s, console clean.
+- [x] 5.2 `C:\xampp\php\php.exe scripts/check-refactor.php` still 8/8 plus both partial checks.
+- [x] 5.3 Confirm `/` serves the new `index.php` content, not the old page.
 
 ## Out of scope — do not touch
 - `openspec/changes/bl-11*`, `bl-12*`, `bl-13*`, `bl-14*`, `bl-15*` — in progress elsewhere.

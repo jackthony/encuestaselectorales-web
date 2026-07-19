@@ -21,8 +21,12 @@ const PAGE_FILES = [
 
 const NAV_BLOCK_PATTERN = /<ul[^>]*\bid="distritos-nav"[^>]*>([\s\S]*?)<\/ul>/;
 // BL-10b (tasks.md 2.1) repointed these pages' district links at the PHP
-// route (distrito.php?id=) since distrito.html no longer exists in prod.
-const LINK_PATTERN = /distrito\.php\?id=([a-z0-9-]+)/g;
+// route since distrito.html no longer exists in prod. distrito.php's own
+// docblock and $_GET read confirm it accepts ?slug=, not ?id= - the plan's
+// literal `?id=` transform would have rendered as 200s but silently shown
+// the "no district selected" empty state for all 129 links (distrito.php
+// has no `id` fallback). Corrected to the param it actually reads.
+const LINK_PATTERN = /distrito\.php\?slug=([a-z0-9-]+)/g;
 
 function fail(message) {
   console.error(`FAIL: ${message}`);
