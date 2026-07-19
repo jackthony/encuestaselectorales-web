@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miraflores - Encuestas Electorales (Prototipo 3 Estados)</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Noto Serif', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#102f86',
+                            green: '#15ba75',      // Solo para UI no-texto (barras, puntos)
+                            greenText: '#0f7a4a',  // Verde oscuro 5.4:1 WCAG AA para texto
+                            bg: '#f4f5f3',
+                            surface: '#f4f5f3',
+                            card: '#ffffff',
+                            border: '#e2e8f0',
+                            text: '#0f172a',
+                            textMuted: '#475569'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: theme('colors.brand.bg'); color: theme('colors.brand.text'); }
+        /* Animación para barras de datos */
+        .data-bar { animation: fillBar 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; transform-origin: left; transform: scaleX(0); }
+        @keyframes fillBar { to { transform: scaleX(1); } }
+    </style>
+</head>
+<body class="antialiased font-sans flex flex-col min-h-screen">
+
+    <header class="bg-brand-card w-full border-b border-brand-border sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex flex-col cursor-pointer group" aria-label="Ir al inicio">
+                <div class="text-2xl md:text-3xl font-extrabold tracking-tight leading-none mb-0.5">
+                    <span class="text-brand-blue">Encuestas</span><span class="text-brand-text">electorales</span><span class="text-brand-green">.pe</span>
+                </div>
+                <div class="text-[10px] md:text-xs font-bold text-brand-textMuted tracking-widest uppercase">
+                    Sondeo ciudadano · Lima 2026
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-8 text-[13px] font-bold text-brand-blue tracking-widest uppercase">
+                <a href="#" class="text-brand-greenText border-b-2 border-brand-green pb-1">Inicio</a>
+                <div class="relative group cursor-pointer">
+                    <span class="hover:text-brand-blue/70 transition-colors flex items-center gap-1">Distritos de Lima <i class="fas fa-chevron-down text-[10px]"></i></span>
+                </div>
+                <a href="metodologia.html" class="hover:text-brand-blue/70 transition-colors">Metodología</a>
+                <a href="quienes-somos.html" class="hover:text-brand-blue/70 transition-colors">Quiénes somos</a>
+            </nav>
+
+            <div class="flex items-center gap-4">
+                <button class="w-10 h-10 rounded-full bg-brand-surface hover:bg-gray-200 flex items-center justify-center text-brand-blue transition-colors" aria-label="Buscar distrito">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button id="mobile-menu-btn" class="md:hidden text-brand-blue text-2xl p-2" aria-label="Menú">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full pb-20">
+        
+        <!-- =========================================================
+             ESTADO 1: SIN CANDIDATOS (ESTADO POR DEFECTO PARA 42 DISTRITOS)
+             ========================================================= -->
+        <section class="max-w-7xl mx-auto px-4 pt-12">
+            <div class="mb-4 inline-block bg-blue-100 text-brand-blue font-bold px-3 py-1 rounded text-[10px] uppercase tracking-widest">
+                Estado 1: Pantalla Principal (El producto actual)
+            </div>
+            
+            <!-- Cabecera del Distrito -->
+            <div class="mb-8 border-b border-brand-border pb-6">
+                <nav class="text-[11px] font-bold text-brand-textMuted uppercase tracking-wider mb-3">
+                    <a href="index.html" class="hover:text-brand-greenText transition-colors">Inicio</a> 
+                    <span class="mx-2 text-gray-300">/</span> Región Lima 
+                    <span class="mx-2 text-gray-300">/</span> Provincia de Lima
+                </nav>
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-brand-blue tracking-tight leading-none">
+                    Miraflores
+                </h1>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                <!-- Contenido Principal (Timeline) -->
+                <div class="lg:col-span-8">
+                    <div class="bg-brand-card border border-brand-border rounded-2xl p-6 md:p-10 shadow-sm">
+                        <div class="w-14 h-14 bg-gray-50 border border-gray-200 text-brand-textMuted rounded-full flex items-center justify-center text-2xl mb-6">
+                            <i class="fas fa-calendar-clock"></i>
+                        </div>
+                        <h2 class="text-2xl font-serif font-bold text-brand-blue mb-3">Listas en proceso de inscripción</h2>
+                        <p class="text-brand-textMuted leading-relaxed mb-8 max-w-2xl">
+                            El Jurado Nacional de Elecciones (JNE) aún no ha publicado las listas oficiales de candidatos admitidos para el distrito de Miraflores. Nuestra plataforma activará la recolección de datos y los perfiles de candidatos respetando el calendario electoral oficial.
+                        </p>
+
+                        <!-- Calendario Real JNE -->
+                        <div class="relative pl-6 md:pl-8 border-l-2 border-brand-border space-y-8 mb-8">
+                            <div class="relative">
+                                <div class="absolute -left-[35px] md:-left-[43px] w-5 h-5 bg-brand-surface border-2 border-brand-border rounded-full flex items-center justify-center mt-0.5">
+                                    <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+                                </div>
+                                <div class="text-[11px] font-bold text-brand-textMuted uppercase tracking-widest mb-1">5 de Agosto, 2026</div>
+                                <div class="font-bold text-brand-text">Listas Admitidas</div>
+                                <div class="text-sm text-brand-textMuted mt-1">Se publican los candidatos oficiales. Activación del sondeo en esta página.</div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute -left-[35px] md:-left-[43px] w-5 h-5 bg-brand-surface border-2 border-brand-border rounded-full flex items-center justify-center mt-0.5">
+                                    <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+                                </div>
+                                <div class="text-[11px] font-bold text-brand-textMuted uppercase tracking-widest mb-1">5 de Septiembre, 2026</div>
+                                <div class="font-bold text-brand-text">Candidaturas Finales</div>
+                                <div class="text-sm text-brand-textMuted mt-1">Cierre definitivo de tachas y exclusiones.</div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute -left-[35px] md:-left-[43px] w-5 h-5 bg-brand-surface border-2 border-brand-green rounded-full flex items-center justify-center mt-0.5">
+                                    <div class="w-2 h-2 bg-brand-green rounded-full"></div>
+                                </div>
+                                <div class="text-[11px] font-bold text-brand-greenText uppercase tracking-widest mb-1">4 de Octubre, 2026</div>
+                                <div class="font-bold text-brand-text">Elecciones Municipales</div>
+                            </div>
+                        </div>
+
+                        <!-- CTA WhatsApp -->
+                        <a href="#" class="inline-flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold py-3.5 px-6 rounded-xl hover:bg-[#20bd5a] transition-colors w-full md:w-auto shadow-sm">
+                            <i class="fab fa-whatsapp text-lg"></i> Avísame cuando haya datos de Miraflores
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Widget Lateral (Estado Bloqueado) -->
+                <aside class="lg:col-span-4">
+                    <div class="bg-gray-50 border border-gray-200 border-dashed rounded-2xl p-6 text-center h-full min-h-[300px] flex flex-col justify-center items-center">
+                        <div class="text-gray-400 text-3xl mb-4"><i class="fas fa-lock"></i></div>
+                        <h3 class="font-bold text-gray-600 mb-2">Sondeo Interactivo Inactivo</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed max-w-[250px] mx-auto mb-6">
+                            El widget de votación segura por GPS se habilitará automáticamente aquí en cuanto el JNE publique la lista oficial de candidatos.
+                        </p>
+                        <a href="metodologia.html" class="text-[11px] font-bold text-brand-blue hover:text-brand-greenText uppercase tracking-widest">
+                            Leer nuestra metodología
+                        </a>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <!-- Divisor de Estados -->
+        <div class="max-w-7xl mx-auto px-4 py-12"><hr class="border-t-[3px] border-dashed border-gray-300"></div>
+
+        <!-- =========================================================
+             ESTADO 2: CON CANDIDATOS (SIN ENCUESTAS / HISTÓRICO 2022)
+             ========================================================= -->
+        <section class="max-w-7xl mx-auto px-4">
+            <div class="mb-4 inline-block bg-blue-100 text-brand-blue font-bold px-3 py-1 rounded text-[10px] uppercase tracking-widest">
+                Estado 2: Directorio de Candidatos
+            </div>
+
+            <!-- Warning Histórico (Crítico) -->
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8 flex items-start gap-3">
+                <i class="fas fa-exclamation-triangle text-amber-500 mt-0.5"></i>
+                <div class="text-sm text-amber-900 leading-relaxed">
+                    <strong>Datos Históricos (Proceso Electoral 2022):</strong> Las candidaturas para el periodo 2026 aún no han sido publicadas. Esta lista muestra a los postulantes del proceso municipal anterior.
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-serif font-bold text-brand-blue mb-6">Candidatos a la Alcaldía Distrital</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                
+                <!-- Candidato 1: Carlos Canales -->
+                <div class="bg-brand-card border border-brand-border rounded-xl p-5 flex items-center gap-4 shadow-sm">
+                    <!-- Avatar CSS (Iniciales) porque foto=null -->
+                    <div class="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0" style="background-color: #B22222;">
+                        CC
+                    </div>
+                    <div>
+                        <div class="font-bold text-brand-text leading-tight mb-1">Carlos Fernando Canales Anchorena</div>
+                        <div class="text-xs font-semibold text-brand-textMuted uppercase tracking-wider">
+                            Renovación Popular <span class="text-[10px] font-normal opacity-70 ml-1">(RP)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Candidato 2: Otro (Dummy para rellenar la grilla) -->
+                <div class="bg-brand-card border border-brand-border rounded-xl p-5 flex items-center gap-4 shadow-sm">
+                    <div class="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0" style="background-color: #00529A;">
+                        SC
+                    </div>
+                    <div>
+                        <div class="font-bold text-brand-text leading-tight mb-1">Sergio Meza Salazar</div>
+                        <div class="text-xs font-semibold text-brand-textMuted uppercase tracking-wider">
+                            Acción Popular <span class="text-[10px] font-normal opacity-70 ml-1">(AP)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Candidato 3: Otro -->
+                <div class="bg-brand-card border border-brand-border rounded-xl p-5 flex items-center gap-4 shadow-sm">
+                    <div class="w-14 h-14 rounded-full flex items-center justify-center text-gray-700 font-bold text-xl shrink-0 border border-gray-200" style="background-color: #f8fafc;">
+                        EA
+                    </div>
+                    <div>
+                        <div class="font-bold text-brand-text leading-tight mb-1">Ernesto Alfonso Mendoza</div>
+                        <div class="text-xs font-semibold text-brand-textMuted uppercase tracking-wider">
+                            Somos Perú <span class="text-[10px] font-normal opacity-70 ml-1">(SP)</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Divisor de Estados -->
+        <div class="max-w-7xl mx-auto px-4 py-12"><hr class="border-t-[3px] border-dashed border-gray-300"></div>
+
+        <!-- =========================================================
+             ESTADO 3: CANDIDATOS + RESULTADOS ENCUESTAS (DUMMY 2022)
+             ========================================================= -->
+        <section class="max-w-7xl mx-auto px-4">
+            <div class="mb-4 inline-block bg-blue-100 text-brand-blue font-bold px-3 py-1 rounded text-[10px] uppercase tracking-widest">
+                Estado 3: Resultados (Ficticios / Históricos)
+            </div>
+
+            <!-- Warning Ficticio (Crítico Legal) -->
+            <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-8 flex items-start gap-3">
+                <i class="fas fa-shield-exclamation text-red-600 mt-0.5"></i>
+                <div class="text-sm text-red-900 leading-relaxed">
+                    <strong>Datos de demostración:</strong> Las cifras e instituciones mostradas a continuación son puramente ilustrativas (basadas en un escenario de 2022) y no representan la intención de voto actual ni encuestas reales emitidas en 2026.
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-serif font-bold text-brand-blue mb-6">Resultados de Sondeos</h2>
+
+            <!-- Bloque de Encuesta (Layout dividido: Datos + Gráfico) -->
+            <div class="bg-brand-card border border-brand-border rounded-2xl shadow-sm overflow-hidden flex flex-col md:flex-row">
+                
+                <!-- Ficha Técnica (Sidebar Izquierdo) -->
+                <div class="bg-gray-50 p-6 md:w-1/3 border-b md:border-b-0 md:border-r border-brand-border">
+                    <div class="text-[10px] font-bold text-brand-textMuted uppercase tracking-widest mb-1">Estudio Realizado por</div>
+                    <h3 class="font-bold text-brand-blue text-lg mb-6 leading-tight">
+                        Encuestadora de ejemplo <br><span class="text-xs font-normal text-gray-500">(Dato ficticio)</span>
+                    </h3>
+                    
+                    <dl class="space-y-4 text-xs">
+                        <div>
+                            <dt class="text-brand-textMuted font-bold uppercase tracking-wider mb-0.5">Trabajo de Campo</dt>
+                            <dd class="font-medium text-brand-text">15 Ago al 01 Sep, 2022</dd>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <dt class="text-brand-textMuted font-bold uppercase tracking-wider mb-0.5">Muestra</dt>
+                                <dd class="font-medium text-brand-text">400 casos</dd>
+                            </div>
+                            <div>
+                                <dt class="text-brand-textMuted font-bold uppercase tracking-wider mb-0.5">Margen Error</dt>
+                                <dd class="font-medium text-brand-text">± 4.9%</dd>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <dt class="text-brand-textMuted font-bold uppercase tracking-wider mb-0.5">Confianza</dt>
+                                <dd class="font-medium text-brand-text">95%</dd>
+                            </div>
+                            <div>
+                                <dt class="text-brand-textMuted font-bold uppercase tracking-wider mb-0.5">Modalidad</dt>
+                                <dd class="font-medium text-brand-text capitalize">Presencial</dd>
+                            </div>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- Gráfico de Barras (Derecha) -->
+                <div class="p-6 md:p-8 md:w-2/3 space-y-6">
+                    
+                    <!-- Fila 1: Canales -->
+                    <div>
+                        <div class="flex justify-between items-baseline mb-1.5">
+                            <div class="font-bold text-brand-text">
+                                Carlos Canales 
+                                <span class="text-[10px] text-brand-textMuted uppercase ml-2 hidden sm:inline-block">Renovación Popular</span>
+                            </div>
+                            <div class="font-extrabold text-brand-blue tabular-nums text-lg">24.5%</div>
+                        </div>
+                        <div class="w-full bg-brand-bg h-2.5 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full data-bar" style="background-color: #B22222; width: 24.5%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Fila 2: Dummy 1 -->
+                    <div>
+                        <div class="flex justify-between items-baseline mb-1.5">
+                            <div class="font-bold text-brand-text">
+                                Sergio Meza 
+                                <span class="text-[10px] text-brand-textMuted uppercase ml-2 hidden sm:inline-block">Acción Popular</span>
+                            </div>
+                            <div class="font-extrabold text-brand-blue tabular-nums text-lg">18.2%</div>
+                        </div>
+                        <div class="w-full bg-brand-bg h-2.5 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full data-bar" style="background-color: #00529A; width: 18.2%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Fila 3: Dummy 2 -->
+                    <div>
+                        <div class="flex justify-between items-baseline mb-1.5">
+                            <div class="font-bold text-brand-text">
+                                Ernesto Mendoza 
+                                <span class="text-[10px] text-brand-textMuted uppercase ml-2 hidden sm:inline-block">Somos Perú</span>
+                            </div>
+                            <div class="font-extrabold text-brand-blue tabular-nums text-lg">12.0%</div>
+                        </div>
+                        <div class="w-full bg-brand-bg h-2.5 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full data-bar" style="background-color: #475569; width: 12.0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-2 text-xs text-brand-textMuted italic">
+                        * Otros candidatos, blancos y viciados suman 45.3%
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#0b1221] text-gray-300 py-12 mt-auto border-t-[5px] border-brand-green">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-12 gap-10">
+            <div class="md:col-span-5">
+                <div class="text-xl font-extrabold tracking-tight leading-none mb-4 text-white">
+                    <span class="text-white">Encuestas</span>electorales<span class="text-brand-green">.pe</span>
+                </div>
+                <p class="text-sm text-gray-400 leading-relaxed mb-4 max-w-sm">
+                    Plataforma independiente de inteligencia electoral y medición ciudadana para Lima Metropolitana.
+                </p>
+            </div>
+            
+            <div class="md:col-span-3 md:col-start-7">
+                <h4 class="text-white font-bold uppercase tracking-wider text-xs mb-4">Navegación</h4>
+                <ul class="flex flex-col gap-2 text-sm font-medium">
+                    <li><a href="#" class="text-white">Inicio</a></li>
+                    <li><a href="metodologia.html" class="text-gray-400 hover:text-white transition-colors">Metodología</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Política Editorial</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Privacidad</a></li>
+                </ul>
+            </div>
+            
+            <div class="md:col-span-3">
+                <h4 class="text-white font-bold uppercase tracking-wider text-xs mb-4">Contacto</h4>
+                <ul class="flex flex-col gap-2 text-sm text-gray-400">
+                    <li><i class="far fa-envelope mr-2 text-brand-green"></i> contacto@encuestaselectorales.pe</li>
+                    <li><i class="fab fa-whatsapp mr-2 text-brand-green"></i> +51 971 388 435</li>
+                </ul>
+                <div class="mt-6 text-xs text-gray-500 font-medium">
+                    © 2026 Todos los derechos reservados.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
