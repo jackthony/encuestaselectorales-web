@@ -85,10 +85,69 @@
         targets.forEach(function (el) { observer.observe(el); });
     }
 
+    /**
+     * National district search (bl-11b-portal-nacional-home). Reads the
+     * `#distritos-data` JSON blob index.php embeds server-side (no /api/,
+     * no fetch — same "no DB, no /api/" constraint the rest of the
+     * pre-BL-16 site follows) and filters client-side by name. Works
+     * unchanged whether data/distrito.json covers Lima's 43 districts or,
+     * eventually, all of Peru — it doesn't assume a count.
+     */
+    function setupDistrictSearch() {
+        var input = document.getElementById('buscador-hero');
+        var button = document.getElementById('buscador-hero-btn');
+        var resultsEl = document.getElementById('buscador-hero-resultados');
+        var dataEl = document.getElementById('distritos-data');
+        if (!input || !resultsEl || !dataEl) return;
+
+        var distritos;
+        try {
+            distritos = JSON.parse(dataEl.textContent);
+        } catch (e) {
+            return;
+        }
+        if (!Array.isArray(distritos)) return;
+
+        function esc(s) {
+            return String(s).replace(/[&<>"']/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+            });
+        }
+
+        function search() {
+            var term = input.value.trim().toLowerCase();
+            resultsEl.classList.remove('hidden');
+            if (term === '') {
+                resultsEl.innerHTML = '';
+                resultsEl.classList.add('hidden');
+                return;
+            }
+
+            var matches = distritos.filter(function (d) {
+                return d.nombre.toLowerCase().indexOf(term) !== -1;
+            });
+
+            if (matches.length === 0) {
+                resultsEl.innerHTML = '<div class="p-4 text-sm text-gray-500">No encontramos esa ubicación.</div>';
+                return;
+            }
+
+            resultsEl.innerHTML = matches.map(function (d) {
+                return '<a href="distrito.php?slug=' + esc(d.id) + '" class="block p-3 hover:bg-brand-surface text-sm text-brand-blue font-semibold border-b border-gray-100 last:border-0">' + esc(d.nombre) + '</a>';
+            }).join('');
+        }
+
+        input.addEventListener('input', search);
+        if (button) {
+            button.addEventListener('click', search);
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         updateClock();
         setInterval(updateClock, 1000);
         setupMobileMenu();
         setupScrollAnimations();
+        setupDistrictSearch();
     });
 })();

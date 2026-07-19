@@ -203,22 +203,6 @@ $activeNav = '';
                 </div>
             </article>
 
-            <!-- TARJETA 4 (Estado Suspendido Ejemplo) -->
-            <article class="bg-gray-50 rounded-xl border border-gray-200 shadow-sm flex flex-col group scroll-animate delay-300 opacity-80">
-                <div class="p-6 border-b border-gray-200 flex items-start justify-between gap-4">
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-600 font-serif mb-1">Encuestadora X</h2>
-                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Ejemplo de Suspensión S.A.C.</div>
-                        <span class="inline-flex items-center gap-1.5 bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest">
-                            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Suspendida
-                        </span>
-                    </div>
-                </div>
-                <div class="p-6 flex-grow bg-white/50">
-                    <p class="text-sm text-gray-500 font-medium">Esta empresa no puede publicar estudios electorales por no actualizar su registro ante la Dirección Nacional de Fiscalización del JNE.</p>
-                </div>
-            </article>
-
         </div>
     </main>
 

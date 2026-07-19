@@ -47,7 +47,7 @@ $navClassMobile = static function (string $key) use ($activeNav): string {
                     <span class="text-brand-blue">Encuestas</span><span class="text-brand-text">electorales</span><span class="text-brand-green">.pe</span>
                 </div>
                 <div class="text-[10px] md:text-xs font-bold text-brand-muted tracking-widest uppercase">
-                    Sondeo ciudadano · Lima 2026
+                    Sondeo ciudadano · Perú 2026
                 </div>
             </a>
 

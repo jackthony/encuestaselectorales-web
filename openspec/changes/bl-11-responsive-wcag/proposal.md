@@ -10,10 +10,14 @@ BL-10 refactored 8 Canvas prototypes into PHP with zero visual change — includ
 
 `distrito.php` today is a stub (no Canvas source existed at BL-10 time). The owner has since had a district-page prototype built in Canvas (`canvas-gemini/distrito.html`, brief in `openspec/changes/bl-10-php-architecture/BRIEF-distrito-canvas.md`) that is deliberately empty-state-first: 42 of 43 districts have zero registered candidates until the JNE admits lists on 2026-08-05. Wiring that prototype into `distrito.php` is this item's second half.
 
+**Superseding update, 2026-07-19.** Owner decision: scale is now national (all of Peru, not Lima-only) launching 2026-07-20, and the empty-state CTA changes from passive notification to active lead capture — visitors are asked to propose their own district's candidates via WhatsApp, ahead of the JNE's official list, because paid traffic starts arriving before 2026-08-05. A second, superseding Canvas prototype exists for this: `canvas-gemini/tablero_electoral_growth_hack_hibrido.html`. It is one hybrid template (growth-hack CTA, gated vote widget, campo-studies sidebar as independently toggling blocks) rather than `distrito.html`'s three mutually-exclusive stacked states. `distrito.html`'s candidate-roster cards and result-bar layout remain valid as reusable sub-components inside the hybrid template, not as the page structure itself. This item's `distrito.php` rebuild targets the hybrid file. A third prototype, `canvas-gemini/portal_nacional_home.html`, covers the equivalent national rebuild of `index.php` — tracked as its own item, `bl-11b-portal-nacional-home`, not folded in here, since it's a different page with its own diff surface.
+
+This is now the highest-priority piece of this item, ahead of the GPS modal and WCAG audit below — it ships first because paid traffic hits it starting tomorrow. Sections below are unchanged and still ship, just after.
+
 ## What changes
 
 1. **GPS recovery modal** — replace the `alert()` with the reference implementation in `openspec/changes/bl-11-responsive-wcag/reference-modal-rescate.html`, wired into `assets/js/voto-gps.js`'s existing state machine via the `gps:reintentar` / `gps:cancelar` events it already emits.
-2. **`distrito.php` rebuild** from `canvas-gemini/distrito.html` — same structural-diff discipline BL-10 used, not a freehand rewrite.
+2. **`distrito.php` rebuild** from `canvas-gemini/tablero_electoral_growth_hack_hibrido.html` (superseding `distrito.html`, see above) — same structural-diff discipline BL-10 used, not a freehand rewrite. Ships with the vote widget block present in markup but never rendered in production (see design.md) — `/api/votar.php` doesn't exist yet (BL-14), and a form with nowhere safe to submit is exactly the kind of fake functionality the owner has ruled out.
 3. **WCAG AA contrast pass** — measure every foreground/background pair now in use across all 9 pages (the 8 from BL-10 plus the rebuilt `distrito.php`), fix what fails.
 4. **Mobile-first responsive audit** — the prototypes were designed at desktop width first; verify and fix breakpoints.
 5. **Chart.js version pin.**
@@ -25,6 +29,8 @@ BL-10 refactored 8 Canvas prototypes into PHP with zero visual change — includ
 - Any change to `/api/`, the DB, or GPS *mandatoriness* — BL-13/BL-14 own the backend; this item only fixes the client-side UX around an existing constraint.
 - Removing CDN dependencies — owner decision 2026-07-18, stays.
 - A `vote_tier` concept of any kind — GPS is mandatory, decided, not reopened here.
+- Any fictitious/example poll, pollster, or result content anywhere on the site — that purge is `bl-11c-purge-datos-ficticios`, a separate item, since it touches pages this item doesn't otherwise open (`index.php`, `sondeos.php`, `encuesta.php`, `candidato.php`).
+- The `encuestas`/rondas-semanales/`tipo` (online_propia vs campo_externa) database schema — tracked as `bl-13b-encuestas-rondas-schema`, sequenced after this item and before BL-14, since `distrito.php` here reads static JSON, not a live DB.
 
 ## Success criterion
 

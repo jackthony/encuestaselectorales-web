@@ -7,14 +7,12 @@
  */
 
 require_once __DIR__ . '/includes/helpers.php';
+require __DIR__ . '/includes/data.php'; // VOTACION_EN_VIVO — see bl-11-responsive-wcag design.md
 
 $pageTitle = 'EncuestasElectorales.pe - Sondeo en vivo';
 $activeNav = 'inicio';
 
-// Party colors read from data/partido.json (php-architecture spec, "Party
-// colors come from data, not literals") — never a hardcoded hex literal.
-$colorRP = partyColorOrGray('RP');
-$colorPP = partyColorOrGray('PP');
+$whatsappNumero = '51971388435';
 ?><!doctype html>
 <html lang="es" class="scroll-smooth">
 <head>
@@ -89,56 +87,28 @@ $colorPP = partyColorOrGray('PP');
                 </div>
             </div>
 
-            <!-- Sidebar Derecho: Votación Interactiva -->
+            <!-- Sidebar Derecho: Votación Interactiva.
+                 Gated on VOTACION_EN_VIVO (bl-11-responsive-wcag design.md) — no
+                 online round has ever opened, so this no longer hardcodes a
+                 specific district's real candidates into a form that submits
+                 nowhere (bl-11c-purge-datos-ficticios). -->
             <aside class="lg:col-span-4">
+<?php if (VOTACION_EN_VIVO): ?>
                 <div class="sticky top-28 bg-brand-card border border-brand-border rounded-2xl p-6 shadow-soft scroll-animate">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="relative flex h-2.5 w-2.5">
-                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-green opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-green"></span>
-                        </span>
-                        <span class="text-[10px] font-bold text-brand-green uppercase tracking-widest">Sondeo Interactivo Abierto</span>
-                    </div>
-
-                    <h3 class="font-serif font-bold text-xl text-brand-blue leading-snug mb-6">
-                        Si las elecciones para la Alcaldía de Miraflores fueran mañana, ¿por quién votarías?
-                    </h3>
-
-                    <form id="vote-form" class="space-y-3">
-                        <label class="flex items-center p-3.5 border border-gray-200 rounded-xl hover:bg-brand-surface hover:border-gray-300 cursor-pointer transition-colors group">
-                            <input type="radio" name="candidato" class="w-4 h-4 text-brand-blue border-gray-300 focus:ring-brand-blue accent-brand-blue">
-                            <div class="ml-3 flex-grow">
-                                <div class="text-sm font-bold text-brand-text group-hover:text-brand-blue">Carlos Canales Anchorena</div>
-                                <div class="text-[10px] text-brand-muted uppercase tracking-wider">Renovación Popular</div>
-                            </div>
-                            <div class="w-4 h-4 rounded-[3px] bg-[<?= esc($colorRP) ?>] opacity-80 group-hover:opacity-100"></div>
-                        </label>
-
-                        <label class="flex items-center p-3.5 border border-gray-200 rounded-xl hover:bg-brand-surface hover:border-gray-300 cursor-pointer transition-colors group">
-                            <input type="radio" name="candidato" class="w-4 h-4 text-brand-blue border-gray-300 focus:ring-brand-blue accent-brand-blue">
-                            <div class="ml-3 flex-grow">
-                                <div class="text-sm font-bold text-brand-text group-hover:text-brand-blue">María Rocío Cano Guerinoni</div>
-                                <div class="text-[10px] text-brand-muted uppercase tracking-wider">Podemos Perú</div>
-                            </div>
-                            <div class="w-4 h-4 rounded-[3px] bg-[<?= esc($colorPP) ?>] opacity-80 group-hover:opacity-100"></div>
-                        </label>
-
-                        <label class="flex items-center p-3.5 border border-gray-200 rounded-xl hover:bg-brand-surface hover:border-gray-300 cursor-pointer transition-colors group">
-                            <input type="radio" name="candidato" class="w-4 h-4 text-brand-blue border-gray-300 focus:ring-brand-blue accent-brand-blue">
-                            <div class="ml-3">
-                                <div class="text-sm font-bold text-brand-text group-hover:text-brand-blue">Blanco / Viciado / No precisa</div>
-                            </div>
-                        </label>
-
-                        <button type="button" class="w-full mt-4 bg-brand-blue text-white font-bold py-3.5 rounded-xl hover:bg-[#0a2060] transition-colors shadow-sm">
-                            Registrar mi voto
-                        </button>
-                    </form>
-
-                    <div class="mt-5 p-3 bg-gray-50 rounded-lg text-[10px] text-brand-muted leading-relaxed">
-                        <strong>Transparencia:</strong> Al activar el registro, se permite 1 voto por dispositivo mediante validación de hash de red. Tu privacidad está protegida.
-                    </div>
+                    <!-- Vote form renders here once a real online_propia round is open. -->
                 </div>
+<?php else: ?>
+                <div class="sticky top-28 bg-brand-card border border-brand-border rounded-2xl p-6 shadow-soft scroll-animate text-center">
+                    <div class="w-12 h-12 bg-[#e6f8f0] text-brand-greenText rounded-full flex items-center justify-center text-xl mx-auto mb-4">
+                        <i class="fas fa-vote-yea"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-lg text-brand-blue mb-2">Aún no hay un sondeo en línea abierto</h3>
+                    <p class="text-xs text-brand-textMuted leading-relaxed mb-5">Elegí tu distrito en el buscador para ver sus candidatos, o proponé uno si aún no está en la lista.</p>
+                    <a href="https://wa.me/<?= esc($whatsappNumero) ?>?text=<?= rawurlencode('Hola, quiero proponer un candidato') ?>" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold py-3 px-5 rounded-xl hover:bg-[#20bd5a] transition-colors w-full shadow-sm text-sm">
+                        <i class="fab fa-whatsapp text-lg"></i> Proponer candidato por WhatsApp
+                    </a>
+                </div>
+<?php endif; ?>
             </aside>
         </section>
     </main>
@@ -154,18 +124,13 @@ $colorPP = partyColorOrGray('PP');
         // Utilidad de escape XSS
         const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]);
 
-        // Datos Mock — colores de partido leídos de data/partido.json vía includes/helpers.php
-        // (partyColor()), no hex literal en este archivo (php-architecture spec, "Party colors
-        // come from data, not literals").
+        // District sample list — no `candidatos`/`pct` fields on any entry:
+        // no district has a real, live online poll result yet (BL-13b/BL-14
+        // not shipped), so every card falls through to generateCardHTML()'s
+        // real "trabajo de campo en progreso" state below, not a fabricated
+        // percentage (bl-11c-purge-datos-ficticios).
         const mockData = [
-            {
-                id: "miraflores", nombre: "Miraflores", actualizado: "17 jul 2026", votos: "1,284",
-                candidatos: [
-                    { nombre: "Carlos Canales Anchorena", siglas: "RP", color: "<?= esc($colorRP) ?>", pct: 24.5 },
-                    { nombre: "María Rocío Cano Guerinoni", siglas: "PP", color: "<?= esc($colorPP) ?>", pct: 18.2 },
-                    { nombre: "Alessandra Krause Alva", siglas: "AVP", color: "<?= esc(partyColorOrGray('AVP')) ?>", pct: 14.0 }
-                ]
-            },
+            { id: "miraflores", nombre: "Miraflores" },
             { id: "surco", nombre: "Santiago de Surco" },
             { id: "san-isidro", nombre: "San Isidro" },
             { id: "barranco", nombre: "Barranco" }
