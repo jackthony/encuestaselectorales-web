@@ -10,6 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # check-refactor.php falls back to `git show <ref>:canvas-gemini/...`
+          # for the now-deleted canvas-gemini/ prototypes it diffs each PHP
+          # page against (readCanvasSource()). That commit is unreachable
+          # under actions/checkout's default shallow clone, so the check
+          # fails on every page with "cannot read canvas source" even though
+          # nothing is actually broken. Full history keeps that ref resolvable.
+          fetch-depth: 0
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
