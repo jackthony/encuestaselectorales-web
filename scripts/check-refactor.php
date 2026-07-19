@@ -136,6 +136,19 @@ function extractBodyMinusChrome(string $html): array
                 continue;
             }
             /** @var DOMElement $child */
+            // <script> tags are excluded from the diff entirely. None of the
+            // 8 canvas prototypes ever put a `class` on a <script> tag, so
+            // counting bare tag presence doesn't verify anything about
+            // whether the JS *content* moved correctly (this check compares
+            // tags+classes, not text) — it would only produce false
+            // failures from consolidating N inline scripts into one shared
+            // assets/js/app.js <script src> (proposal.md's stated problem;
+            // design.md target structure), which is the intended, spec-
+            // mandated result of this refactor, not a structural regression.
+            if (strtolower($child->tagName) === 'script') {
+                $walk($child);
+                continue;
+            }
             $classAttr = $child->getAttribute('class');
             $classes = preg_split('/\s+/', trim($classAttr));
             $classes = array_values(array_filter($classes, fn($c) => $c !== ''));
