@@ -18,13 +18,10 @@
 
 ## Phase 3 — Core Architecture Refactoring (The PHP Switch)
 ### BL-10 — PHP Architecture, Naming & Cleanup
-- **Status**: not-started
-- **Input**: 7 HTML prototypes in `/canvas-gemini/` and old `/styles.css`. The folder also holds `controlador_php_backend_seguro.php` and `esquema_base_de_datos_b_veda_gps.sql` — these are **BL-13/BL-14 input, not BL-10 input**; move them to `docs/reference/` before touching the folder.
-- **Output**: MVC-lite PHP structure (`/partials/`, `/assets/`, `index.php`, `distrito.php`).
-- **Action**: 
-  1. Extract repeating UI (head, nav, footer, widget-gps) into `/partials/`.
-  2. Route all styling to a single `/assets/css/styles.css`, keeping existing Canvas design 100% intact.
-  3. Delete `/canvas-gemini/` only after the refactor is committed and the PHP structure renders correctly — the folder is the only copy of the validated design.
+- **Status**: done (2026-07-18)
+- **Input**: 8 HTML prototypes in `/canvas-gemini/` (backup preserved at commit `2a6e18f`) and old `/styles.css`.
+- **Output**: MVC-lite PHP structure — `index.php`, `sondeos.php`, `distrito.php`, `encuesta.php`, `candidato.php`, `encuestadoras.php`, `metodologia.php`, `quienes-somos.php`, `partials/` (head, header, footer, widget-gps, card-sondeo), `includes/` (data.php, helpers.php), `assets/css/styles.css`, `assets/js/` (app.js, voto-gps.js). `scripts/check-refactor.php` verifies structural parity against the canvas originals (8/8) plus shared header/footer partial consistency; `canvas-gemini/` deleted after it went green (recoverable at `2a6e18f`).
+- **Finding carried to BL-16**: `distrito.php` had no canvas-gemini source (none of the 8 prototypes was a district-detail page) — it ships as a minimal page built only from the shared partials, no fabricated content. BL-16 wires it to `data/*.json` once a Canvas prototype exists for it. See `openspec/changes/bl-10-php-architecture/tasks.md` for the full decision log (header/footer "newest prototype wins", legal scrub, party-color data sourcing).
 
 ### BL-11 — Responsive UI & WCAG Validation
 - **Status**: not-started
