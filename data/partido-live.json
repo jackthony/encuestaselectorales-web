@@ -1,0 +1,8 @@
+[
+  { "id": 9, "nombre": "Frente Popular Agrícola FIA del Perú", "siglas": "FREPAP", "color": "#7CB342", "logo": null },
+  { "id": 10, "nombre": "Partido Popular Cristiano - PPC", "siglas": "PPC", "color": "#1E88E5", "logo": null },
+  { "id": 11, "nombre": "Renovación Popular Perú", "siglas": "RPP", "color": "#B22222", "logo": null },
+  { "id": 12, "nombre": "Partido Cívico Obras", "siglas": "PCO", "color": "#0F766E", "logo": null },
+  { "id": 13, "nombre": "Partido Frente de la Esperanza 2021", "siglas": "FEP", "color": "#14B8A6", "logo": null },
+  { "id": 14, "nombre": "Partido Patriótico del Perú", "siglas": "PPP", "color": "#7C3AED", "logo": null }
+]

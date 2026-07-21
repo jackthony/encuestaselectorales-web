@@ -59,7 +59,7 @@
 - **Output**: MySQL script creating tables with NO AUTO_INCREMENT (use UUIDv4/NanoID). Includes `gps_lat` (DECIMAL 10,8), `gps_lng` (DECIMAL 11,8), `trust_score` (INT).
 
 ### BL-14 — IP Traceability & Geolocation Logic (PHP)
-- **Status**: not-started
+- **Status**: done (2026-07-21)
 - **Depends on**: BL-13
 - **Output**: `/api/votar.php` endpoint that hashes IP (salted) for deduplication, encrypts real IP via `AES-256-GCM`, and calculates `trust_score` (0-100) server-side.
 - **Never**: return `trust_score` in the API response. Exposing it lets an attacker tune submissions until they score 100. It is written to the DB and read only behind the BL-15 admin wall.

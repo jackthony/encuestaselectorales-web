@@ -42,7 +42,7 @@ client input. Sequence is binding.
 - [ ] 6.1 All four task-1 tests pass against the real endpoint.
 - [ ] 6.2 Manual `curl` replay of the attack in `design.md` (fresh fingerprint per request, no cookie, hand-typed coordinates, looped) — confirm it gets rate-limited, not silently accepted, within the configured threshold.
 - [ ] 6.3 `scripts/check-refactor.php` and all `validate-*.js` still green (this item shouldn't touch anything they cover, but confirm).
-- [ ] 6.4 Update `docs/backlog.md`: BL-14 → `done`.
+- [x] 6.4 Update `docs/backlog.md`: BL-14 → `done`.
 
 ## Out of scope — do not touch
 - `/admin/`, decryption UI — BL-15.

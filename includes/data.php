@@ -17,8 +17,8 @@ $readJson = static function (string $file) use ($dataDir): array {
 
 return [
     'distritos'      => $readJson('distrito.json'),
-    'candidatos'     => $readJson('candidato.json'),
-    'partidos'       => $readJson('partido.json'),
+    'candidatos'     => array_merge($readJson('candidato.json'), $readJson('candidato-live.json')),
+    'partidos'       => array_merge($readJson('partido.json'), $readJson('partido-live.json')),
     'encuestas'      => $readJson('encuesta.json'),
     'encuestadoras'  => $readJson('encuestadora.json'),
     'resultados'     => $readJson('resultado.json'),
