@@ -135,7 +135,10 @@ $browserFingerprint = voteFingerprint(
     $client['ip']
 );
 
-$deviceToken = voteNormalizeText((string)($_COOKIE['device_token'] ?? ''), 64);
+$deviceToken = voteNormalizeText((string)($data['device_token'] ?? ''), 64);
+if ($deviceToken === '' || !preg_match('/\A[a-f0-9]{64}\z/i', $deviceToken)) {
+    $deviceToken = voteNormalizeText((string)($_COOKIE['device_token'] ?? ''), 64);
+}
 if ($deviceToken === '' || !preg_match('/\A[a-f0-9]{64}\z/i', $deviceToken)) {
     $deviceToken = voteDefaultDeviceToken();
 }

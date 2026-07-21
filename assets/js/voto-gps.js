@@ -109,6 +109,41 @@
         ].join('|');
     }
 
+    function generateDeviceToken() {
+        var bytes = new Uint8Array(32);
+        if (window.crypto && window.crypto.getRandomValues) {
+            window.crypto.getRandomValues(bytes);
+        } else {
+            for (var i = 0; i < bytes.length; i++) {
+                bytes[i] = Math.floor(Math.random() * 256);
+            }
+        }
+
+        var token = '';
+        for (var j = 0; j < bytes.length; j++) {
+            token += bytes[j].toString(16).padStart(2, '0');
+        }
+        return token;
+    }
+
+    function getDeviceToken() {
+        var storageKey = 'encuestaselectorales.device_token';
+        var token = '';
+
+        try {
+            token = window.localStorage.getItem(storageKey) || '';
+        } catch (e) {}
+
+        if (!/^[a-f0-9]{64}$/i.test(token)) {
+            token = generateDeviceToken();
+            try {
+                window.localStorage.setItem(storageKey, token);
+            } catch (e) {}
+        }
+
+        return token.toLowerCase();
+    }
+
     function finalizarVoto() {
         var context = getVoteContext();
         var candidatoId = getSelectedCandidateId();
@@ -145,7 +180,8 @@
                 gps_lng: latestGps.lng,
                 gps_accuracy_meters: latestGps.accuracy,
                 interaction_time_ms: latestGps.interactionTime,
-                browser_fingerprint: buildBrowserFingerprint()
+                browser_fingerprint: buildBrowserFingerprint(),
+                device_token: getDeviceToken()
             })
         }).then(function (response) {
             return response.json().catch(function () {
