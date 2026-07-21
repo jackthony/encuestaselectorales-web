@@ -11,12 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # check-refactor.php falls back to `git show <ref>:canvas-gemini/...`
-          # for the now-deleted canvas-gemini/ prototypes it diffs each PHP
-          # page against (readCanvasSource()). That commit is unreachable
-          # under actions/checkout's default shallow clone, so the check
-          # fails on every page with "cannot read canvas source" even though
-          # nothing is actually broken. Full history keeps that ref resolvable.
+          # Keep full history available for any canvas-gemini fallback reads.
+          # The checker now treats missing historical Canvas files as smoke
+          # checks, but full history still preserves the optional git blob path.
           fetch-depth: 0
 
       - name: Set up PHP
@@ -27,7 +24,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: PHP refactor regression check
         run: php scripts/check-refactor.php
