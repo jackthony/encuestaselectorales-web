@@ -26,6 +26,7 @@ Options -Indexes
 RewriteEngine On
 RewriteRule ^includes/ - [F,L]
 RewriteRule ^partials/ - [F,L]
+RewriteRule ^config/ - [F,L]
 
 # data/*.json — checked (task 3.4): grepped assets/js/ and every inline
 # <script> in the .php pages for fetch()/XMLHttpRequest/axios/$.ajax
