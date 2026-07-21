@@ -11,18 +11,27 @@
     var startTime;
     var latestGps = null;
 
-    var overlay, vistaSoftAsk, vistaCargando, vistaSmartMatch, vistaExito;
+    var overlay, vistaSoftAsk, vistaCargando, vistaSmartMatch, vistaExito, vistaError, vistaErrorTexto;
 
     function ocultarTodasLasVistas() {
-        [vistaSoftAsk, vistaCargando, vistaSmartMatch, vistaExito].forEach(function (v) {
+        [vistaSoftAsk, vistaCargando, vistaSmartMatch, vistaExito, vistaError].forEach(function (v) {
             if (v) v.classList.add('hidden');
         });
+    }
+
+    function mostrarError(mensaje) {
+        ocultarTodasLasVistas();
+        if (vistaErrorTexto) {
+            vistaErrorTexto.textContent = mensaje || 'No pudimos registrar tu voto.';
+        }
+        if (overlay) overlay.classList.remove('hidden');
+        if (vistaError) vistaError.classList.remove('hidden');
     }
 
     function iniciarValidacion() {
         var seleccionado = document.querySelector('input[name="candidato"]:checked');
         if (!seleccionado) {
-            alert('Por favor, selecciona un candidato primero.');
+            mostrarError('Por favor, selecciona un candidato primero.');
             return;
         }
 
@@ -44,8 +53,7 @@
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         } else {
-            alert('Tu navegador no soporta geolocalización.');
-            cerrarModal();
+            mostrarError('Tu navegador no soporta geolocalización.');
         }
     }
 
@@ -69,9 +77,7 @@
     }
 
     function gpsError(error) {
-        ocultarTodasLasVistas();
-        alert('No podemos registrar tu voto sin validación geográfica. Permiso denegado.');
-        cerrarModal();
+        mostrarError('No podemos registrar tu voto sin validación geográfica. Permiso denegado.');
     }
 
     function getVoteContext() {
@@ -136,17 +142,17 @@
         var candidatoId = getSelectedCandidateId();
 
         if (!context || !context.encuestaId || !context.ubigeoVotacion) {
-            alert('No encontramos la encuesta activa de este distrito.');
+            mostrarError('No encontramos la encuesta activa de este distrito.');
             return;
         }
 
         if (!candidatoId) {
-            alert('Por favor, selecciona un candidato primero.');
+            mostrarError('Por favor, selecciona un candidato primero.');
             return;
         }
 
         if (!latestGps) {
-            alert('Primero valida tu ubicación.');
+            mostrarError('Primero valida tu ubicación.');
             return;
         }
 
@@ -187,8 +193,7 @@
             ocultarTodasLasVistas();
             if (vistaExito) vistaExito.classList.remove('hidden');
         }).catch(function (error) {
-            alert(error.message || 'No pudimos registrar tu voto.');
-            cerrarModal();
+            mostrarError(error.message || 'No pudimos registrar tu voto.');
         });
     }
 
@@ -203,6 +208,8 @@
         vistaCargando = document.getElementById('paso-cargando');
         vistaSmartMatch = document.getElementById('paso-smartmatch');
         vistaExito = document.getElementById('paso-exito');
+        vistaError = document.getElementById('paso-error');
+        vistaErrorTexto = document.getElementById('paso-error-texto');
     });
 
     // Exposed globally: partials/widget-gps.php and page-specific vote
