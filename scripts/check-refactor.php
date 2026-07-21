@@ -90,10 +90,9 @@ function readCanvasSource(string $root, string $canvasDir, string $canvasRef, st
     }
     $out = [];
     $cmd = sprintf(
-        'git -C %s show %s:canvas-gemini/%s 2>&1',
+        'git -C %s show %s 2>&1',
         escapeshellarg($root),
-        escapeshellarg($canvasRef),
-        escapeshellarg($file)
+        escapeshellarg($canvasRef . ':canvas-gemini/' . $file)
     );
     exec($cmd, $out, $exit);
     if ($exit !== 0) {

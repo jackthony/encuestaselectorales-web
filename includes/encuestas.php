@@ -3,7 +3,7 @@
  * Survey round read helpers.
  */
 
-function getEncuestasPdo(): PDO
+function getEncuestasPdo(): ?PDO
 {
     static $pdo = null;
 
@@ -11,7 +11,12 @@ function getEncuestasPdo(): PDO
         return $pdo;
     }
 
-    $pdo = require __DIR__ . '/db.php';
+    try {
+        $pdo = require __DIR__ . '/db.php';
+    } catch (Throwable $e) {
+        error_log('encuestas PDO bootstrap unavailable: ' . $e->getMessage());
+        return null;
+    }
 
     return $pdo;
 }
@@ -28,6 +33,12 @@ function getRondaActiva(string $distritoId): ?array
         return $cache[$distritoId];
     }
 
+    $pdo = getEncuestasPdo();
+    if (!$pdo instanceof PDO) {
+        $cache[$distritoId] = null;
+        return null;
+    }
+
     $sql = <<<SQL
 SELECT id, distrito_id, tipo, numero_ronda, titulo, fecha_apertura, fecha_cierre, estado_publicacion, created_at
 FROM encuestas
@@ -38,7 +49,7 @@ ORDER BY fecha_apertura DESC, numero_ronda DESC, created_at DESC
 LIMIT 1
 SQL;
 
-    $stmt = getEncuestasPdo()->prepare($sql);
+    $stmt = $pdo->prepare($sql);
     $stmt->execute(['distrito_id' => $distritoId]);
     $ronda = $stmt->fetch();
 
@@ -55,6 +66,12 @@ function getRondasActivas(): array
         return $cache;
     }
 
+    $pdo = getEncuestasPdo();
+    if (!$pdo instanceof PDO) {
+        $cache = [];
+        return $cache;
+    }
+
     $sql = <<<SQL
 SELECT id, distrito_id, tipo, numero_ronda, titulo, fecha_apertura, fecha_cierre, estado_publicacion, created_at
 FROM encuestas
@@ -63,7 +80,7 @@ WHERE estado_publicacion = 'producción'
 ORDER BY fecha_apertura DESC, numero_ronda DESC, created_at DESC
 SQL;
 
-    $stmt = getEncuestasPdo()->query($sql);
+    $stmt = $pdo->query($sql);
     $cache = $stmt->fetchAll();
 
     return $cache;
