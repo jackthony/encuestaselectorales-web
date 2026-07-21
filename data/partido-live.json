@@ -1,8 +1,163 @@
 [
-  { "id": 9, "nombre": "Frente Popular Agrícola FIA del Perú", "siglas": "FREPAP", "color": "#7CB342", "logo": null },
-  { "id": 10, "nombre": "Partido Popular Cristiano - PPC", "siglas": "PPC", "color": "#1E88E5", "logo": null },
-  { "id": 11, "nombre": "Renovación Popular Perú", "siglas": "RPP", "color": "#B22222", "logo": null },
-  { "id": 12, "nombre": "Partido Cívico Obras", "siglas": "PCO", "color": "#0F766E", "logo": null },
-  { "id": 13, "nombre": "Partido Frente de la Esperanza 2021", "siglas": "FEP", "color": "#14B8A6", "logo": null },
-  { "id": 14, "nombre": "Partido Patriótico del Perú", "siglas": "PPP", "color": "#7C3AED", "logo": null }
+  {
+    "id": 755328334,
+    "nombre": "Acción Popular",
+    "siglas": "AP",
+    "color": "#6EC6E8",
+    "logo": null
+  },
+  {
+    "id": 380986185,
+    "nombre": "Ahora Nación - AN",
+    "siglas": "AN",
+    "color": "#C2982E",
+    "logo": null
+  },
+  {
+    "id": 375845544,
+    "nombre": "Avanza País - Partido de Integración Social",
+    "siglas": "AVP",
+    "color": "#F58220",
+    "logo": null
+  },
+  {
+    "id": 601891737,
+    "nombre": "Batalla Perú",
+    "siglas": "BP",
+    "color": "#A9C22E",
+    "logo": null
+  },
+  {
+    "id": 794859208,
+    "nombre": "Coalición Transformadora Tierra Verde",
+    "siglas": "CTTV",
+    "color": "#2EC2B8",
+    "logo": null
+  },
+  {
+    "id": 521966202,
+    "nombre": "Frente Popular Agrícola FIA del Perú",
+    "siglas": "FREPAP",
+    "color": "#7CB342",
+    "logo": null
+  },
+  {
+    "id": 674445571,
+    "nombre": "Fuerza Ciudadana",
+    "siglas": "FC",
+    "color": "#2E64C2",
+    "logo": null
+  },
+  {
+    "id": 446664092,
+    "nombre": "Fuerza Popular",
+    "siglas": "FP",
+    "color": "#FF6B00",
+    "logo": null
+  },
+  {
+    "id": 244366679,
+    "nombre": "Juntos por el Perú",
+    "siglas": "JPP",
+    "color": "#5FC22E",
+    "logo": null
+  },
+  {
+    "id": 657213737,
+    "nombre": "Partido Cívico Obras",
+    "siglas": "PCO",
+    "color": "#0F766E",
+    "logo": null
+  },
+  {
+    "id": 895953213,
+    "nombre": "Partido Demócrata Verde",
+    "siglas": "PDV",
+    "color": "#4B2EC2",
+    "logo": null
+  },
+  {
+    "id": 516551920,
+    "nombre": "Partido Democrático Somos Perú",
+    "siglas": "SP",
+    "color": "#009444",
+    "logo": null
+  },
+  {
+    "id": 483519320,
+    "nombre": "Partido Frente de la Esperanza 2021",
+    "siglas": "FEP",
+    "color": "#14B8A6",
+    "logo": null
+  },
+  {
+    "id": 851706810,
+    "nombre": "Partido Morado",
+    "siglas": "PM",
+    "color": "#6A1B9A",
+    "logo": null
+  },
+  {
+    "id": 874548262,
+    "nombre": "Partido Patriótico del Perú",
+    "siglas": "PPP",
+    "color": "#7C3AED",
+    "logo": null
+  },
+  {
+    "id": 885605221,
+    "nombre": "Partido Político Integridad Democrática",
+    "siglas": "IPD",
+    "color": "#2EC273",
+    "logo": null
+  },
+  {
+    "id": 496449107,
+    "nombre": "Partido Político Nacional Perú Libre",
+    "siglas": "PPL",
+    "color": "#2EC2C0",
+    "logo": null
+  },
+  {
+    "id": 746663163,
+    "nombre": "Partido Político Pueblo Consciente",
+    "siglas": "PPCN",
+    "color": "#2E62C2",
+    "logo": null
+  },
+  {
+    "id": 378033469,
+    "nombre": "Partido Popular Cristiano - PPC",
+    "siglas": "PPC",
+    "color": "#1E88E5",
+    "logo": null
+  },
+  {
+    "id": 422765651,
+    "nombre": "Podemos Perú",
+    "siglas": "PP",
+    "color": "#00A99D",
+    "logo": null
+  },
+  {
+    "id": 243464051,
+    "nombre": "Primero la Gente - Comunidad, Ecología, Libertad y Progreso",
+    "siglas": "PLG",
+    "color": "#C2732E",
+    "logo": null
+  },
+  {
+    "id": 623978597,
+    "nombre": "Renovación Popular Perú",
+    "siglas": "RPP",
+    "color": "#B22222",
+    "logo": null
+  },
+  {
+    "id": 848874999,
+    "nombre": "Visión Perú",
+    "siglas": "VP",
+    "color": "#492EC2",
+    "logo": null
+  }
 ]
