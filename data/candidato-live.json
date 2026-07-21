@@ -1,12 +1,302 @@
 [
-  { "id": 9, "nombre": "Dante Jose Mandriotti Castro", "partidoId": 6, "cargo": "gobernador_regional", "distritoId": "callao", "foto": null, "numero": null, "activo": true },
-  { "id": 10, "nombre": "Cinthya Isela Camasca Zamudio", "partidoId": 9, "cargo": "gobernador_regional", "distritoId": "callao", "foto": null, "numero": null, "activo": true },
-  { "id": 11, "nombre": "Ismael Alberto Paredes Avalos", "partidoId": 5, "cargo": "gobernador_regional", "distritoId": "callao", "foto": null, "numero": null, "activo": true },
-  { "id": 12, "nombre": "Jose Remigio Sosa Dulanto Badiola", "partidoId": 10, "cargo": "gobernador_regional", "distritoId": "callao", "foto": null, "numero": null, "activo": true },
-  { "id": 13, "nombre": "Pedro Carmelo Spadaro Philipps", "partidoId": 11, "cargo": "gobernador_regional", "distritoId": "callao", "foto": null, "numero": null, "activo": true },
-  { "id": 14, "nombre": "Carlos Alberto Tejada Noriega", "partidoId": 6, "cargo": "alcalde_provincial", "distritoId": "lima-cercado", "foto": null, "numero": null, "activo": true },
-  { "id": 15, "nombre": "Ricardo Pablo Belmont Cassinelli", "partidoId": 12, "cargo": "alcalde_provincial", "distritoId": "lima-cercado", "foto": null, "numero": null, "activo": true },
-  { "id": 16, "nombre": "Elizabeth Maria del Rosario Leon Chinchay", "partidoId": 13, "cargo": "alcalde_provincial", "distritoId": "lima-cercado", "foto": null, "numero": null, "activo": true },
-  { "id": 17, "nombre": "Sandro Caller Gutierrez", "partidoId": 14, "cargo": "alcalde_provincial", "distritoId": "lima-cercado", "foto": null, "numero": null, "activo": true },
-  { "id": 18, "nombre": "Luis Isael Rubio Idrogo", "partidoId": 11, "cargo": "alcalde_provincial", "distritoId": "lima-cercado", "foto": null, "numero": null, "activo": true }
+  {
+    "id": 492459493,
+    "nombre": "Dante Jose Mandriotti Castro",
+    "partidoId": 755328334,
+    "cargo": "gobernador_regional",
+    "distritoId": "callao",
+    "foto": "https://mpesije.jne.gob.pe/apidocs/1ec143eb-1fc3-46f0-b9f5-bd32c9367d9f.jpg",
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 854138891,
+    "nombre": "Rafael Sebastian Yancan Mayo",
+    "partidoId": 794859208,
+    "cargo": "gobernador_regional",
+    "distritoId": "callao",
+    "foto": "https://mpesije.jne.gob.pe/apidocs/486e7752-3bd8-47c0-9b5a-a741dd93ff88.jpg",
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 784579398,
+    "nombre": "Cinthya Isela Camasca Zamudio",
+    "partidoId": 521966202,
+    "cargo": "gobernador_regional",
+    "distritoId": "callao",
+    "foto": "https://mpesije.jne.gob.pe/apidocs/15b3e845-be23-47d4-8b5b-fa6bb17b2dbb.jpg",
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 249652108,
+    "nombre": "Miguel Francisco Cordano Rodriguez",
+    "partidoId": 446664092,
+    "cargo": "gobernador_regional",
+    "distritoId": "callao",
+    "foto": "https://mpesije.jne.gob.pe/apidocs/b84b3d99-1008-49c8-be6c-a6633902c039.jpg",
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 379089383,
+    "nombre": "Ismael Alberto Paredes Avalos",
+    "partidoId": 516551920,
+    "cargo": "gobernador_regional",
+    "distritoId": "callao",
+    "foto": "https://mpesije.jne.gob.pe/apidocs/57dee9c0-f943-48bf-a5ef-95437fe16cee.jpg",
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 396656020,
+    "nombre": "Jose Remigio Sosa Dulanto Badiola",
+    "partidoId": 378033469,
+    "cargo": "gobernador_regional",
+    "distritoId": "callao",
+    "foto": "https://mpesije.jne.gob.pe/apidocs/60ddad7e-ab31-40f2-8857-87a48f60a6db.jpg",
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 353321100,
+    "nombre": "Lizandra Gladys Zuñiga Bermudez",
+    "partidoId": 243464051,
+    "cargo": "gobernador_regional",
+    "distritoId": "callao",
+    "foto": "https://mpesije.jne.gob.pe/apidocs/86740265-ae17-4fd8-bfc1-cf9e8c0ee0a1.jpg",
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 240550750,
+    "nombre": "Pedro Carmelo Spadaro Philipps",
+    "partidoId": 623978597,
+    "cargo": "gobernador_regional",
+    "distritoId": "callao",
+    "foto": "https://mpesije.jne.gob.pe/apidocs/0a4869bf-07ea-4206-8ec7-ebaf6f6b0773.jpg",
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 396232994,
+    "nombre": "Carlos Alberto Tejada Noriega",
+    "partidoId": 755328334,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 485465441,
+    "nombre": "Susel Ana Maria Paredes Pique",
+    "partidoId": 380986185,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 476824536,
+    "nombre": "Francis James Allison Oyague",
+    "partidoId": 375845544,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 552531596,
+    "nombre": "Samir Frank Quispe Caballero",
+    "partidoId": 601891737,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 499611252,
+    "nombre": "Yehude Simon Munaro",
+    "partidoId": 794859208,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 565858651,
+    "nombre": "Segundo Valdez Zavala",
+    "partidoId": 521966202,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 787355917,
+    "nombre": "Ruben Daniel Bonilla Espinoza",
+    "partidoId": 674445571,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 671571880,
+    "nombre": "Samuel Marcos Daza Taype",
+    "partidoId": 446664092,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 544703850,
+    "nombre": "Oswaldo Hernan Vargas Cuellar",
+    "partidoId": 244366679,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 765067333,
+    "nombre": "Ricardo Pablo Belmont Cassinelli",
+    "partidoId": 657213737,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 439682881,
+    "nombre": "Flor de Maria Hurtado Valdez",
+    "partidoId": 895953213,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 210553219,
+    "nombre": "Carlos Ricardo Bruce Montes de Oca",
+    "partidoId": 516551920,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 745066900,
+    "nombre": "Elizabeth Maria del Rosario Leon Chinchay",
+    "partidoId": 483519320,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 638533445,
+    "nombre": "Victoria Betzabe la Cruz Garces",
+    "partidoId": 851706810,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 641845322,
+    "nombre": "Sandro Caller Gutierrez",
+    "partidoId": 874548262,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 248525285,
+    "nombre": "Jessica Viviana Linares Romero",
+    "partidoId": 885605221,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 530955117,
+    "nombre": "Ruben Jose Ramirez Mateo",
+    "partidoId": 496449107,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 612900536,
+    "nombre": "Luis Alberto Huette Tolentino",
+    "partidoId": 746663163,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 476920513,
+    "nombre": "Edgardo Renan de Pomar Vizcarra",
+    "partidoId": 378033469,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 416503296,
+    "nombre": "Daniel Belizario Urresti Elera",
+    "partidoId": 422765651,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 628672030,
+    "nombre": "Luis Isael Rubio Idrogo",
+    "partidoId": 623978597,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  },
+  {
+    "id": 638039794,
+    "nombre": "Santiago Rosendo Abarca Leon",
+    "partidoId": 848874999,
+    "cargo": "alcalde_provincial",
+    "distritoId": "lima-cercado",
+    "foto": null,
+    "numero": null,
+    "activo": true
+  }
 ]

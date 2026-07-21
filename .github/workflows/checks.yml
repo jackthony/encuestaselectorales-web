@@ -26,6 +26,9 @@ jobs:
         with:
           node-version: '24'
 
+      - name: JNE live seed validator
+        run: node scripts/validate-jne-live-seed.js
+
       - name: PHP refactor regression check
         run: php scripts/check-refactor.php
 
