@@ -464,9 +464,9 @@ function checkDistrito(string $root, string $canvasDir, string $canvasRef): arra
     $expectedCta = extractByClassSubstring($canvasHtml, 'border-dashed');
     // The Canvas source's "Encuesta Online - Semana 1" ribbon (identified by
     // its distinctive `rounded-bl-lg` class) claims an open weekly round.
-    // No round has ever opened (VOTACION_EN_VIVO is false, no `tipo:
-    // online_propia` encuesta exists), so distrito.php deliberately omits it
-    // — showing it would be exactly the fictional-data problem
+    // The current live pages intentionally omit that ribbon until a real
+    // `encuestas` row exists for the selected district, so showing it would
+    // be exactly the fictional-data problem
     // bl-11c-purge-datos-ficticios exists to close. Excluded from the
     // expected set rather than left as a permanent false failure.
     foreach (array_keys($expectedCta) as $token) {

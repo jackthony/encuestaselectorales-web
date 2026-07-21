@@ -41,5 +41,6 @@
   { "id": "santiago-de-surco", "nombre": "Santiago de Surco", "provincia": "lima", "region": "lima" },
   { "id": "surquillo", "nombre": "Surquillo", "provincia": "lima", "region": "lima" },
   { "id": "villa-el-salvador", "nombre": "Villa El Salvador", "provincia": "lima", "region": "lima" },
-  { "id": "villa-maria-del-triunfo", "nombre": "Villa María del Triunfo", "provincia": "lima", "region": "lima" }
+  { "id": "villa-maria-del-triunfo", "nombre": "Villa María del Triunfo", "provincia": "lima", "region": "lima" },
+  { "id": "callao", "nombre": "Callao", "provincia": "callao", "region": "callao", "ubigeo": "070101" }
 ]

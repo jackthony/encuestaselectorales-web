@@ -30,3 +30,13 @@
 ## Workflow
 - Spanish for public UI/UX content; English for code, comments, and commits.
 - Read `docs/engineering-standards.md` before writing any PHP/JS logic.
+
+## MCPs y APIs
+Para trabajar con este proyecto, conviene tener disponibles estas integraciones:
+
+- `GitHub`: preferir MCP o, como mínimo, `gh` CLI autenticado para PRs, issues, releases y revisión de ramas.
+- `Hostinger`: preferir MCP si está disponible; si no, usar API/CLI/documentación del hosting para deployments, bases de datos y dominios.
+- `Codebase memory`: mantener indexado el repo para búsquedas de arquitectura, trazado de dependencias y análisis de impacto.
+- `OpenSpec`: usarlo para cambios estructurados de producto y tareas de implementación.
+
+Si un MCP no existe aún a nivel global, documentar el fallback equivalente en CLI/API para no bloquear el flujo de trabajo.

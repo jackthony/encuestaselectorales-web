@@ -7,7 +7,9 @@
  */
 
 require_once __DIR__ . '/includes/helpers.php';
-require __DIR__ . '/includes/data.php'; // VOTACION_EN_VIVO — see bl-11-responsive-wcag design.md
+require_once __DIR__ . '/includes/encuestas.php';
+$data = require __DIR__ . '/includes/data.php';
+$totalDistritos = count($data['distritos']);
 
 $pageTitle = 'EncuestasElectorales.pe - Sondeo en vivo';
 $activeNav = 'inicio';
@@ -79,7 +81,7 @@ $whatsappNumero = '51971388435';
             <div class="lg:col-span-8">
                 <div class="flex justify-between items-baseline mb-8 border-b border-brand-border pb-4">
                     <h2 class="text-3xl font-serif font-bold text-brand-blue">Sondeos Activos</h2>
-                    <span class="text-sm font-bold text-brand-muted uppercase tracking-wider">43 Distritos</span>
+                    <span class="text-sm font-bold text-brand-muted uppercase tracking-wider"><?= esc((string) $totalDistritos) ?> Distritos</span>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="feed-container">
@@ -88,14 +90,23 @@ $whatsappNumero = '51971388435';
             </div>
 
             <!-- Sidebar Derecho: Votación Interactiva.
-                 Gated on VOTACION_EN_VIVO (bl-11-responsive-wcag design.md) — no
-                 online round has ever opened, so this no longer hardcodes a
-                 specific district's real candidates into a form that submits
-                 nowhere (bl-11c-purge-datos-ficticios). -->
+                 Shows the first active `encuestas` row from MySQL when one
+                 exists; otherwise it keeps the WhatsApp CTA fallback. -->
             <aside class="lg:col-span-4">
-<?php if (VOTACION_EN_VIVO): ?>
+<?php $rondaActiva = getRondasActivas()[0] ?? null; ?>
+<?php if ($rondaActiva): ?>
                 <div class="sticky top-28 bg-brand-card border border-brand-border rounded-2xl p-6 shadow-soft scroll-animate">
-                    <!-- Vote form renders here once a real online_propia round is open. -->
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-brand-blue mb-2">Encuesta web activa</div>
+                    <h3 class="font-serif font-bold text-lg text-brand-blue mb-2"><?= esc($rondaActiva['titulo']) ?></h3>
+                    <p class="text-xs text-brand-muted leading-relaxed mb-4">
+                        La votación en vivo se habilita en el distrito correspondiente. BL-14 conectará este panel al endpoint real.
+                    </p>
+                    <?php $distritoActiva = findDistritoById((string) ($rondaActiva['distrito_id'] ?? '')); ?>
+                    <?php if ($distritoActiva): ?>
+                        <a href="distrito.php?slug=<?= esc($distritoActiva['id']) ?>" class="inline-flex items-center justify-center gap-2 bg-brand-blue text-white font-bold py-3 px-5 rounded-xl hover:bg-[#0c2466] transition-colors w-full shadow-sm text-sm">
+                            Ver <?= esc($distritoActiva['nombre']) ?>
+                        </a>
+                    <?php endif; ?>
                 </div>
 <?php else: ?>
                 <div class="sticky top-28 bg-brand-card border border-brand-border rounded-2xl p-6 shadow-soft scroll-animate text-center">

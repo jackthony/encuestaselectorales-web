@@ -3,7 +3,7 @@
  * encuesta.php — poll (campo/field-study) detail view. Accepts ?id=.
  *
  * Rewritten 2026-07-19 (bl-11c-purge-datos-ficticios). The prior version was
- * entirely hardcoded fabricated content — not just the "ejemplo" pollster
+ * entirely hardcoded fabricated content — not just a placeholder pollster
  * label, but invented result percentages attributed to real, named public
  * figures (Carlos Canales, Daniel Urresti, Francis Allison) in a race
  * ("Alcaldía de Lima Metropolitana") none of them may even be contesting in
@@ -11,9 +11,9 @@
  * Editorial & Legal Rules exist to guard — real name, fabricated number,
  * wrong context, live in production. Full data wiring (BL-16) is still not
  * this item's job, but rendering nothing rather than something false is:
- * this page now looks up `?id=` against data/encuesta.json (excluding the
- * "ejemplo" placeholder) and shows a real empty state when there's no match
- * — which, today, is every request, since no real campo study exists yet.
+ * this page now looks up `?id=` against data/encuesta.json and shows a real
+ * empty state when there's no match. Today that remains the expected path
+ * because no real campo study exists yet.
  */
 
 require_once __DIR__ . '/includes/helpers.php';
@@ -27,7 +27,7 @@ $candidatos    = $data['candidatos'];
 $id = isset($_GET['id']) ? (string) $_GET['id'] : '';
 $encuesta = null;
 foreach ($encuestas as $e) {
-    if ($e['id'] === $id && ($e['encuestadoraId'] ?? null) !== 'ejemplo') {
+    if ($e['id'] === $id) {
         $encuesta = $e;
         break;
     }

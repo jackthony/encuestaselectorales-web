@@ -2,8 +2,9 @@ const fs = require('fs');
 const path = require('path');
 
 const DATA_PATH = path.join(__dirname, '..', 'data', 'distrito.json');
-const EXPECTED_COUNT = 43;
+const EXPECTED_COUNT = 44;
 const REQUIRED_FIELDS = ['id', 'nombre', 'provincia', 'region'];
+const OPTIONAL_FIELDS = ['ubigeo'];
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 function fail(message) {
@@ -41,6 +42,12 @@ function main() {
         fail(`duplicate id slug "${record.id}"`);
       }
       seenIds.add(record.id);
+    }
+
+    for (const field of OPTIONAL_FIELDS) {
+      if (Object.prototype.hasOwnProperty.call(record, field) && record[field] !== null && typeof record[field] !== 'string') {
+        fail(`record at index ${index} has invalid optional field "${field}"`);
+      }
     }
   });
 

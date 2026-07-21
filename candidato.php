@@ -8,7 +8,7 @@
  * entirely hardcoded fabricated content built around a real, named public
  * figure (Carlos Canales): an invented 6-month polling trend, a fake current
  * average, a fake photo, and three "últimos registros" cards all attributed
- * to the "ejemplo" pollster. That is exactly the highest-liability content
+ * to a placeholder pollster. That is exactly the highest-liability content
  * category CLAUDE.md's Editorial & Legal Rules exist to guard. This page now
  * looks up a real `data/candidato.json` record and shows an honest empty
  * state for the trend chart / recent-studies list — no real per-candidate
@@ -19,26 +19,17 @@ require_once __DIR__ . '/includes/helpers.php';
 
 $data       = require __DIR__ . '/includes/data.php';
 $candidatos = $data['candidatos'];
-$distritos  = $data['distritos'];
 $encuestas  = $data['encuestas'];
 $resultados = $data['resultados'];
 
 $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $candidato = findCandidato($id);
 $partido = $candidato ? findPartido((int) $candidato['partidoId']) : null;
-$distrito = null;
-if ($candidato) {
-    foreach ($distritos as $d) {
-        if ($d['id'] === $candidato['distritoId']) {
-            $distrito = $d;
-            break;
-        }
-    }
-}
+$distrito = $candidato ? findDistritoById($candidato['distritoId']) : null;
 
-// Real per-candidate result history — none exists yet (no `tipo` field on
-// any encuesta.json record, no closed online_propia round). Not hardcoded
-// false: the day a real trend exists for this candidate, it renders here.
+// Real per-candidate result history — none exists yet (no closed
+// online_propia round). When a real trend exists for this candidate, it
+// renders here.
 $historial = [];
 foreach ($resultados as $r) {
     foreach ($r['resultados'] as $rr) {

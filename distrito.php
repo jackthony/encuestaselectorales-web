@@ -9,36 +9,26 @@
  *
  *   - growth-hack CTA (WhatsApp)   -> no candidato.json entries for this district
  *   - candidate roster             -> candidato.json entries exist
- *   - vote widget                  -> candidates exist AND VOTACION_EN_VIVO is true
- *   - own-poll evolution chart     -> a closed online_propia round exists (none do
- *                                     yet — data/encuesta.json has no `tipo` field
- *                                     until bl-13b ships, so this stays dark honestly,
- *                                     not by a hardcoded false)
- *   - campo-studies sidebar        -> a real (non-"ejemplo") campo result exists,
+ *   - active round panel           -> a real `encuestas` row is currently open
+ *   - own-poll evolution chart     -> an active round exists for this district
+ *   - campo-studies sidebar        -> a real campo result exists,
  *                                     independent of every block above
  *
- * The "ejemplo" placeholder record is excluded explicitly below rather than
- * relied on being deleted by bl-11c-purge-datos-ficticios — this page is
- * correct regardless of which of the two changes lands first.
+ * The field-study placeholder record is excluded explicitly below so this
+ * page stays correct even if legacy seed data is still present locally.
  */
 
 require_once __DIR__ . '/includes/helpers.php';
+require_once __DIR__ . '/includes/encuestas.php';
 
 $data          = require __DIR__ . '/includes/data.php';
-$distritos     = $data['distritos'];
 $candidatos    = $data['candidatos'];
 $encuestas     = $data['encuestas'];
 $resultados    = $data['resultados'];
 $encuestadoras = $data['encuestadoras'];
 
 $slug = isset($_GET['slug']) ? (string) $_GET['slug'] : '';
-$distrito = null;
-foreach ($distritos as $d) {
-    if ($d['id'] === $slug) {
-        $distrito = $d;
-        break;
-    }
-}
+$distrito = findDistritoById($slug);
 
 $candidatosDistrito = [];
 if ($distrito) {
@@ -61,26 +51,15 @@ if ($tieneCandidatos) {
     }
 }
 
-// Own-poll closed round (tipo='online_propia') — bl-13b hasn't shipped the
-// `tipo` field yet, so this is always null today. Not hardcoded false: the
-// day that field exists with a closed round, this lights up on its own.
-$rondaPropiaCerrada = null;
-if ($distrito) {
-    foreach ($encuestas as $e) {
-        if (($e['distritoId'] ?? null) === $distrito['id'] && ($e['tipo'] ?? null) === 'online_propia') {
-            $rondaPropiaCerrada = $e;
-            break;
-        }
-    }
-}
+$rondaActiva = $distrito ? getRondaActiva($distrito['id']) : null;
 
-// Campo (third-party) study — real ones only, "ejemplo" excluded explicitly.
+// Campo (third-party) study — real ones only.
 $campoEncuesta = null;
 $campoResultado = null;
 $campoEncuestadora = null;
 if ($distrito) {
     foreach ($encuestas as $e) {
-        if (($e['distritoId'] ?? null) === $distrito['id'] && ($e['encuestadoraId'] ?? null) !== 'ejemplo') {
+        if (($e['distritoId'] ?? null) === $distrito['id'] && findEncuestadoraById((string) ($e['encuestadoraId'] ?? '')) !== null) {
             $campoEncuesta = $e;
             break;
         }
@@ -164,14 +143,7 @@ $whatsappTexto = rawurlencode($distrito
                 <div class="lg:col-span-8 space-y-10">
 <?php if (!$tieneCandidatos): ?>
                     <!-- Growth-hack CTA: no candidato.json entries for this district.
-                         No "Encuesta Online - Semana N" ribbon here (unlike the Canvas
-                         source) — no real round has ever opened (VOTACION_EN_VIVO is
-                         false, no data/encuesta.json tipo='online_propia' record
-                         exists yet), and claiming one would be exactly the fictional-
-                         data problem bl-11c-purge-datos-ficticios exists to close.
-                         scripts/check-refactor.php's structural check for this block
-                         excludes that one ribbon element from the Canvas diff for the
-                         same reason — see its own comment. -->
+                         The active round panel below is driven by MySQL. -->
                     <section class="bg-brand-card border-2 border-dashed border-brand-green/40 rounded-2xl p-6 md:p-8 relative overflow-hidden">
                         <div class="flex items-start gap-5">
                             <div class="w-14 h-14 bg-[#e6f8f0] text-brand-greenText rounded-full flex items-center justify-center text-2xl shrink-0">
@@ -218,31 +190,25 @@ $whatsappTexto = rawurlencode($distrito
                             </div>
 <?php endforeach; ?>
                         </div>
-<?php if (VOTACION_EN_VIVO): ?>
-                        <!-- Vote widget: candidates exist AND voting is live. Dark today. -->
-                        <form id="form-voto-distrito" class="mt-8 border-t border-brand-border pt-6" data-distrito="<?= esc($distrito['id']) ?>">
-                            <h3 class="font-serif font-bold text-xl text-brand-blue leading-snug mb-5">¿Por quién votarías para la Alcaldía de <?= esc($distrito['nombre']) ?>?</h3>
-                            <div class="space-y-3 mb-5">
-<?php foreach ($candidatosDistrito as $c): ?>
-                                <label class="flex items-center p-3 border border-brand-border rounded-xl hover:bg-brand-surface cursor-pointer transition-colors">
-                                    <input type="radio" name="candidato" value="<?= esc((string) $c['id']) ?>" class="w-4 h-4 text-brand-blue border-gray-300 focus:ring-brand-blue accent-brand-blue">
-                                    <div class="ml-3 flex-grow">
-                                        <div class="text-sm font-bold text-brand-text"><?= esc($c['nombre']) ?></div>
-                                    </div>
-                                </label>
-<?php endforeach; ?>
+<?php if ($rondaActiva): ?>
+                        <div class="mt-8 border-t border-brand-border pt-6" data-distrito="<?= esc($distrito['id']) ?>">
+                            <div class="bg-[#f7fbff] border border-[#d7e7ff] rounded-2xl p-5 mb-5">
+                                <div class="text-[10px] font-bold uppercase tracking-widest text-brand-blue mb-2">Encuesta web activa</div>
+                                <h3 class="font-serif font-bold text-xl text-brand-blue leading-snug mb-2"><?= esc($rondaActiva['titulo']) ?></h3>
+                                <p class="text-sm text-brand-muted">
+                                    Ronda <?= esc((string) $rondaActiva['numero_ronda']) ?> disponible hasta <?= esc($rondaActiva['fecha_cierre']) ?>.
+                                </p>
                             </div>
-                            <button type="button" onclick="document.getElementById('modal-overlay').classList.remove('hidden'); document.getElementById('paso-softask').classList.remove('hidden');" class="w-full bg-brand-blue text-white font-bold py-3.5 rounded-xl hover:bg-[#0a2060] transition-colors shadow-sm">
-                                Registrar mi voto
-                            </button>
-                            <p class="text-[10px] text-gray-400 text-center mt-3">Protegido por verificación GPS y rate-limiting en servidor.</p>
-                        </form>
+                            <p class="text-sm text-brand-muted leading-relaxed">
+                                El flujo de voto se habilita con BL-14; esta vista ya muestra la ronda real que está activa para <?= esc($distrito['nombre']) ?>.
+                            </p>
+                        </div>
 <?php endif; ?>
                     </section>
 <?php endif; ?>
 
-<?php if ($rondaPropiaCerrada): ?>
-                    <!-- Own-poll evolution chart: a closed online_propia round exists -->
+<?php if ($rondaActiva): ?>
+                    <!-- Own-poll evolution chart: a real online_propia round exists -->
                     <section>
                         <h2 class="text-2xl font-serif font-bold text-brand-blue mb-4">Evolución del Voto Online</h2>
                         <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
@@ -295,14 +261,14 @@ $whatsappTexto = rawurlencode($distrito
 <?php endif; ?>
     </main>
 
-<?php if ($distrito && $tieneCandidatos && VOTACION_EN_VIVO): ?>
+<?php if ($distrito && $tieneCandidatos && $rondaActiva): ?>
     <?php require __DIR__ . '/partials/widget-gps.php'; ?>
 <?php endif; ?>
 
     <?php require __DIR__ . '/partials/footer.php'; ?>
 
     <script src="assets/js/app.js"></script>
-<?php if ($distrito && $tieneCandidatos && VOTACION_EN_VIVO): ?>
+<?php if ($distrito && $tieneCandidatos && $rondaActiva): ?>
     <script src="assets/js/voto-gps.js"></script>
 <?php endif; ?>
 </body>

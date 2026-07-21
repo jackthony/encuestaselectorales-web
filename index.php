@@ -13,34 +13,26 @@
  *
  * The prototype's two hub columns ("Encuestas Web Activas", "Últimos
  * Estudios de Campo") each show one example card in the Canvas file for
- * design reference — today, with zero online rounds ever opened and zero
- * real campo studies, both columns render their own real empty state
- * instead (see design.md).
+ * design reference. The live page now renders real MySQL rounds when
+ * present and its own empty state when they are not.
  */
 
 require_once __DIR__ . '/includes/helpers.php';
+require_once __DIR__ . '/includes/encuestas.php';
 
 $data       = require __DIR__ . '/includes/data.php';
 $distritos  = $data['distritos'];
 $encuestas  = $data['encuestas'];
 
-// Real campo (third-party) studies only — "ejemplo" already purged from the
-// data itself (bl-11c), but filtered defensively here too regardless of
-// which change landed first.
+// Real campo (third-party) studies only.
 $estudiosCampo = [];
 foreach ($encuestas as $e) {
-    if (($e['encuestadoraId'] ?? null) !== 'ejemplo') {
+    if (findEncuestadoraById((string) ($e['encuestadoraId'] ?? '')) !== null) {
         $estudiosCampo[] = $e;
     }
 }
 
-// Real open online rounds — none exist yet (no `tipo` field until bl-13b/BL-14).
-$rondasAbiertas = [];
-foreach ($encuestas as $e) {
-    if (($e['tipo'] ?? null) === 'online_propia') {
-        $rondasAbiertas[] = $e;
-    }
-}
+$rondasAbiertas = getRondasActivas();
 
 $pageTitle = 'Encuestas Electorales Perú 2026 - Transparencia y Datos';
 $pageDescription = 'El pulso electoral del Perú: sondeos ciudadanos por región, provincia y distrito para las Elecciones Regionales y Municipales 2026.';
@@ -117,12 +109,13 @@ $whatsappNumero = '51971388435';
                             </a>
                         </div>
 <?php else: ?>
-<?php foreach ($rondasAbiertas as $ronda): $d = null; foreach ($distritos as $dd) { if ($dd['id'] === ($ronda['distritoId'] ?? null)) { $d = $dd; break; } } if (!$d) continue; ?>
+<?php foreach ($rondasAbiertas as $ronda): $d = findDistritoById((string) ($ronda['distrito_id'] ?? '')); if (!$d) continue; ?>
                         <a href="distrito.php?slug=<?= esc($d['id']) ?>" class="block bg-brand-card rounded-2xl p-6 border border-brand-border hover:shadow-lg hover:border-brand-blue/30 transition-all">
                             <div class="flex justify-between items-start mb-3">
                                 <h3 class="font-bold text-xl text-brand-blue"><?= esc($d['nombre']) ?></h3>
                                 <span class="bg-[#e6f8f0] text-brand-greenText text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest border border-[#15ba75]/30">Ronda Abierta</span>
                             </div>
+                            <p class="text-sm text-brand-muted leading-relaxed"><?= esc($ronda['titulo']) ?></p>
                         </a>
 <?php endforeach; ?>
 <?php endif; ?>

@@ -7,6 +7,8 @@
  */
 
 require_once __DIR__ . '/includes/helpers.php';
+$data = require __DIR__ . '/includes/data.php';
+$totalDistritos = count($data['distritos']);
 
 $pageTitle = 'Metodología y Rigor | EncuestasElectorales.pe';
 $pageDescription = 'Conoce la metodología detrás de nuestra plataforma de medición ciudadana en tiempo real para las Elecciones de Lima 2026.';
@@ -95,7 +97,7 @@ $activeNav = 'metodologia';
                     A través de nuestro portal interactivo, movilizamos una participación ciudadana masiva. Diseñamos nuestras encuestas para que sean friccionales y accesibles desde cualquier dispositivo móvil o de escritorio, lo que nos permite medir el termómetro electoral con una velocidad sin precedentes.
                 </p>
                 <ul>
-                    <li><strong>Cobertura Total:</strong> Mapeamos y mantenemos sondeos activos para los 43 distritos de Lima Metropolitana de forma simultánea.</li>
+                    <li><strong>Cobertura Total:</strong> Mapeamos y mantenemos sondeos activos para <?= esc((string) $totalDistritos) ?> distritos cubiertos por la plataforma de forma simultánea.</li>
                     <li><strong>Actualización Continua:</strong> Los datos no reposan en cajones. A medida que aumenta la participación ciudadana, las tendencias se reflejan en la plataforma alimentando el debate público al instante.</li>
                     <li><strong>Muestra Dinámica:</strong> Al ser una plataforma abierta, nuestra muestra crece orgánicamente, capturando la energía, el interés y la movilización digital de los diferentes sectores del electorado.</li>
                 </ul>

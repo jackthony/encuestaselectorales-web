@@ -112,6 +112,38 @@ function findCandidato(int $id): ?array
     return null;
 }
 
+/** Looks up a district record by string id. Returns null if not found. */
+function findDistritoById(string $id): ?array
+{
+    static $distritos = null;
+    if ($distritos === null) {
+        $distritos = require __DIR__ . '/data.php';
+        $distritos = $distritos['distritos'];
+    }
+    foreach ($distritos as $d) {
+        if ($d['id'] === $id) {
+            return $d;
+        }
+    }
+    return null;
+}
+
+/** Looks up an encuestadora record by string id. Returns null if not found. */
+function findEncuestadoraById(string $id): ?array
+{
+    static $encuestadoras = null;
+    if ($encuestadoras === null) {
+        $encuestadoras = require __DIR__ . '/data.php';
+        $encuestadoras = $encuestadoras['encuestadoras'];
+    }
+    foreach ($encuestadoras as $e) {
+        if ($e['id'] === $id) {
+            return $e;
+        }
+    }
+    return null;
+}
+
 /**
  * First letter of a person's first and last name token, uppercased — the
  * initials-on-party-color avatar fallback CLAUDE.md's image-handling rule

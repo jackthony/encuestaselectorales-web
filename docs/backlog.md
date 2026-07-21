@@ -40,7 +40,7 @@
 - **Output**: `"ejemplo"` pollster/survey/result records and every hardcoded reference to them removed from production. Verified in a real browser; spec archived to `openspec/specs/no-fictitious-production-data/`.
 
 ### BL-13b — Encuestas / Rondas / UBIGEO Schema
-- **Status**: not-started (not yet drafted as an openspec change)
+- **Status**: done
 - **Depends on**: BL-13
 - **Action**: Design the `encuestas` DB table (`modalidad`/`tipo` ENUM `online_propia`/`campo_externa`, ronda open/close dates, `estado_publicacion` prueba/producción gate) and the national UBIGEO catalog acquisition. Sequenced after BL-11/BL-11b/BL-11c — real online voting cannot launch faster than BL-12→BL-14's security requirements allow, so this does not block tomorrow's informational/lead-capture launch.
 

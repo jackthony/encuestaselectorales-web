@@ -7,10 +7,16 @@ CLAUDE.local.md
 /config/security.php
 .env
 *.env
+/CODEX-HANDOFF.md
 
 # Dependencies
 /node_modules/
 /vendor/
+
+# Local IDE / generated noise
+/.vs/
+/.agents/
+/api-1.json
 
 # OS generated files
 .DS_Store
