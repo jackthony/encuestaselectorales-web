@@ -75,10 +75,7 @@ const PARTY_COLOR_OVERRIDES = {
   'renovacion popular peru': '#B22222',
 };
 
-const PARTY_CATALOG = [
-  ...readJsonArray(PARTIDOS_PATH),
-  ...readJsonArray(PARTIDOS_LIVE_PATH),
-];
+const PARTY_CATALOG = readJsonArray(PARTIDOS_PATH);
 
 const PARTY_BY_NAME = new Map();
 const PARTY_BY_SIGLAS = new Map();
@@ -365,12 +362,13 @@ function buildJneLiveSeed() {
       if (!partyByKey.has(partyKey)) {
         const canonicalName = canonicalPartyName(rawPartyName);
         const id = stableInt('party', partyKey, partyUsedIds);
+        const partyLogo = record['Link Foto Candidato'] ? record['Link Foto Candidato'].trim() : '';
         const partyRecord = {
           id,
           nombre: canonicalName,
           siglas: canonicalSiglas(rawPartyName),
           color: canonicalColor(rawPartyName),
-          logo: null,
+          logo: partyLogo !== '' ? partyLogo : null,
         };
         partyByKey.set(partyKey, partyRecord);
         partySeenOrder.push(partyRecord);
@@ -392,7 +390,7 @@ function buildJneLiveSeed() {
         partidoId: partyRecord.id,
         cargo,
         distritoId: districtId,
-        foto: null,
+        foto: record['Foto Adicional'] ? record['Foto Adicional'].trim() || null : null,
         numero: null,
         activo: true,
       };
