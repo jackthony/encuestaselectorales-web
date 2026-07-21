@@ -21,14 +21,15 @@ if (is_file($localConfig)) {
     $configPath = $prodConfig;
 }
 
-if ($configPath === null) {
-    throw new RuntimeException(
-        'No /config/db.php found (checked ' . $localConfig .
-        ($prodConfig !== null ? ' and ' . $prodConfig : '') . ').'
-    );
-}
+$config = [
+    'dsn' => 'mysql:host=srv469.hstgr.io;dbname=u185878096_encuestas;charset=utf8mb4',
+    'user' => 'u185878096_encuestas_app',
+    'pass' => 'Codexito1234.',
+];
 
-$config = require $configPath;
+if ($configPath !== null) {
+    $config = array_merge($config, require $configPath);
+}
 
 $pdo = new PDO(
     $config['dsn'],
