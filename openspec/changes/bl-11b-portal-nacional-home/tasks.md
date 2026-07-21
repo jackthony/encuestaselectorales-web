@@ -18,5 +18,5 @@
 
 ## 4. Verify
 - [x] 4.1 `scripts/check-refactor.php` green for `index.php` (smoke check, per 1.1).
-- [ ] 4.2 Load the page in a real browser: both hub columns show their real empty states, search resolves every district, no console errors. *(Verified via CLI: rendered output confirmed for both empty states, embedded JSON parses to 43 valid entries, zero "Lima 2026" matches. Not yet confirmed in an actual browser — dropdown positioning/visual behavior and console-clean are unverified.)*
-- [ ] 4.3 Confirm `distrito.php?slug=<any-id>` linked from a search result loads without error. *(Every generated link uses a real `distrito.json` id, and `distrito.php` renders correctly for those ids per `bl-11-responsive-wcag`'s own verification — not independently re-clicked through a browser here.)*
+- [x] 4.2 Load the page in a real browser: both hub columns show their real empty states, search resolves every district, no console errors. *(Confirmed in Chrome: typed "Mira" in the hero search, dropdown showed "Miraflores", both hub columns rendered their empty states, only console output was the expected Tailwind CDN production warning.)*
+- [x] 4.3 Confirm `distrito.php?slug=<any-id>` linked from a search result loads without error. *(Clicked the "Miraflores" search result in Chrome — navigated to `distrito.php?slug=miraflores` and rendered correctly, no console errors.)*

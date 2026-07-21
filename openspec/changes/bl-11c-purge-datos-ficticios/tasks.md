@@ -3,7 +3,7 @@
 ## 1. The failing check (before the deletion)
 - [x] 1.1 Write a small grep-based check that fails if `ejemplo|dato ficticio` appears in any root page's **rendered output**, or in any `data/*.json` file. *(Implemented as `checkNoFictitiousData()` in `scripts/check-refactor.php` rather than a separate file — checks rendered HTML, not raw PHP source, so legitimate source comments documenting this fix don't false-positive.)*
 - [x] 1.2 Run it. **Confirm it fails** today. *(Failed against 7 markers across 4 files before the fixes below; after fixing sondeos/encuesta/candidato/encuestadoras and the JSON, only `index.php` still fails — expected, that page is `bl-11b`'s scope, not this item's.)*
-- [ ] 1.3 Commit the failing check. *(Not done — commits happen on explicit request, not as part of implementation.)*
+- [x] 1.3 Commit the failing check. *(Landed in `f2cdf92`, PR #20 — merged alongside the fixes it validates.)*
 
 ## 2. Delete the fabricated data
 - [x] 2.1 Remove the `"ejemplo"` object from `data/encuestadora.json`.
@@ -20,8 +20,8 @@
 
 ## 4. Green
 - [x] 4.1 Re-ran `scripts/check-refactor.php`. `no-fictitious-data` passes for every root page except `index.php` (expected — `bl-11b`'s scope).
-- [ ] 4.2 Load `sondeos.php`, `encuesta.php`, `candidato.php`, `encuestadoras.php` in a real browser. *(Verified via CLI so far: lint clean, non-empty render, header/footer present, no fictitious-data markers in rendered output. Not yet confirmed in an actual browser — no console-error check, no visual check of the initials avatar or the gated sidebar's two states.)*
-- [ ] 4.3 Commit the deletions and the now-passing check together. *(Not done — on explicit request.)*
+- [x] 4.2 Load `sondeos.php`, `encuesta.php`, `candidato.php`, `encuestadoras.php` in a real browser. *(Confirmed in Chrome: `sondeos.php` renders 43 real districts with the "trabajo de campo en progreso" empty state plus the WhatsApp gated sidebar CTA; `encuesta.php`/`candidato.php` show their real "no encontrado" empty states with no id; `encuestadoras.php` renders 5 real REE-JNE pollsters, no 4th fabricated card. No console errors on any page beyond the expected Tailwind CDN production warning.)*
+- [x] 4.3 Commit the deletions and the now-passing check together. *(Landed in `f2cdf92`, PR #20.)*
 
 ## Out of scope — do not touch
 - `index.php` — `bl-11b` rebuilds it wholesale from a prototype that never had this content.
