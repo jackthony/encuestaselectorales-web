@@ -30,14 +30,14 @@
 - **Action**: `distrito.php` hybrid rebuild (national growth-hack template) ships first, ahead of the GPS modal and WCAG audit — see proposal.md's 2026-07-19 update. Mobile-first + WCAG AA contrast passes follow after.
 
 ### BL-11b — National Home Portal (`index.php`)
-- **Status**: not-started
+- **Status**: done (2026-07-20)
 - **Depends on**: BL-10
-- **Action**: Rebuild `index.php` nationally from `canvas-gemini/portal_nacional_home.html` — global UBIGEO search, real-data-only hub columns. Ships alongside BL-11, same urgency (2026-07-20 national launch).
+- **Output**: `index.php` rebuilt nationally from `canvas-gemini/portal_nacional_home.html` — global UBIGEO search, real-data-only hub columns. Verified in a real browser; spec archived to `openspec/specs/national-home-portal/`.
 
 ### BL-11c — Purge Fictitious Poll Data
-- **Status**: not-started
+- **Status**: done (2026-07-20)
 - **Depends on**: none (independent of BL-11/BL-11b's own diffs, touches `sondeos.php`/`encuesta.php`/`candidato.php`/`data/*.json`)
-- **Action**: Remove the `"ejemplo"` pollster/survey/result records and every hardcoded reference to them from production. Same urgency as BL-11/BL-11b.
+- **Output**: `"ejemplo"` pollster/survey/result records and every hardcoded reference to them removed from production. Verified in a real browser; spec archived to `openspec/specs/no-fictitious-production-data/`.
 
 ### BL-13b — Encuestas / Rondas / UBIGEO Schema
 - **Status**: not-started (not yet drafted as an openspec change)
