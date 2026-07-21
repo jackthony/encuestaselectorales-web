@@ -109,24 +109,7 @@
         ].join('|');
     }
 
-    function generateDeviceToken() {
-        var bytes = new Uint8Array(32);
-        if (window.crypto && window.crypto.getRandomValues) {
-            window.crypto.getRandomValues(bytes);
-        } else {
-            for (var i = 0; i < bytes.length; i++) {
-                bytes[i] = Math.floor(Math.random() * 256);
-            }
-        }
-
-        var token = '';
-        for (var j = 0; j < bytes.length; j++) {
-            token += bytes[j].toString(16).padStart(2, '0');
-        }
-        return token;
-    }
-
-    function getDeviceToken() {
+    function getStoredDeviceToken() {
         var storageKey = 'encuestaselectorales.device_token';
         var token = '';
 
@@ -134,14 +117,18 @@
             token = window.localStorage.getItem(storageKey) || '';
         } catch (e) {}
 
+        return token.toLowerCase();
+    }
+
+    function storeDeviceToken(token) {
+        var storageKey = 'encuestaselectorales.device_token';
         if (!/^[a-f0-9]{64}$/i.test(token)) {
-            token = generateDeviceToken();
-            try {
-                window.localStorage.setItem(storageKey, token);
-            } catch (e) {}
+            return;
         }
 
-        return token.toLowerCase();
+        try {
+            window.localStorage.setItem(storageKey, token.toLowerCase());
+        } catch (e) {}
     }
 
     function finalizarVoto() {
@@ -181,7 +168,7 @@
                 gps_accuracy_meters: latestGps.accuracy,
                 interaction_time_ms: latestGps.interactionTime,
                 browser_fingerprint: buildBrowserFingerprint(),
-                device_token: getDeviceToken()
+                device_token: getStoredDeviceToken()
             })
         }).then(function (response) {
             return response.json().catch(function () {
@@ -193,7 +180,10 @@
                 }
                 return data;
             });
-        }).then(function () {
+        }).then(function (data) {
+            if (data && data.device_token) {
+                storeDeviceToken(data.device_token);
+            }
             ocultarTodasLasVistas();
             if (vistaExito) vistaExito.classList.remove('hidden');
         }).catch(function (error) {

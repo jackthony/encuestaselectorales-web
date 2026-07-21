@@ -277,4 +277,5 @@ setcookie('device_token', $deviceToken, $cookieOptions);
 voteRespond(200, [
     'status' => 'success',
     'message' => 'Voto registrado y encriptado correctamente.',
+    'device_token' => $deviceToken,
 ]);
