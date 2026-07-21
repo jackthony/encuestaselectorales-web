@@ -29,10 +29,11 @@ CREATE TABLE IF NOT EXISTS votos_interactivos (
 
     PRIMARY KEY (id),
 
-    -- Plain indexes, never UNIQUE: CGNAT means many legitimate voters share one
-    -- ip_hash, and device models collide on browser_fingerprint. Rate limiting is
-    -- a query ("how many in the last hour"), not a uniqueness constraint.
+    -- Rate limiting still uses plain indexes. The live product now also enforces
+    -- one vote per encuesta per connection/device with unique constraints.
     KEY idx_ratelimit_ip     (encuesta_id, ip_hash, created_at),
     KEY idx_ratelimit_device (encuesta_id, device_token, created_at),
-    KEY idx_geo_heatmap      (ubigeo_votacion, gps_lat, gps_lng)
+    KEY idx_geo_heatmap      (ubigeo_votacion, gps_lat, gps_lng),
+    UNIQUE KEY uniq_vote_ip   (encuesta_id, ip_hash),
+    UNIQUE KEY uniq_vote_device (encuesta_id, device_token)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -140,6 +140,27 @@ if ($deviceToken === '' || !preg_match('/\A[a-f0-9]{64}\z/i', $deviceToken)) {
     $deviceToken = voteDefaultDeviceToken();
 }
 
+$duplicateStmt = $pdo->prepare(
+    'SELECT id
+     FROM votos_interactivos
+     WHERE encuesta_id = :encuesta_id
+       AND (ip_hash = :ip_hash OR device_token = :device_token)
+     ORDER BY created_at DESC
+     LIMIT 1'
+);
+$duplicateStmt->execute([
+    'encuesta_id' => $encuestaId,
+    'ip_hash' => $ipHash,
+    'device_token' => $deviceToken,
+]);
+
+if ($duplicateStmt->fetchColumn() !== false) {
+    voteRespond(409, [
+        'status' => 'error',
+        'message' => 'Ya registramos un voto para esta encuesta desde esta conexión o dispositivo.',
+    ]);
+}
+
 $recentBurstStmt = $pdo->prepare(
     'SELECT COUNT(*) FROM votos_interactivos
      WHERE encuesta_id = :encuesta_id
