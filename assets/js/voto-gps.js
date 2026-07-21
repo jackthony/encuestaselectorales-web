@@ -1,11 +1,5 @@
 /**
- * GPS vote-confirmation state machine (tasks.md 4.2). Source:
- * canvas-gemini/flujo_de_votaci_n_gps.html — behavior unchanged from the
- * prototype, including the `alert()` calls on missing-candidate-selection
- * and on GPS permission denial. That's hostile UX and BL-11 owns fixing it
- * ("Notes carried forward" in tasks.md) — BL-10 is a structural refactor
- * only, it preserves current behavior including its current defects
- * (proposal.md).
+ * GPS vote-confirmation flow for BL-14.
  *
  * Pair with partials/widget-gps.php (the modal markup) and a page-specific
  * vote form whose candidate radios are named `candidato`.
@@ -15,6 +9,7 @@
     'use strict';
 
     var startTime;
+    var latestGps = null;
 
     var overlay, vistaSoftAsk, vistaCargando, vistaSmartMatch, vistaExito;
 
@@ -55,18 +50,17 @@
     }
 
     function gpsExito(position) {
-        /*
-         * AQUÍ SUCEDE LA MAGIA EN EL BACKEND (Simulado en JS para el frontend).
-         * En un entorno real, enviarías lat/lng a PHP, PHP haría un Reverse Geocoding
-         * rápido usando la BD espacial y determinaría que el usuario está en "San Isidro".
-         * Como el voto era para "Miraflores", PHP devuelve un flag de "Mismatch".
-         */
         var lat = position.coords.latitude;
         var lng = position.coords.longitude;
         var accuracy = position.coords.accuracy;
         var interactionTime = Date.now() - startTime;
 
-        console.log('Datos para la Bóveda:', { lat: lat, lng: lng, accuracy: accuracy, interactionTime: interactionTime });
+        latestGps = {
+            lat: lat,
+            lng: lng,
+            accuracy: accuracy,
+            interactionTime: interactionTime
+        };
 
         setTimeout(function () {
             ocultarTodasLasVistas();
@@ -80,19 +74,96 @@
         cerrarModal();
     }
 
-    function finalizarVoto(distritoFinal) {
-        /*
-         * Aquí envías el JSON final a `/api/vote.php`.
-         * Si eligió 'Miraflores', guardas { is_out_of_district: true }.
-         * Si eligió 'San Isidro', cambias el `distrito_id` del voto.
-         */
+    function getVoteContext() {
+        var host = document.getElementById('voto-panel') || document.querySelector('[data-encuesta-id][data-ubigeo-votacion]');
+        if (!host) {
+            return null;
+        }
+
+        return {
+            encuestaId: host.getAttribute('data-encuesta-id') || '',
+            ubigeoVotacion: host.getAttribute('data-ubigeo-votacion') || '',
+            distritoNombre: host.getAttribute('data-distrito-nombre') || ''
+        };
+    }
+
+    function getSelectedCandidateId() {
+        var seleccionado = document.querySelector('input[name="candidato"]:checked');
+        return seleccionado ? seleccionado.value : '';
+    }
+
+    function buildBrowserFingerprint() {
+        var timezone = '';
+        try {
+            timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+        } catch (e) {}
+
+        return [
+            navigator.userAgent || '',
+            navigator.language || '',
+            window.screen ? window.screen.width + 'x' + window.screen.height : '',
+            window.screen ? window.screen.colorDepth : '',
+            navigator.hardwareConcurrency || '',
+            navigator.deviceMemory || '',
+            timezone
+        ].join('|');
+    }
+
+    function finalizarVoto() {
+        var context = getVoteContext();
+        var candidatoId = getSelectedCandidateId();
+
+        if (!context || !context.encuestaId || !context.ubigeoVotacion) {
+            alert('No encontramos la encuesta activa de este distrito.');
+            return;
+        }
+
+        if (!candidatoId) {
+            alert('Por favor, selecciona un candidato primero.');
+            return;
+        }
+
+        if (!latestGps) {
+            alert('Primero valida tu ubicación.');
+            return;
+        }
+
         ocultarTodasLasVistas();
         if (vistaCargando) vistaCargando.classList.remove('hidden');
 
-        setTimeout(function () {
+        fetch('api/votar.php?encuesta_id=' + encodeURIComponent(context.encuestaId), {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ubigeo_votacion: context.ubigeoVotacion,
+                tipo_voto: 'candidato',
+                candidato_id: parseInt(candidatoId, 10),
+                gps_lat: latestGps.lat,
+                gps_lng: latestGps.lng,
+                gps_accuracy_meters: latestGps.accuracy,
+                interaction_time_ms: latestGps.interactionTime,
+                browser_fingerprint: buildBrowserFingerprint()
+            })
+        }).then(function (response) {
+            return response.json().catch(function () {
+                return {};
+            }).then(function (data) {
+                if (!response.ok) {
+                    var message = data && data.message ? data.message : 'No pudimos registrar tu voto.';
+                    throw new Error(message);
+                }
+                return data;
+            });
+        }).then(function () {
             ocultarTodasLasVistas();
             if (vistaExito) vistaExito.classList.remove('hidden');
-        }, 1000);
+        }).catch(function (error) {
+            alert(error.message || 'No pudimos registrar tu voto.');
+            cerrarModal();
+        });
     }
 
     function cerrarModal() {

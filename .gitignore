@@ -5,6 +5,8 @@ CLAUDE.local.md
 # Configuration & Secrets
 /config/db.php
 /config/security.php
+/config/*.key
+/config/*.bin
 .env
 *.env
 /CODEX-HANDOFF.md

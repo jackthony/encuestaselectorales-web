@@ -12,31 +12,31 @@ client input. Sequence is binding.
 - [ ] 1.5 Commit all four failing tests together.
 
 ## 2. `/api/votar.php` skeleton
-- [ ] 2.1 `header('Content-Type: application/json')`; reject non-`POST` with `405`, explicit status code (draft's `die(json_encode(...))` with no status set is the bug being fixed).
-- [ ] 2.2 Reject before parsing: rate limit via `includes/trusted-ip.php` (BL-12) resolving the real client IP, hashed with the project's HMAC salt, queried against `idx_ratelimit_ip`. `429` above threshold. Threshold lives in `/config/` as a named constant, not a magic number in the endpoint — it will be tuned against real traffic.
-- [ ] 2.3 Parse `php://input` as JSON. Malformed JSON → `400`.
-- [ ] 2.4 Validate every field with `filter_var()` per `docs/engineering-standards.md` §3: `gps_lat`/`gps_lng` numeric range (`isset()`, not `empty()` — `empty()` is true for `0.0`, a real latitude), `interaction_time_ms` positive int, `candidato_id` int or absent depending on `tipo_voto`.
-- [ ] 2.5 **GPS presence check uses `isset()`, not `empty()`.** Missing → `400` before any further processing.
-- [ ] 2.6 `ubigeo_votacion` checked against `data/distrito.json`'s id list (loaded via `includes/data.php`, BL-10). Not in the list → `400`.
-- [ ] 2.7 `tipo_voto` determines whether `candidato_id` is required; a `candidato_id` cast with `(int)` on a `null` silently becomes `0` — validate explicitly instead of casting-and-hoping (the draft's bug).
+- [x] 2.1 `header('Content-Type: application/json')`; reject non-`POST` with `405`, explicit status code (draft's `die(json_encode(...))` with no status set is the bug being fixed).
+- [x] 2.2 Reject before parsing: rate limit via `includes/trusted-ip.php` (BL-12) resolving the real client IP, hashed with the project's HMAC salt, queried against `idx_ratelimit_ip`. `429` above threshold. Threshold lives in `/config/` as a named constant, not a magic number in the endpoint — it will be tuned against real traffic.
+- [x] 2.3 Parse `php://input` as JSON. Malformed JSON → `400`.
+- [x] 2.4 Validate every field with `filter_var()` per `docs/engineering-standards.md` §3: `gps_lat`/`gps_lng` numeric range (`isset()`, not `empty()` — `empty()` is true for `0.0`, a real latitude), `interaction_time_ms` positive int, `candidato_id` int or absent depending on `tipo_voto`.
+- [x] 2.5 **GPS presence check uses `isset()`, not `empty()`.** Missing → `400` before any further processing.
+- [x] 2.6 `ubigeo_votacion` checked against `data/distrito.json`'s id list (loaded via `includes/data.php`, BL-10). Not in the list → `400`.
+- [x] 2.7 `tipo_voto` determines whether `candidato_id` is required; a `candidato_id` cast with `(int)` on a `null` silently becomes `0` — validate explicitly instead of casting-and-hoping (the draft's bug).
 
 ## 3. Crypto
-- [ ] 3.1 `ip_hash = hash_hmac('sha256', $ip, $ip_salt)` — HMAC, not `hash('sha256', $ip . $salt)`. The salt is 32+ random bytes from `/config/`, not a short string.
-- [ ] 3.2 AES-256-GCM: `openssl_encrypt($ip, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag)`. Store ciphertext, `$iv` and `$tag` in the three separate columns BL-13 created.
-- [ ] 3.3 Key: 32 raw bytes read from a keyfile path defined in `/config/` (outside `public_html/`), generated once via `random_bytes(32)`, never a human-typed string.
-- [ ] 3.4 Local-dev fallback: `HTTP_CF_CONNECTING_IP` is absent locally. Fallback to `REMOTE_ADDR` **only** when an explicit `LOCAL_DEV` flag is set in `/config/` — never a bare `??`, which in production would let an attacker set `CF-Connecting-IP` directly (BL-12's origin lock is the primary defense; this is defense in depth on the application side).
+- [x] 3.1 `ip_hash = hash_hmac('sha256', $ip, $ip_salt)` — HMAC, not `hash('sha256', $ip . $salt)`. The salt is 32+ random bytes from `/config/`, not a short string.
+- [x] 3.2 AES-256-GCM: `openssl_encrypt($ip, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag)`. Store ciphertext, `$iv` and `$tag` in the three separate columns BL-13 created.
+- [x] 3.3 Key: 32 raw bytes read from a keyfile path defined in `/config/` (outside `public_html/`), generated once via `random_bytes(32)`, never a human-typed string.
+- [x] 3.4 Local-dev fallback: `HTTP_CF_CONNECTING_IP` is absent locally. Fallback to `REMOTE_ADDR` **only** when an explicit `LOCAL_DEV` flag is set in `/config/` — never a bare `??`, which in production would let an attacker set `CF-Connecting-IP` directly (BL-12's origin lock is the primary defense; this is defense in depth on the application side).
 
 ## 4. trust_score
-- [ ] 4.1 Compute from: GPS falls within the claimed district's approximate bounds; `CF-IPCountry === 'PE'` (from BL-12, `NULL`-safe until BL-12 is live); `interaction_time_ms` within a plausible band (reject sub-200ms as certainly-scripted, don't reward extremely slow either); `gps_accuracy_meters` under a sane ceiling; no burst from this `ip_hash` in the last N minutes beyond the rate-limit threshold itself.
-- [ ] 4.2 Exact weights are tunable and not spec-locked — write them as named constants in `/config/`, document the reasoning for each in a code comment, expect them to change once real data exists.
-- [ ] 4.3 Write to `trust_score` column. **Grep the entire file after writing the response-construction code**: `trust_score` must not appear in any `json_encode()` call. This is the task 1.4 test's assertion, made true.
+- [x] 4.1 Compute from: GPS falls within the claimed district's approximate bounds; `CF-IPCountry === 'PE'` (from BL-12, `NULL`-safe until BL-12 is live); `interaction_time_ms` within a plausible band (reject sub-200ms as certainly-scripted, don't reward extremely slow either); `gps_accuracy_meters` under a sane ceiling; no burst from this `ip_hash` in the last N minutes beyond the rate-limit threshold itself.
+- [x] 4.2 Exact weights are tunable and not spec-locked — write them as named constants in `/config/`, document the reasoning for each in a code comment, expect them to change once real data exists.
+- [x] 4.3 Write to `trust_score` column. **Grep the entire file after writing the response-construction code**: `trust_score` must not appear in any `json_encode()` call. This is the task 1.4 test's assertion, made true.
 
 ## 5. Vote insert
-- [ ] 5.1 Prepared statement, all fields bound — no string concatenation anywhere in this file.
-- [ ] 5.2 Cryptographic PK: `bin2hex(random_bytes(16))`.
-- [ ] 5.3 `device_token`: read from cookie if present, else generate; `setcookie(..., ['httponly' => true, 'secure' => true, 'samesite' => 'Strict'])` — the draft's `setcookie` with positional args and no `SameSite` is the bug being fixed.
-- [ ] 5.4 On unique-constraint or other `PDOException`, respond with the appropriate status (not a blanket 500 hiding a 429-worthy duplicate) and a message that doesn't leak schema detail.
-- [ ] 5.5 Success response: `{"status": "success", "message": "..."}`. No `trust_score`, no internal IDs beyond what the client needs to reference its own vote if anything.
+- [x] 5.1 Prepared statement, all fields bound — no string concatenation anywhere in this file.
+- [x] 5.2 Cryptographic PK: `bin2hex(random_bytes(16))`.
+- [x] 5.3 `device_token`: read from cookie if present, else generate; `setcookie(..., ['httponly' => true, 'secure' => true, 'samesite' => 'Strict'])` — the draft's `setcookie` with positional args and no `SameSite` is the bug being fixed.
+- [x] 5.4 On unique-constraint or other `PDOException`, respond with the appropriate status (not a blanket 500 hiding a 429-worthy duplicate) and a message that doesn't leak schema detail.
+- [x] 5.5 Success response: `{"status": "success", "message": "..."}`. No `trust_score`, no internal IDs beyond what the client needs to reference its own vote if anything.
 
 ## 6. Green
 - [ ] 6.1 All four task-1 tests pass against the real endpoint.

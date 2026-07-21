@@ -6,5 +6,15 @@
   { "id": 5, "nombre": "Ernesto Javier Mendoza De La Puente", "partidoId": 5, "cargo": "alcalde_distrital", "distritoId": "miraflores", "foto": null, "numero": null, "activo": false },
   { "id": 6, "nombre": "Sergio Manuel Meza Salazar", "partidoId": 6, "cargo": "alcalde_distrital", "distritoId": "miraflores", "foto": null, "numero": null, "activo": false },
   { "id": 7, "nombre": "Diego Sebastián Mora Olivares", "partidoId": 7, "cargo": "alcalde_distrital", "distritoId": "miraflores", "foto": null, "numero": null, "activo": false },
-  { "id": 8, "nombre": "Sitza Lita Romero Peralta", "partidoId": 8, "cargo": "alcalde_distrital", "distritoId": "miraflores", "foto": null, "numero": null, "activo": false }
+  { "id": 8, "nombre": "Sitza Lita Romero Peralta", "partidoId": 8, "cargo": "alcalde_distrital", "distritoId": "miraflores", "foto": null, "numero": null, "activo": false },
+  { "id": 9, "nombre": "Dante Jose Mandriotti Castro", "partidoId": 6, "cargo": "gobernador_regional", "distritoId": "callao", "foto": null, "numero": null, "activo": true },
+  { "id": 10, "nombre": "Cinthya Isela Camasca Zamudio", "partidoId": 9, "cargo": "gobernador_regional", "distritoId": "callao", "foto": null, "numero": null, "activo": true },
+  { "id": 11, "nombre": "Ismael Alberto Paredes Avalos", "partidoId": 5, "cargo": "gobernador_regional", "distritoId": "callao", "foto": null, "numero": null, "activo": true },
+  { "id": 12, "nombre": "Jose Remigio Sosa Dulanto Badiola", "partidoId": 10, "cargo": "gobernador_regional", "distritoId": "callao", "foto": null, "numero": null, "activo": true },
+  { "id": 13, "nombre": "Pedro Carmelo Spadaro Philipps", "partidoId": 11, "cargo": "gobernador_regional", "distritoId": "callao", "foto": null, "numero": null, "activo": true },
+  { "id": 14, "nombre": "Carlos Alberto Tejada Noriega", "partidoId": 6, "cargo": "alcalde_provincial", "distritoId": "lima-cercado", "foto": null, "numero": null, "activo": true },
+  { "id": 15, "nombre": "Ricardo Pablo Belmont Cassinelli", "partidoId": 12, "cargo": "alcalde_provincial", "distritoId": "lima-cercado", "foto": null, "numero": null, "activo": true },
+  { "id": 16, "nombre": "Elizabeth Maria del Rosario Leon Chinchay", "partidoId": 13, "cargo": "alcalde_provincial", "distritoId": "lima-cercado", "foto": null, "numero": null, "activo": true },
+  { "id": 17, "nombre": "Sandro Caller Gutierrez", "partidoId": 14, "cargo": "alcalde_provincial", "distritoId": "lima-cercado", "foto": null, "numero": null, "activo": true },
+  { "id": 18, "nombre": "Luis Isael Rubio Idrogo", "partidoId": 11, "cargo": "alcalde_provincial", "distritoId": "lima-cercado", "foto": null, "numero": null, "activo": true }
 ]

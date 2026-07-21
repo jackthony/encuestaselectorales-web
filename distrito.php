@@ -168,7 +168,7 @@ $whatsappTexto = rawurlencode($distrito
 <?php else: ?>
                     <!-- Candidate roster: candidato.json entries exist -->
                     <section class="bg-brand-card border border-brand-border rounded-2xl p-6 md:p-8">
-                        <h2 class="text-2xl font-serif font-bold text-brand-blue mb-6">Candidatos a la Alcaldía Distrital</h2>
+                        <h2 class="text-2xl font-serif font-bold text-brand-blue mb-6">Lista de candidatos</h2>
 <?php if ($esHistorico): ?>
                         <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-start gap-3">
                             <i class="fas fa-exclamation-triangle text-amber-500 mt-0.5"></i>
@@ -177,19 +177,41 @@ $whatsappTexto = rawurlencode($distrito
                             </div>
                         </div>
 <?php endif; ?>
+<?php if ($rondaActiva): ?>
+                        <form id="voto-panel" class="space-y-6" data-encuesta-id="<?= esc($rondaActiva['id']) ?>" data-ubigeo-votacion="<?= esc($distrito['id']) ?>" data-distrito-nombre="<?= esc($distrito['nombre']) ?>">
+<?php endif; ?>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<?php foreach ($candidatosDistrito as $c): $color = partyColorOrGray((int) $c['partidoId']); $partido = findPartido((int) $c['partidoId']); ?>
-                            <div class="bg-brand-surface border border-brand-border rounded-xl p-5 flex items-center gap-4">
+<?php foreach ($candidatosDistrito as $index => $c): $color = partyColorOrGray((int) $c['partidoId']); $partido = findPartido((int) $c['partidoId']); ?>
+                            <label class="bg-brand-surface border border-brand-border rounded-xl p-5 flex items-center gap-4 cursor-pointer transition-all hover:border-brand-blue/30 hover:bg-white">
+                                <?php if ($rondaActiva): ?>
+                                <input type="radio" name="candidato" value="<?= esc((string) $c['id']) ?>" class="sr-only peer" <?= $index === 0 ? 'required' : '' ?>>
+                                <?php endif; ?>
                                 <div class="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0" style="background-color: <?= esc($color) ?>;"><?= esc(iniciales($c['nombre'])) ?></div>
-                                <div>
+                                <div class="flex-1">
                                     <div class="font-bold text-brand-text leading-tight mb-1"><?= esc($c['nombre']) ?></div>
                                     <div class="text-xs font-semibold text-brand-muted uppercase tracking-wider">
                                         <?= esc($partido['nombre'] ?? '') ?><?php if ($partido): ?> <span class="text-[10px] font-normal opacity-70 ml-1">(<?= esc($partido['siglas']) ?>)</span><?php endif; ?>
                                     </div>
                                 </div>
-                            </div>
+                                <?php if ($rondaActiva): ?>
+                                <span class="ml-auto flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-gray-300 text-transparent transition-colors peer-checked:border-brand-blue peer-checked:bg-brand-blue peer-checked:text-white">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <?php endif; ?>
+                            </label>
 <?php endforeach; ?>
                         </div>
+<?php if ($rondaActiva): ?>
+                        <div class="border-t border-brand-border pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <p class="text-xs text-brand-muted leading-relaxed">
+                                Selecciona un candidato y valida tu ubicación para registrar el voto de <?= esc($distrito['nombre']) ?>.
+                            </p>
+                            <button type="button" onclick="iniciarValidacion()" class="inline-flex items-center justify-center gap-2 bg-brand-blue text-white font-bold py-3 px-6 rounded-xl hover:bg-[#0a2060] transition-colors shadow-sm">
+                                <i class="fas fa-location-arrow"></i> Registrar mi voto
+                            </button>
+                        </div>
+                        </form>
+<?php endif; ?>
 <?php if ($rondaActiva): ?>
                         <div class="mt-8 border-t border-brand-border pt-6" data-distrito="<?= esc($distrito['id']) ?>">
                             <div class="bg-[#f7fbff] border border-[#d7e7ff] rounded-2xl p-5 mb-5">

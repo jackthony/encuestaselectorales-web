@@ -6,5 +6,11 @@
   { "id": 5, "nombre": "Partido Democrático Somos Perú", "siglas": "SP", "color": "#009444", "logo": null },
   { "id": 6, "nombre": "Acción Popular", "siglas": "AP", "color": "#6EC6E8", "logo": null },
   { "id": 7, "nombre": "Partido Morado", "siglas": "PM", "color": "#6A1B9A", "logo": null },
-  { "id": 8, "nombre": "Fuerza Popular", "siglas": "FP", "color": "#FF6B00", "logo": null }
+  { "id": 8, "nombre": "Fuerza Popular", "siglas": "FP", "color": "#FF6B00", "logo": null },
+  { "id": 9, "nombre": "Frente Popular Agrícola FIA del Perú", "siglas": "FREPAP", "color": "#7CB342", "logo": null },
+  { "id": 10, "nombre": "Partido Popular Cristiano - PPC", "siglas": "PPC", "color": "#1E88E5", "logo": null },
+  { "id": 11, "nombre": "Renovación Popular Perú", "siglas": "RPP", "color": "#B22222", "logo": null },
+  { "id": 12, "nombre": "Partido Cívico Obras", "siglas": "PCO", "color": "#0F766E", "logo": null },
+  { "id": 13, "nombre": "Partido Frente de la Esperanza 2021", "siglas": "FEP", "color": "#14B8A6", "logo": null },
+  { "id": 14, "nombre": "Partido Patriótico del Perú", "siglas": "PPP", "color": "#7C3AED", "logo": null }
 ]

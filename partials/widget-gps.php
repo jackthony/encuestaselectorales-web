@@ -48,26 +48,23 @@
             <p class="text-xs text-gray-500 mt-2 text-center">Por favor, dale a "Permitir" en el aviso de tu navegador.</p>
         </div>
 
-        <!-- PASO 3: EL "SMART MATCH" (Resolución de conflicto) -->
+        <!-- PASO 3: Confirmación final -->
         <div id="paso-smartmatch" class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl hidden fade-in">
             <div class="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center text-amber-500 text-xl mb-4 mx-auto border border-amber-100">
                 <i class="fas fa-exclamation-triangle"></i>
             </div>
-            <h4 class="text-center font-serif text-xl font-bold text-brand-blue mb-4">Confirmación de Distrito</h4>
+            <h4 class="text-center font-serif text-xl font-bold text-brand-blue mb-4">Confirma tu voto</h4>
 
             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-5 text-sm text-gray-700 leading-relaxed text-center">
-                Te hemos ubicado físicamente en <strong class="text-brand-blue">San Isidro</strong>.<br>
-                Sin embargo, estás a punto de votar para la alcaldía de <strong class="text-brand-blue">Miraflores</strong>.
-                <br><br>
-                ¿Es esto correcto?
+                Ya validamos tu ubicación. Pulsa el botón para registrar el voto seleccionado.
             </div>
 
             <div class="space-y-3">
-                <button onclick="finalizarVoto('Miraflores')" class="w-full bg-brand-blue text-white font-bold py-3 rounded-xl hover:bg-[#0a2060] transition-colors shadow-sm text-sm">
-                    Sí, mi DNI y voto son de Miraflores
+                <button onclick="finalizarVoto()" class="w-full bg-brand-blue text-white font-bold py-3 rounded-xl hover:bg-[#0a2060] transition-colors shadow-sm text-sm">
+                    Registrar mi voto
                 </button>
-                <button onclick="finalizarVoto('San Isidro')" class="w-full bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors text-sm">
-                    No, cambiar mi voto a San Isidro
+                <button onclick="cerrarModal()" class="w-full bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors text-sm">
+                    Cancelar
                 </button>
             </div>
         </div>
