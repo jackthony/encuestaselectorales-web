@@ -16,6 +16,7 @@ This project is intentionally PHP-first and hosted on Hostinger. The goal of thi
 
 - `docs/backlog.md`
 - `docs/engineering-standards.md`
+- `docs/ops/`
 - `openspec/`
 - `.claude/`
 - `.agents/`
@@ -34,5 +35,6 @@ This project is intentionally PHP-first and hosted on Hostinger. The goal of thi
 
 - `docs/reference/hostinger-api.openapi.json` is a vendor API export kept only as reference.
 - `docs/reference/canvas-gemini/` keeps the HTML prototypes the refactor checks compare against.
+- `docs/ops/CLAUDE.local.md` and `docs/ops/CODEX-HANDOFF.md` are session notes, not runtime files.
 - Public pages stay at the repo root for now to avoid changing production URLs during cleanup.
 - If more cleanup is needed, do it incrementally and keep the root route files stable.
