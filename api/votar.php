@@ -147,7 +147,11 @@ $duplicateStmt = $pdo->prepare(
     'SELECT id
      FROM votos_interactivos
      WHERE encuesta_id = :encuesta_id
-       AND (ip_hash = :ip_hash OR device_token = :device_token)
+       AND (
+            ip_hash = :ip_hash
+            OR device_token = :device_token
+            OR browser_fingerprint = :browser_fingerprint
+       )
      ORDER BY created_at DESC
      LIMIT 1'
 );
@@ -155,6 +159,7 @@ $duplicateStmt->execute([
     'encuesta_id' => $encuestaId,
     'ip_hash' => $ipHash,
     'device_token' => $deviceToken,
+    'browser_fingerprint' => $browserFingerprint,
 ]);
 
 if ($duplicateStmt->fetchColumn() !== false) {

@@ -105,8 +105,8 @@
         } catch (e) {}
 
         return [
-            navigator.userAgent || '',
-            navigator.language || '',
+            navigator.platform || '',
+            navigator.maxTouchPoints || '',
             window.screen ? window.screen.width + 'x' + window.screen.height : '',
             window.screen ? window.screen.colorDepth : '',
             navigator.hardwareConcurrency || '',

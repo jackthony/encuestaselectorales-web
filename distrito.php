@@ -291,7 +291,7 @@ $whatsappTexto = rawurlencode($distrito
 
     <script src="assets/js/app.js"></script>
 <?php if ($distrito && $tieneCandidatos && $rondaActiva): ?>
-    <script src="assets/js/voto-gps.js"></script>
+    <script src="assets/js/voto-gps.js?v=<?= filemtime(__DIR__ . '/assets/js/voto-gps.js') ?>"></script>
 <?php endif; ?>
 </body>
 </html>

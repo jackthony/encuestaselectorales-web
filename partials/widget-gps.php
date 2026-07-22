@@ -6,10 +6,8 @@
  * success) — markup only, verbatim. JS state machine lives in
  * assets/js/voto-gps.js (tasks.md 3.3/4.2).
  *
- * Behavior is intentionally unchanged from the prototype, including the
- * `alert()` calls on missing-candidate-selection and on GPS permission
- * denial — BL-11 owns UX fixes for that, not this structural refactor
- * (tasks.md "Notes carried forward").
+ * The modal now routes validation and permission errors through the inline
+ * error step instead of browser alerts so the flow stays usable on mobile.
  *
  * Include this partial on any page that offers a vote action (currently
  * sondeos.php and distrito.php).
