@@ -221,9 +221,6 @@ $whatsappTexto = rawurlencode($distrito
                                     Ronda <?= esc((string) $rondaActiva['numero_ronda']) ?> disponible hasta <?= esc($rondaActiva['fecha_cierre']) ?>.
                                 </p>
                             </div>
-                            <p class="text-sm text-brand-muted leading-relaxed">
-                                El flujo de voto se habilita con BL-14; esta vista ya muestra la ronda real que está activa para <?= esc($distrito['nombre']) ?>.
-                            </p>
                         </div>
 <?php endif; ?>
                     </section>

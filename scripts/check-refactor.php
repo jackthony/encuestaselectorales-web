@@ -39,7 +39,7 @@
 error_reporting(E_ALL & ~E_DEPRECATED);
 
 $root       = dirname(__DIR__);
-$canvasDir  = $root . '/canvas-gemini';
+$canvasDir  = $root . '/docs/reference/canvas-gemini';
 $canvasRef  = '2a6e18f'; // commit the canvas prototypes are snapshotted at (task 8.2)
 
 /**
