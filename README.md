@@ -3,7 +3,7 @@
 Plataforma de inteligencia electoral, agregación de encuestas y cartografía política para las Elecciones Municipales y Regionales 2026 en Perú.
 
 ## Repository Map
-- `docs/repo-map.md`: quick guide to runtime code, reference material, and operational docs.
+- `docs/repo-map.md`: current runtime vs. migration scaffold vs. reference material.
 - `docs/backlog.md`: execution order for the active work.
 - `docs/engineering-standards.md`: architecture and API rules.
 

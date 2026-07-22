@@ -1,8 +1,10 @@
 # Repo Map
 
-This project is intentionally PHP-first and hosted on Hostinger. The goal of this map is to separate runtime code from reference material so the repo stays navigable without a framework rewrite.
+This repository is in transition from a PHP legacy app to a Laravel scaffold.
+The map below separates what is production runtime today from what is migration
+scaffold or reference material.
 
-## Runtime
+## Runtime today
 
 - `index.php`, `sondeos.php`, `distrito.php`, `encuesta.php`, `candidato.php`, `encuestadoras.php`, `metodologia.php`, `quienes-somos.php`
 - `api/`
@@ -12,6 +14,10 @@ This project is intentionally PHP-first and hosted on Hostinger. The goal of thi
 - `data/`
 - `db/migrations/`
 
+## Migration scaffold
+
+- `laravel-app/`
+- `laravel-app/public/api/votar.php` keeps the current vote endpoint alive while Laravel is introduced.
 ## Operational docs
 
 - `docs/backlog.md`
@@ -24,7 +30,7 @@ This project is intentionally PHP-first and hosted on Hostinger. The goal of thi
 ## Reference material
 
 - `docs/reference/`
-- `docs/reference/canvas-gemini/`
+- `canvas-gemini/`
 - `lista-candidatos/`
 - `fuentes-correcciones.html`
 - `politica-editorial.html`
@@ -36,5 +42,5 @@ This project is intentionally PHP-first and hosted on Hostinger. The goal of thi
 - `docs/reference/hostinger-api.openapi.json` is a vendor API export kept only as reference.
 - `docs/reference/canvas-gemini/` keeps the HTML prototypes the refactor checks compare against.
 - `docs/ops/CLAUDE.local.md` and `docs/ops/CODEX-HANDOFF.md` are session notes, not runtime files.
-- Public pages stay at the repo root for now to avoid changing production URLs during cleanup.
-- If more cleanup is needed, do it incrementally and keep the root route files stable.
+- Public pages stay at the repo root while the bridge is validated and cleanup proceeds incrementally.
+- The Laravel scaffold is the migration path, not a rewrite of the production URLs yet.
