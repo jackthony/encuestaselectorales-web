@@ -6,8 +6,7 @@ scaffold or reference material.
 
 ## Runtime today
 
-- `index.php`, `sondeos.php`, `distrito.php`, `encuesta.php`, `candidato.php`, `encuestadoras.php`, `metodologia.php`, `quienes-somos.php`
-- `territorio.php`
+- `index.php`
 - `api/`
 - `assets/`
 - `includes/`
@@ -46,6 +45,6 @@ scaffold or reference material.
 - `docs/reference/hostinger-api.openapi.json` is a vendor API export kept only as reference.
 - `docs/reference/canvas-gemini/` keeps the HTML prototypes the refactor checks compare against.
 - `docs/ops/CLAUDE.local.md` and `docs/ops/CODEX-HANDOFF.md` are session notes, not runtime files.
-- Public pages stay at the repo root while the bridge is validated and cleanup proceeds incrementally.
-- The Laravel scaffold is the migration path, not a rewrite of the production URLs yet.
+- Public-facing pages now resolve through the Laravel scaffold; the legacy root has been reduced to the bridge entrypoint.
+- The Laravel scaffold is the migration path and currently owns the public routes.
 - The normalized MySQL catalog lives in `db/migrations/003_create_catalogo_normalizado.sql`.

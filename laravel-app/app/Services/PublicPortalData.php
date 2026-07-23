@@ -230,6 +230,7 @@ final class PublicPortalData
             'activeRound' => $activeRound,
             'hasCandidates' => $hasCandidates,
             'voteEnabled' => $voteEnabled,
+            'whatsappNumero' => '51971388435',
             'pageTitle' => $district
                 ? (($district['nombre'] ?? '') . ' — Distrito | EncuestasElectorales.pe')
                 : 'Distrito no encontrado | EncuestasElectorales.pe',
