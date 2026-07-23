@@ -19,6 +19,17 @@ final class EloquentTerritoryCatalog implements TerritoryCatalog
         return $territory ? $this->toData($territory) : null;
     }
 
+    public function findPublishedByScopeAndSlug(string $scopeType, string $slug): ?TerritoryData
+    {
+        $territory = $this->published()
+            ->with('parent.parent')
+            ->where('scope_type', $scopeType)
+            ->where('slug', $slug)
+            ->first();
+
+        return $territory ? $this->toData($territory) : null;
+    }
+
     public function searchPublished(string $query, int $limit = 20): array
     {
         $query = trim($query);
