@@ -34,7 +34,10 @@ final class DatabaseSchemaTest extends TestCase
             ->first(static fn (array $index): bool => (bool) ($index['primary'] ?? false));
 
         $this->assertNotNull($idColumn);
-        $this->assertStringStartsWith('varchar', strtolower((string) $idColumn['type']));
+        $this->assertMatchesRegularExpression(
+            '/^(?:char|varchar)(?:\(26\))?$/',
+            strtolower((string) $idColumn['type']),
+        );
         $this->assertNotNull($primaryIndex);
         $this->assertContains('id', $primaryIndex['columns']);
     }
