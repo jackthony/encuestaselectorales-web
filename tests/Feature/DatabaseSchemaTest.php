@@ -28,11 +28,15 @@ final class DatabaseSchemaTest extends TestCase
             $this->assertTrue(Schema::hasColumn($table, 'id'), "{$table} must have an opaque id.");
         }
 
-        $idColumn = collect(DB::select("PRAGMA table_info('electoral_territories')"))
+        $idColumn = collect(Schema::getColumns('electoral_territories'))
             ->firstWhere('name', 'id');
+        $primaryIndex = collect(Schema::getIndexes('electoral_territories'))
+            ->first(static fn (array $index): bool => (bool) ($index['primary'] ?? false));
 
-        $this->assertSame('varchar', strtolower((string) $idColumn->type));
-        $this->assertSame(1, (int) $idColumn->pk);
+        $this->assertNotNull($idColumn);
+        $this->assertStringStartsWith('varchar', strtolower((string) $idColumn['type']));
+        $this->assertNotNull($primaryIndex);
+        $this->assertContains('id', $primaryIndex['columns']);
     }
 
     public function test_candidacy_rejects_missing_catalog_relationships(): void

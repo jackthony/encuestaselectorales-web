@@ -205,7 +205,8 @@ class BackfillLegacyData extends Command
                 };
 
                 if ($dryRun) {
-                    DB::transaction($runBatch);
+                    // The command-level transaction owns the dry-run rollback.
+                    $runBatch();
 
                     return;
                 }
