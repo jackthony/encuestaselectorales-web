@@ -25,7 +25,7 @@ The public site has outgrown the legacy PHP root: survey pages, candidate render
 
 ## Impact
 
-- Laravel application structure under `laravel-app/` becomes the production source of truth.
+- The Laravel application at the repository root becomes the production source of truth.
 - Public PHP pages in the repo root are reduced or removed after cutover.
 - Existing seed/import scripts and normalized catalog data continue to feed the public portal.
 - Image storage on Hostinger remains part of the delivery model for candidate photos, party logos, and social share assets.

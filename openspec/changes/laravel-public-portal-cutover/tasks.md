@@ -28,7 +28,7 @@
 
 ## 5. Cutover, cleanup, and release
 
-- [ ] 5.1 Point Hostinger production to `laravel-app/public` and verify the public routes load correctly in the live environment.
+- [ ] 5.1 Route Hostinger production to the root Laravel application's `public/` entrypoint and verify the public routes load correctly.
 - [ ] 5.2 Remove or archive the duplicate legacy root pages and bridge files once Laravel reaches parity for the public portal.
 - [x] 5.3 Update CI checks to cover Laravel public rendering, mobile vote flow, and the no-fictitious-production-data rule.
 - [ ] 5.4 Run final smoke tests on desktop and mobile, then publish the production release.

@@ -24,14 +24,21 @@ if ($envConfig !== '' && is_file($envConfig)) {
     $configPath = $prodConfig;
 }
 
-$config = [
-    'dsn' => 'mysql:host=srv469.hstgr.io;dbname=u185878096_encuestas;charset=utf8mb4',
-    'user' => 'u185878096_encuestas_app',
-    'pass' => 'Codexito1234.',
+$config = $configPath !== null ? require $configPath : [
+    'dsn' => getenv('DB_DSN') ?: '',
+    'user' => getenv('DB_USERNAME') ?: '',
+    'pass' => getenv('DB_PASSWORD') ?: '',
 ];
 
-if ($configPath !== null) {
-    $config = array_merge($config, require $configPath);
+if (!is_array($config)
+    || ($config['dsn'] ?? '') === ''
+    || ($config['user'] ?? '') === ''
+    || !array_key_exists('pass', $config)
+) {
+    throw new RuntimeException(
+        'Database configuration is missing. Provide config/db.php outside the web root '
+        . 'or set DB_DSN, DB_USERNAME, and DB_PASSWORD.'
+    );
 }
 
 $pdo = new PDO(

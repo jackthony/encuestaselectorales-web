@@ -1,26 +1,25 @@
 # Repo Map
 
-This repository is in transition from a PHP legacy app to a Laravel scaffold.
-The map below separates what is production runtime today from what is migration
-scaffold or reference material.
+Laravel is the application source of truth. The former PHP portal remains only as
+temporary rollback material until the production observation gate is complete.
 
-## Runtime today
+## Laravel runtime
 
-- `index.php`
-- `api/`
-- `assets/`
-- `includes/`
-- `partials/`
-- `data/`
-- `db/migrations/`
-- `db/seeds/`
-- `scripts/import-normalized-catalog.php`
+- `app/`
+- `bootstrap/`
+- `config/`
+- `database/`
+- `public/`
+- `resources/`
+- `routes/`
+- `storage/`
+- `tests/`
+- `artisan`
+- `composer.json`
+- `composer.lock`
 
-## Migration scaffold
-
-- `laravel-app/`
-- `laravel-app/public/api/votar.php` keeps the current vote endpoint alive while Laravel is introduced.
-- Persistent scaffold path: `C:\Users\jaaguilar\Documents\neuracode\encuestaselectorales-web\laravel-app`
+`public/api/votar.php` is a compatibility front controller that boots Laravel. It does
+not execute the former root vote endpoint.
 ## Operational docs
 
 - `docs/backlog.md`
@@ -45,6 +44,8 @@ scaffold or reference material.
 - `docs/reference/hostinger-api.openapi.json` is a vendor API export kept only as reference.
 - `docs/reference/canvas-gemini/` keeps the HTML prototypes the refactor checks compare against.
 - `docs/ops/CLAUDE.local.md` and `docs/ops/CODEX-HANDOFF.md` are session notes, not runtime files.
-- Public-facing pages now resolve through the Laravel scaffold; the legacy root has been reduced to the bridge entrypoint.
-- The Laravel scaffold is the migration path and currently owns the public routes.
-- The normalized MySQL catalog lives in `db/migrations/003_create_catalogo_normalizado.sql`.
+- Public-facing pages and API endpoints resolve through Laravel.
+- The normalized schema lives in `database/migrations/`.
+- Approved import data lives in `data/import/`.
+- Root `api/`, `assets/`, `db/`, `includes/`, and `partials/` are rollback-only until
+  production verification allows their deletion.

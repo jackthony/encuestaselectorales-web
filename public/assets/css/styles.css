@@ -1,0 +1,258 @@
+/* Shared design tokens + base rules — one file until it's demonstrably too large (docs/engineering-standards.md §0) */
+/* Values sourced from the harness `dataviz` skill's validated reference palette (BL-04) — not invented hex. */
+:root {
+  --bg: #f9f9f7;         /* page plane */
+  --surface: #fcfcfb;    /* card/surface */
+  --text: #0b0b0b;       /* primary ink */
+  --muted: #52514e;      /* secondary ink (body text) */
+  --muted-2: #898781;    /* axis/label-weight muted, reserved for lower-emphasis text */
+  --accent: #2a78d6;       /* == dataviz reference categorical slot 1 (blue), shared with future charts (BL-13). Non-text use only (borders/tints, 3:1 bar) — fails 4.5:1 as flat text (4.19:1, verified). */
+  --accent-text: #256abf;  /* same hue, ramp step 500 — for accent used AS text/bullets (5.12:1, passes AA) */
+  --border: rgba(11, 11, 11, 0.10);
+
+  /* Status colors — reserved, not yet used on any page (BL-14/BL-24 will draw from these) */
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+
+  --font-heading: ui-serif, Georgia, "Times New Roman", serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.6;
+}
+
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+h1 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(24px, 5vw, 34px);
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+h2 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(18px, 3.5vw, 22px);
+  margin: 32px 0 12px;
+}
+
+p {
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+a {
+  color: var(--accent-text);
+}
+
+ul {
+  list-style: none;
+  margin-bottom: 16px;
+}
+
+li {
+  padding: 10px 0 10px 24px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+li::before {
+  content: "•";
+  position: absolute;
+  left: 4px;
+  color: var(--accent-text);
+}
+
+.tag {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+  border: 1px solid rgba(42, 120, 214, 0.35);
+  background: rgba(42, 120, 214, 0.08);
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+header.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.site-header .header-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.site-header .site-name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-text);
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.nav-dropdown summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav-dropdown[open] summary {
+  border-color: var(--accent);
+}
+
+.nav-dropdown ul {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 10;
+  max-height: 320px;
+  overflow-y: auto;
+  width: 240px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(11, 11, 11, 0.12);
+  margin-bottom: 0;
+  padding: 8px 0;
+}
+
+.nav-dropdown li {
+  padding: 0;
+  border-bottom: none;
+}
+
+.nav-dropdown li::before {
+  content: none;
+}
+
+.nav-dropdown li a {
+  display: block;
+  padding: 8px 16px;
+  font-size: 14px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.nav-dropdown li a:hover,
+.nav-dropdown li a:focus {
+  background: var(--bg);
+  color: var(--accent-text);
+}
+
+.candidatos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.candidato-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  background: var(--surface);
+}
+
+.candidato-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--muted-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.candidato-nombre {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.candidato-partido {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.partido-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.candidato-numero {
+  font-size: 13px;
+  color: var(--muted-2);
+}
+
+@media (min-width: 768px) {
+  main {
+    padding: 48px 24px;
+  }
+}

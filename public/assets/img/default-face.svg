@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Foto por defecto de candidato">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5f7fb"/>
+      <stop offset="100%" stop-color="#e5ebf4"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="128" fill="url(#bg)"/>
+  <circle cx="128" cy="106" r="46" fill="#cbd5e1"/>
+  <path d="M64 208c10-34 38-54 64-54s54 20 64 54" fill="#cbd5e1"/>
+  <circle cx="112" cy="98" r="6" fill="#94a3b8"/>
+  <circle cx="144" cy="98" r="6" fill="#94a3b8"/>
+  <path d="M108 120c7 7 33 7 40 0" stroke="#94a3b8" stroke-width="8" stroke-linecap="round" fill="none"/>
+</svg>

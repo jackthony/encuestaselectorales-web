@@ -1,0 +1,207 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Application\Data\RegisterVoteData;
+use App\Application\Vote\RegisterVote;
+use App\Domain\Vote\Exceptions\DuplicateVote;
+use App\Domain\Vote\Exceptions\GeographicValidationFailed;
+use App\Domain\Vote\Exceptions\VoteUnavailable;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\LegacyVoteRequest;
+use App\Http\Requests\RegisterVoteRequest;
+use App\Infrastructure\Security\TrustedClientIp;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
+use Symfony\Component\HttpFoundation\Cookie;
+
+final class VoteController extends Controller
+{
+    public function __construct(
+        private readonly RegisterVote $registerVote,
+        private readonly TrustedClientIp $clientIp,
+    ) {}
+
+    public function store(RegisterVoteRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+        $deviceToken = $this->deviceToken($request, $validated['device_token'] ?? null);
+        $clientIp = $this->resolveClientIp($request);
+        if ($clientIp instanceof JsonResponse) {
+            return $clientIp;
+        }
+
+        try {
+            $vote = $this->registerVote->execute(new RegisterVoteData(
+                surveyRoundId: $validated['survey_round_id'],
+                surveyOptionId: $validated['survey_option_id'],
+                latitude: (float) $validated['gps_latitude'],
+                longitude: (float) $validated['gps_longitude'],
+                accuracyMeters: (float) $validated['gps_accuracy_meters'],
+                interactionTimeMs: (int) $validated['interaction_time_ms'],
+                deviceToken: $deviceToken,
+                browserFingerprint: $validated['browser_fingerprint'],
+                clientIp: $clientIp,
+            ));
+        } catch (DuplicateVote) {
+            return $this->error(
+                409,
+                'duplicate_vote',
+                'Ya registramos un voto para esta encuesta desde esta conexión o dispositivo.',
+            );
+        } catch (VoteUnavailable $exception) {
+            return $this->error(
+                409,
+                $exception->getMessage(),
+                'Esta encuesta no está disponible para votar.',
+            );
+        } catch (GeographicValidationFailed) {
+            return $this->error(
+                422,
+                'geographic_validation_failed',
+                'No pudimos validar tu ubicación dentro del ámbito de esta encuesta.',
+            );
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'code' => 'vote_registered',
+            'message' => 'Voto registrado correctamente.',
+            'data' => ['vote_id' => (string) $vote->getKey()],
+        ], 201)->cookie($this->deviceCookie($deviceToken));
+    }
+
+    public function legacy(LegacyVoteRequest $request): JsonResponse
+    {
+        $legacyRoundId = (string) $request->query('encuesta_id', '');
+        $validated = $request->validated();
+        $roundId = $this->mappedId('encuestas', $legacyRoundId, 'survey_rounds');
+        $candidateId = $this->mappedId(
+            'candidates',
+            (string) $validated['candidato_id'],
+            'electoral_candidates',
+        );
+        $optionId = $candidateId === null || $roundId === null
+            ? null
+            : DB::table('survey_options')
+                ->join('electoral_candidacies', 'electoral_candidacies.id', '=', 'survey_options.candidacy_id')
+                ->where('survey_options.survey_round_id', $roundId)
+                ->where('electoral_candidacies.candidate_id', $candidateId)
+                ->where('survey_options.status', 'eligible')
+                ->value('survey_options.id');
+
+        if ($roundId === null || ! is_string($optionId)) {
+            return $this->error(
+                409,
+                'legacy_mapping_unavailable',
+                'La encuesta todavía no está disponible en la nueva plataforma.',
+            );
+        }
+
+        $deviceToken = $this->deviceToken($request, $validated['device_token'] ?? null);
+        $clientIp = $this->resolveClientIp($request);
+        if ($clientIp instanceof JsonResponse) {
+            return $clientIp;
+        }
+
+        try {
+            $vote = $this->registerVote->execute(new RegisterVoteData(
+                surveyRoundId: $roundId,
+                surveyOptionId: $optionId,
+                latitude: (float) $validated['gps_lat'],
+                longitude: (float) $validated['gps_lng'],
+                accuracyMeters: (float) $validated['gps_accuracy_meters'],
+                interactionTimeMs: (int) $validated['interaction_time_ms'],
+                deviceToken: $deviceToken,
+                browserFingerprint: $validated['browser_fingerprint'],
+                clientIp: $clientIp,
+            ));
+        } catch (DuplicateVote) {
+            return $this->error(
+                409,
+                'duplicate_vote',
+                'Ya registramos un voto para esta encuesta desde esta conexión o dispositivo.',
+            );
+        } catch (VoteUnavailable) {
+            return $this->error(409, 'round_unavailable', 'Esta encuesta no está disponible para votar.');
+        } catch (GeographicValidationFailed) {
+            return $this->error(
+                422,
+                'geographic_validation_failed',
+                'No pudimos validar tu ubicación dentro del ámbito de esta encuesta.',
+            );
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'code' => 'vote_registered',
+            'message' => 'Voto registrado correctamente.',
+            'vote_id' => (string) $vote->getKey(),
+            'device_token' => $deviceToken,
+        ], 201)->cookie($this->deviceCookie($deviceToken));
+    }
+
+    private function mappedId(string $sourceTable, string $legacyId, string $targetTable): ?string
+    {
+        if ($legacyId === '' || ! DB::getSchemaBuilder()->hasTable('legacy_mappings')) {
+            return null;
+        }
+
+        $targetId = DB::table('legacy_mappings')
+            ->where('source_table', $sourceTable)
+            ->where('legacy_id', $legacyId)
+            ->where('target_table', $targetTable)
+            ->value('target_id');
+
+        return is_string($targetId) ? $targetId : null;
+    }
+
+    private function deviceToken(Request $request, mixed $submitted): string
+    {
+        $token = is_string($submitted) ? trim($submitted) : '';
+        if ($token === '') {
+            $token = trim((string) $request->cookie('encuestas_device', ''));
+        }
+
+        return strlen($token) >= 32 ? $token : bin2hex(random_bytes(32));
+    }
+
+    private function resolveClientIp(Request $request): string|JsonResponse
+    {
+        try {
+            return $this->clientIp->resolve($request);
+        } catch (RuntimeException) {
+            return $this->error(
+                503,
+                'network_validation_failed',
+                'No pudimos validar la conexión de forma segura. Inténtalo nuevamente.',
+            );
+        }
+    }
+
+    private function deviceCookie(string $token): Cookie
+    {
+        return cookie(
+            'encuestas_device',
+            $token,
+            60 * 24 * 365,
+            '/',
+            null,
+            true,
+            true,
+            false,
+            'Lax',
+        );
+    }
+
+    private function error(int $status, string $code, string $message): JsonResponse
+    {
+        return response()->json([
+            'status' => 'error',
+            'code' => $code,
+            'message' => $message,
+        ], $status);
+    }
+}

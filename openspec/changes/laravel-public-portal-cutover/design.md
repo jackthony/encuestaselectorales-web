@@ -1,6 +1,6 @@
 ## Context
 
-The repository already contains two parallel worlds: a legacy PHP portal in the repo root and a Laravel 12 scaffold in `laravel-app/` that currently acts mostly as a bridge. The public product still needs to show the real survey feed, territorial survey pages, candidate lists, party branding, empty states when data is missing, and social sharing surfaces, while keeping the anti-abuse and secret-isolation rules already established in prior changes.
+The repository originally contained two parallel worlds: a legacy PHP portal in the repo root and a Laravel 12 scaffold that acted mostly as a bridge. Laravel has now been promoted to the repository root and owns the public product.
 
 Hostinger can host the PHP stack and has enough storage for media, so the migration does not need an external platform change. The main problem is architectural: the same public experience is still split across duplicate root pages, helper files, and bridge routes, which makes growth and cleanup harder every week.
 
@@ -80,7 +80,7 @@ Alternatives considered:
 3. Add shared candidate/party rendering, empty states, and share UI in reusable partials/components.
 4. Generate or cache share images and social metadata for the public pages.
 5. Validate route-by-route parity against the legacy pages.
-6. Point Hostinger to `laravel-app/public` as the production entrypoint.
+6. Route Hostinger traffic to the root Laravel application's `public/` entrypoint.
 7. Archive or delete the legacy root pages and duplicate bridge paths once the framework is fully serving production.
 
 Rollback strategy:
