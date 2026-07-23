@@ -36,8 +36,16 @@ network identifiers, encryption material, and voter location evidence.
 
 - The reproducible release artifact for commit `ba1d57934c54` was built with
   production Composer dependencies and stored outside the repository.
-- Push the verified release commit and complete Hostinger Git Deploy.
-- Confirm the external production `.env` is available above `public_html`.
-- Verify `/api/health`, public pages, sharing, mobile GPS, first vote persistence,
-  and duplicate rejection on the deployed Laravel runtime.
+- Production now runs through the Laravel front controller and keeps its `.env`
+  under the hosting account home, outside the GitDeploy tree and `public_html`.
+- `/`, `/api/health`, `/api/survey-rounds`, both initial territorial rounds, and
+  the legacy-compatible `sondeos.php` URL returned HTTP 200 after cache clearing.
+- The read API returned the Callao regional and Lima provincial rounds with five
+  eligible candidate/party options each, including media fallback metadata.
+- A controlled production GPS vote returned HTTP 201, persisted as accepted with
+  an `inside` geographic result and 15-meter accuracy, and an identical retry
+  returned HTTP 409 `duplicate_vote`.
+- The final GitHub Actions run passed Laravel tests on SQLite and MariaDB.
+- All temporary Hostinger cron jobs and encrypted deployment transport files were
+  removed after verification.
 - Rotate credentials after the production observation gate.
