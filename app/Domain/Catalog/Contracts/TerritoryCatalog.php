@@ -9,7 +9,4 @@ interface TerritoryCatalog
     public function findPublished(string $id): ?TerritoryData;
 
     public function findPublishedByScopeAndSlug(string $scopeType, string $slug): ?TerritoryData;
-
-    /** @return array<int, TerritoryData> */
-    public function searchPublished(string $query, int $limit = 20): array;
 }

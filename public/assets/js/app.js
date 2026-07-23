@@ -85,86 +85,10 @@
         targets.forEach(function (el) { observer.observe(el); });
     }
 
-    /**
-     * National territory search backed by the normalized Laravel catalog.
-     */
-    function setupDistrictSearch() {
-        var input = document.getElementById('buscador-hero');
-        var button = document.getElementById('buscador-hero-btn');
-        var resultsEl = document.getElementById('buscador-hero-resultados');
-        if (!input || !resultsEl) return;
-
-        var requestController = null;
-        var debounceTimer = null;
-
-        function esc(s) {
-            return String(s).replace(/[&<>"']/g, function (c) {
-                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-            });
-        }
-
-        function search() {
-            var term = input.value.trim();
-            resultsEl.classList.remove('hidden');
-            if (term.length < 2) {
-                resultsEl.innerHTML = '';
-                resultsEl.classList.add('hidden');
-                return;
-            }
-
-            if (requestController) requestController.abort();
-            requestController = new AbortController();
-            resultsEl.innerHTML = '<div class="p-4 text-sm text-gray-500">Buscando ubicación...</div>';
-
-            fetch('/api/territories/search?q=' + encodeURIComponent(term), {
-                headers: { 'Accept': 'application/json' },
-                signal: requestController.signal
-            }).then(function (response) {
-                if (!response.ok) throw new Error('search_failed');
-                return response.json();
-            }).then(function (payload) {
-                var territories = payload && Array.isArray(payload.data) ? payload.data : [];
-                if (!territories.length) {
-                    resultsEl.innerHTML = '<div class="p-4 text-sm text-gray-500">No encontramos esa ubicación.</div>';
-                    return;
-                }
-
-                resultsEl.innerHTML = territories.map(function (territory) {
-                    var parents = (territory.ancestors || []).map(function (ancestor) {
-                        return ancestor.name;
-                    }).join(' · ');
-                    var label = territory.scope_type === 'region'
-                        ? 'Región'
-                        : (territory.scope_type === 'province' ? 'Provincia' : 'Distrito');
-                    var context = parents ? '<span class="block text-xs text-gray-500 mt-0.5">' + esc(parents) + '</span>' : '';
-                    var href = '/encuestas/' + encodeURIComponent(territory.scope_type) + '/' + encodeURIComponent(territory.slug);
-
-                    return '<a href="' + href + '" class="block px-4 py-3 border-b border-gray-100 last:border-0 hover:bg-brand-surface text-sm text-brand-blue font-semibold">'
-                        + '<span class="text-[10px] uppercase tracking-widest text-brand-muted">' + esc(label) + '</span>'
-                        + '<span class="block">' + esc(territory.name) + '</span>'
-                        + context
-                        + '</a>';
-                }).join('');
-            }).catch(function (error) {
-                if (error.name === 'AbortError') return;
-                resultsEl.innerHTML = '<div class="p-4 text-sm text-red-600">No pudimos consultar las ubicaciones.</div>';
-            });
-        }
-
-        input.addEventListener('input', function () {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(search, 180);
-        });
-        if (button) {
-            button.addEventListener('click', search);
-        }
-    }
-
     document.addEventListener('DOMContentLoaded', function () {
         updateClock();
         setInterval(updateClock, 1000);
         setupMobileMenu();
         setupScrollAnimations();
-        setupDistrictSearch();
     });
 })();

@@ -30,29 +30,6 @@ final class EloquentTerritoryCatalog implements TerritoryCatalog
         return $territory ? $this->toData($territory) : null;
     }
 
-    public function searchPublished(string $query, int $limit = 20): array
-    {
-        $query = trim($query);
-        if ($query === '') {
-            return [];
-        }
-
-        return $this->published()
-            ->with('parent.parent')
-            ->where(function (Builder $builder) use ($query): void {
-                $builder
-                    ->where('name', 'like', "%{$query}%")
-                    ->orWhere('canonical_name', 'like', "%{$query}%")
-                    ->orWhere('official_code', 'like', "{$query}%");
-            })
-            ->orderByRaw("CASE scope_type WHEN 'region' THEN 1 WHEN 'province' THEN 2 ELSE 3 END")
-            ->orderBy('name')
-            ->limit(max(1, min($limit, 50)))
-            ->get()
-            ->map(fn (Territory $territory): TerritoryData => $this->toData($territory))
-            ->all();
-    }
-
     public function toData(Territory $territory): TerritoryData
     {
         $ancestors = [];
