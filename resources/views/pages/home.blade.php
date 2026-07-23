@@ -76,7 +76,7 @@
                     <div>
                         <div class="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-1">Controles</div>
                         <p class="text-sm text-brand-muted">
-                            <span class="font-semibold text-brand-blue">Ordena y filtra por ronda</span> o minimiza la lista cuando ya elegiste una votación.
+                            <span class="font-semibold text-brand-blue">Ordena, busca y filtra por ronda</span> o minimiza la lista cuando ya elegiste una votación.
                         </p>
                     </div>
                     <button type="button" id="home-voting-toggle" class="rounded-xl border border-brand-border bg-white px-4 py-3 text-sm font-bold text-brand-blue hover:border-brand-blue/30 transition-colors">
@@ -85,7 +85,19 @@
                 </div>
 
                 <div id="home-voting-body" class="{{ $hasExplicitSelection ? 'hidden' : '' }}">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mt-4">
+                        <label class="block md:col-span-6">
+                            <span class="block text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-2">Buscar</span>
+                            <div class="relative">
+                                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted text-sm"></i>
+                                <input
+                                    id="home-voting-search"
+                                    type="search"
+                                    placeholder="Buscar región, provincia, distrito, partido o candidatura"
+                                    class="w-full rounded-xl border border-brand-border bg-white pl-11 pr-4 py-3 text-sm font-semibold text-brand-blue placeholder:text-brand-muted focus:border-brand-blue focus:outline-none"
+                                >
+                            </div>
+                        </label>
                         <label class="block">
                             <span class="block text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-2">Orden</span>
                             <select id="home-voting-sort" class="w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-sm font-semibold text-brand-blue focus:border-brand-blue focus:outline-none">
@@ -93,7 +105,7 @@
                                 <option value="geo-desc">Jerarquía territorial: descendente</option>
                             </select>
                         </label>
-                        <label class="block">
+                        <label class="block md:col-span-3">
                             <span class="block text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-2">Ronda</span>
                             <select id="home-voting-round" class="w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-sm font-semibold text-brand-blue focus:border-brand-blue focus:outline-none">
                                 <option value="all">Todas</option>
@@ -101,7 +113,7 @@
                                 <option value="2">Ronda 2</option>
                             </select>
                         </label>
-                        <div class="flex items-end">
+                        <div class="flex items-end md:col-span-3">
                             <button type="button" id="home-voting-reset" class="w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-sm font-bold text-brand-blue hover:border-brand-blue/30 transition-colors">
                                 Limpiar filtros
                             </button>

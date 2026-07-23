@@ -89,6 +89,7 @@
         var list = document.getElementById('home-voting-list');
         var body = document.getElementById('home-voting-body');
         var toggleButton = document.getElementById('home-voting-toggle');
+        var searchInput = document.getElementById('home-voting-search');
         var sortSelect = document.getElementById('home-voting-sort');
         var roundSelect = document.getElementById('home-voting-round');
         var resetButton = document.getElementById('home-voting-reset');
@@ -126,13 +127,16 @@
         }
 
         function applyFilters() {
+            var searchValue = searchInput ? searchInput.value.trim().toLowerCase() : '';
             var roundValue = roundSelect.value || 'all';
             var rows = Array.prototype.slice.call(list.querySelectorAll('[data-voting-row]'));
 
             rows.forEach(function (row) {
                 var roundNumber = row.dataset.roundNumber || '';
                 var matchesRound = roundValue === 'all' || String(roundNumber) === roundValue;
-                row.classList.toggle('hidden', !matchesRound);
+                var rowText = (row.textContent || '').toLowerCase();
+                var matchesSearch = searchValue === '' || rowText.indexOf(searchValue) !== -1;
+                row.classList.toggle('hidden', !matchesRound || !matchesSearch);
             });
 
             rows.sort(compareRows).forEach(function (row) {
@@ -150,9 +154,15 @@
 
         sortSelect.addEventListener('change', applyFilters);
         roundSelect.addEventListener('change', applyFilters);
+        if (searchInput) {
+            searchInput.addEventListener('input', applyFilters);
+        }
 
         if (resetButton) {
             resetButton.addEventListener('click', function () {
+                if (searchInput) {
+                    searchInput.value = '';
+                }
                 sortSelect.value = 'geo-asc';
                 roundSelect.value = 'all';
                 applyFilters();
