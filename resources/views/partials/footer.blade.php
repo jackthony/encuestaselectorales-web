@@ -13,7 +13,6 @@
             <h4 class="text-white font-bold uppercase tracking-wider text-xs mb-4">Navegación</h4>
             <ul class="flex flex-col gap-2 text-sm font-medium">
                 <li><a href="{{ url('/') }}" class="text-white">Inicio</a></li>
-                <li><a href="{{ url('/metodologia.php') }}" class="text-gray-400 hover:text-white transition-colors">Metodología</a></li>
                 <li><a href="{{ url('/politica-editorial.html') }}" class="text-gray-400 hover:text-white transition-colors">Política Editorial</a></li>
                 <li><a href="{{ url('/politica-privacidad.html') }}" class="text-gray-400 hover:text-white transition-colors">Privacidad</a></li>
                 <li><a href="{{ url('/fuentes-correcciones.html') }}" class="text-gray-400 hover:text-white transition-colors">Fuentes y correcciones</a></li>
