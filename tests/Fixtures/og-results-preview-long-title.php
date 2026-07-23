@@ -1,12 +1,10 @@
 <?php
 
-// Fase 1 — fixture visual estático para el prototipo de miniatura OG.
-// No conectar con base de datos ni datos reales.
-// bar_width se calcula en la vista a partir de percentage, no vive aquí.
+// Fase 1 — casuística visual: nombre de distrito largo (auto-fit de fuente).
 
 return [
     'eyebrow' => 'SONDEO CIUDADANO · PERÚ 2026',
-    'title' => 'Distrito de San Isidro',
+    'title' => 'Distrito de San Martín de Porres',
     'subtitle' => 'Alcaldía Distrital 2026 · Ronda 1',
     'footer_text' => 'Base: 18,420 votos · Actualizado: 23/07/2026 14:32',
     'results' => [

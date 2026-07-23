@@ -143,7 +143,8 @@ body {
     position: absolute;
     left: 0px;
     width: 1200px;
-    height: 65px;
+    /* height/top: inline por fila — el alto de fila es dinámico según cuántos
+       candidatos traiga el fixture (menos filas => más alto cada una). */
 }
 
 .og-row-sep {
@@ -157,7 +158,8 @@ body {
 .og-rank {
     position: absolute;
     left: 37px;
-    top: 9px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 54px;
     height: 46px;
     border-radius: 6px;
@@ -173,11 +175,15 @@ body {
     background: #15BA75;
 }
 
-.og-candidate-name {
+.og-candidate-block {
     position: absolute;
     left: 134px;
-    top: 10px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 330px;
+}
+
+.og-candidate-name {
     font-size: 22px;
     font-weight: 700;
     line-height: 24px;
@@ -187,10 +193,7 @@ body {
 }
 
 .og-candidate-party {
-    position: absolute;
-    left: 134px;
-    top: 36px;
-    width: 330px;
+    margin-top: 2px;
     font-size: 16px;
     font-weight: 700;
     line-height: 19px;
@@ -206,7 +209,8 @@ body {
 .og-bar-track {
     position: absolute;
     left: 482px;
-    top: 28px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 258px;
     height: 9px;
     background: #E5E7EB;
@@ -229,7 +233,8 @@ body {
 .og-pct {
     position: absolute;
     left: 782px;
-    top: 17px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 102px;
     font-size: 25px;
     font-weight: 700;
@@ -245,7 +250,8 @@ body {
 .og-votes-box {
     position: absolute;
     left: 972px;
-    top: 9px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 112px;
     height: 46px;
     border-radius: 6px;
@@ -293,12 +299,22 @@ body {
     white-space: nowrap;
 }
 
+/* El asset brand-domain-lockup.png trae ~71% de relleno vertical incorporado
+   (contenido real: 1826x212 dentro de un lienzo de 2172x724). Se recorta por
+   CSS -sin editar el archivo- para mostrar el glifo a un tamaño legible. */
 .og-domain {
     position: absolute;
-    left: 805px;
-    top: 561px;
-    width: 320px;
-    height: 30px;
-    object-fit: contain;
-    object-position: right center;
+    left: 809px;
+    top: 554px;
+    width: 317px;
+    height: 37px;
+    overflow: hidden;
+}
+
+.og-domain img {
+    position: absolute;
+    left: -33px;
+    top: -42px;
+    width: 377px;
+    height: 126px;
 }

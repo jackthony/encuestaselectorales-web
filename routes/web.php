@@ -29,9 +29,11 @@ Route::get('/politica-privacidad.html', [StaticPublicPortalController::class, 's
     ->defaults('page', 'politica-privacidad.html');
 
 if (app()->environment(['local', 'testing'])) {
-    Route::get('/__design/og-results-preview', function () {
-        return view('dev.og-results-preview', [
-            'data' => require base_path('tests/Fixtures/og-results-preview.php'),
-        ]);
+    Route::get('/__design/og-results-preview', function (\Illuminate\Http\Request $request) {
+        $fixture = basename($request->query('fixture', 'og-results-preview'));
+        $path = base_path("tests/Fixtures/{$fixture}.php");
+        abort_unless(is_file($path), 404);
+
+        return view('dev.og-results-preview', ['data' => require $path]);
     })->name('dev.og-results-preview');
 }

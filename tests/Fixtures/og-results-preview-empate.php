@@ -1,8 +1,7 @@
 <?php
 
-// Fase 1 — fixture visual estático para el prototipo de miniatura OG.
-// No conectar con base de datos ni datos reales.
-// bar_width se calcula en la vista a partir de percentage, no vive aquí.
+// Fase 1 — casuística visual: empate en 1er lugar (2 candidatos con
+// position=1, ambos deben salir en verde).
 
 return [
     'eyebrow' => 'SONDEO CIUDADANO · PERÚ 2026',
@@ -14,15 +13,15 @@ return [
             'position' => 1,
             'candidate_name' => 'María Fernanda Quispe Rojas',
             'party_name' => 'AVANZA PAÍS',
-            'percentage' => '39.7%',
-            'votes' => '7,311',
+            'percentage' => '34.5%',
+            'votes' => '6,355',
         ],
         [
-            'position' => 2,
+            'position' => 1,
             'candidate_name' => 'Jorge Luis Delgado',
             'party_name' => 'FUERZA POPULAR',
-            'percentage' => '28.2%',
-            'votes' => '5,203',
+            'percentage' => '34.5%',
+            'votes' => '6,355',
         ],
         [
             'position' => 3,

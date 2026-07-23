@@ -10,12 +10,23 @@
     <div class="og-canvas" id="og-canvas">
         <img class="og-bg" src="{{ asset('assets/miniatura-compartir/og-results-background-1200x630.png') }}" alt="">
 
-        <img class="og-logo" src="{{ asset('assets/miniatura-compartir/brand-logo-horizontal.png') }}" alt="">
+        <img class="og-logo" src="{{ asset('assets/miniatura-compartir/brand-logo-horizontal-cleaned.png') }}" alt="">
         <div class="og-divider"></div>
 
         <div class="og-eyebrow">{{ $data['eyebrow'] }}</div>
-        <div class="og-title">{{ $data['title'] }}</div>
+        <div class="og-title" id="og-title">{{ $data['title'] }}</div>
         <div class="og-subtitle">{{ $data['subtitle'] }}</div>
+
+        @php
+            // Banda disponible para filas dentro del panel (coords relativas al panel):
+            // empieza a 44px (bajo el header RESULTADOS/PORCENTAJE/VOTOS) y termina a
+            // 369px (arriba del footer). Se reparte por igual entre N candidatos, así
+            // que con menos de 5 el diseño no deja un hueco vacío abajo.
+            $rowsAreaTop = 44;
+            $rowsAreaHeight = 325;
+            $rowCount = max(count($data['results']), 1);
+            $rowPitch = $rowsAreaHeight / $rowCount;
+        @endphp
 
         <div class="og-panel">
             <div class="og-col-header og-col-header--results">RESULTADOS</div>
@@ -23,13 +34,18 @@
             <div class="og-col-header og-col-header--votes">VOTOS</div>
 
             @foreach ($data['results'] as $index => $row)
-                @php $isFirst = $row['position'] === 1; @endphp
-                <div class="og-row" style="top: {{ 44 + $index * 65 }}px;">
+                @php
+                    $isFirst = $row['position'] === 1;
+                    $barWidth = round((float) $row['percentage'] * 258 / 100);
+                @endphp
+                <div class="og-row" style="top: {{ $rowsAreaTop + $index * $rowPitch }}px; height: {{ $rowPitch }}px;">
                     <div class="og-rank {{ $isFirst ? 'is-first' : '' }}">{{ $row['position'] }}</div>
-                    <div class="og-candidate-name">{{ $row['candidate_name'] }}</div>
-                    <div class="og-candidate-party {{ $isFirst ? 'is-first' : '' }}">{{ $row['party_name'] }}</div>
+                    <div class="og-candidate-block">
+                        <div class="og-candidate-name">{{ $row['candidate_name'] }}</div>
+                        <div class="og-candidate-party {{ $isFirst ? 'is-first' : '' }}">{{ $row['party_name'] }}</div>
+                    </div>
                     <div class="og-bar-track">
-                        <div class="og-bar-fill {{ $isFirst ? 'is-first' : '' }}" style="width: {{ $row['bar_width'] }}px;"></div>
+                        <div class="og-bar-fill {{ $isFirst ? 'is-first' : '' }}" style="width: {{ $barWidth }}px;"></div>
                     </div>
                     <div class="og-pct {{ $isFirst ? 'is-first' : '' }}">{{ $row['percentage'] }}</div>
                     <div class="og-votes-box {{ $isFirst ? 'is-first' : '' }}">
@@ -37,7 +53,7 @@
                     </div>
                 </div>
                 @if (!$loop->last)
-                    <div class="og-row-sep" style="top: {{ 44 + ($index + 1) * 65 }}px;"></div>
+                    <div class="og-row-sep" style="top: {{ $rowsAreaTop + ($index + 1) * $rowPitch }}px;"></div>
                 @endif
             @endforeach
 
@@ -49,7 +65,25 @@
             </div>
         </div>
 
-        <img class="og-domain" src="{{ asset('assets/miniatura-compartir/brand-domain-lockup.png') }}" alt="">
+        <div class="og-domain">
+            <img src="{{ asset('assets/miniatura-compartir/brand-domain-lockup-cleaned.png') }}" alt="">
+        </div>
     </div>
+    <script>
+        // Distritos con nombre largo: encoge el título hasta que quepa en una
+        // línea dentro del contenedor (805px), sin truncar el texto.
+        document.fonts.ready.then(function () {
+            var el = document.getElementById('og-title');
+            if (!el) return;
+            var maxWidth = 805;
+            var minFontSize = 32;
+            var fontSize = parseFloat(getComputedStyle(el).fontSize);
+            while (el.scrollWidth > maxWidth && fontSize > minFontSize) {
+                fontSize -= 1;
+                el.style.fontSize = fontSize + 'px';
+                el.style.lineHeight = (fontSize + 2) + 'px';
+            }
+        });
+    </script>
 </body>
 </html>

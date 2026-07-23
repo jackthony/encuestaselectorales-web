@@ -4,8 +4,13 @@ const puppeteer = require('puppeteer-core');
 const path = require('path');
 
 const CHROME_PATH = process.env.CHROME_PATH || 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-const URL = process.env.OG_PREVIEW_URL || 'http://127.0.0.1:8123/__design/og-results-preview';
-const OUTPUT = path.resolve(__dirname, '..', 'storage/app/testing/og-results-preview-static-1200x630.png');
+const BASE_URL = process.env.OG_PREVIEW_BASE_URL || 'http://127.0.0.1:8123/__design/og-results-preview';
+
+// node capture.js [fixture] [outputFileName]
+const fixture = process.argv[2] || 'og-results-preview';
+const outputName = process.argv[3] || 'og-results-preview-static-1200x630.png';
+const URL = `${BASE_URL}?fixture=${encodeURIComponent(fixture)}`;
+const OUTPUT = path.resolve(__dirname, '..', 'storage/app/testing', outputName);
 
 (async () => {
     const browser = await puppeteer.launch({
