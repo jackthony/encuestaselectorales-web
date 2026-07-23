@@ -115,16 +115,35 @@ final class VoteApiTest extends TestCase
         $this->assertDatabaseCount('interactive_votes', 0);
     }
 
-    public function test_production_requires_verified_cloudflare_client_ip(): void
+    public function test_production_uses_server_observed_ip_without_trusting_forwarded_header(): void
     {
         $this->app->detectEnvironment(fn (): string => 'production');
         config()->set('vote.trusted_proxies', ['203.0.113.0/24']);
         $ids = $this->seedRound();
 
-        $this->withServerVariables(['REMOTE_ADDR' => '203.0.113.10'])
+        $this->withServerVariables([
+            'REMOTE_ADDR' => '203.0.113.10',
+            'HTTP_X_FORWARDED_FOR' => '198.51.100.99',
+        ])
             ->postJson('/api/votes', $this->payload($ids))
-            ->assertServiceUnavailable()
-            ->assertJsonPath('code', 'network_validation_failed');
+            ->assertCreated();
+
+        $vote = DB::table('interactive_votes')->first();
+        $this->assertSame('203.0.113.10', openssl_decrypt(
+            $vote->ip_ciphertext,
+            'aes-256-gcm',
+            '01234567890123456789012345678901',
+            OPENSSL_RAW_DATA,
+            $vote->ip_nonce,
+            $vote->ip_auth_tag,
+        ));
+    }
+
+    public function test_production_accepts_cloudflare_ip_only_from_a_trusted_proxy(): void
+    {
+        $this->app->detectEnvironment(fn (): string => 'production');
+        config()->set('vote.trusted_proxies', ['203.0.113.0/24']);
+        $ids = $this->seedRound();
 
         $this->withServerVariables([
             'REMOTE_ADDR' => '203.0.113.10',
@@ -142,6 +161,16 @@ final class VoteApiTest extends TestCase
             $vote->ip_nonce,
             $vote->ip_auth_tag,
         ));
+
+        $this->withServerVariables([
+            'REMOTE_ADDR' => '192.0.2.10',
+            'HTTP_CF_CONNECTING_IP' => '198.51.100.60',
+        ])
+            ->postJson('/api/votes', $this->payload($ids, [
+                'device_token' => 'another-device-token-012345678901234567890',
+            ]))
+            ->assertServiceUnavailable()
+            ->assertJsonPath('code', 'network_validation_failed');
     }
 
     public function test_legacy_vote_payload_is_adapted_without_using_legacy_php(): void

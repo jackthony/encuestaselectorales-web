@@ -13,14 +13,19 @@ final class TrustedClientIp
             $clientIp = trim((string) $request->server('HTTP_CF_CONNECTING_IP', ''));
             $proxyIp = trim((string) $request->server('REMOTE_ADDR', ''));
 
-            if (filter_var($clientIp, FILTER_VALIDATE_IP) === false
-                || filter_var($proxyIp, FILTER_VALIDATE_IP) === false
-                || ! $this->isTrustedProxy($proxyIp)
-            ) {
-                throw new RuntimeException('Unable to verify the Cloudflare client IP.');
+            if (filter_var($proxyIp, FILTER_VALIDATE_IP) === false) {
+                throw new RuntimeException('Unable to verify the server-observed client IP.');
             }
 
-            return $clientIp;
+            if ($clientIp === '') {
+                return $proxyIp;
+            }
+
+            if (filter_var($clientIp, FILTER_VALIDATE_IP) !== false && $this->isTrustedProxy($proxyIp)) {
+                return $clientIp;
+            }
+
+            throw new RuntimeException('Unable to verify the Cloudflare client IP.');
         }
 
         $ip = $request->ip();
