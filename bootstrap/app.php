@@ -37,12 +37,18 @@ $app = Application::configure(basePath: $basePath)
     })->create();
 
 $configuredEnvironmentPath = getenv('APP_ENV_PATH');
-$externalEnvironmentPath = is_string($configuredEnvironmentPath) && $configuredEnvironmentPath !== ''
-    ? $configuredEnvironmentPath
-    : dirname($basePath);
+$environmentPaths = array_filter([
+    is_string($configuredEnvironmentPath) ? $configuredEnvironmentPath : null,
+    dirname($basePath, 3).DIRECTORY_SEPARATOR.'.encuestaselectorales',
+    dirname($basePath),
+]);
 
-if (is_file($externalEnvironmentPath.DIRECTORY_SEPARATOR.'.env')) {
-    $app->useEnvironmentPath($externalEnvironmentPath);
+foreach ($environmentPaths as $environmentPath) {
+    if (is_file($environmentPath.DIRECTORY_SEPARATOR.'.env')) {
+        $app->useEnvironmentPath($environmentPath);
+
+        break;
+    }
 }
 
 return $app;
