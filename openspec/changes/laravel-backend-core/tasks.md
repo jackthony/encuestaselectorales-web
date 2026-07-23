@@ -53,7 +53,7 @@
 
 ## 8. Hostinger rollout and production verification
 
-- [ ] 8.1 Build a repeatable Hostinger release artifact with Composer production dependencies, external secret requirements, storage permissions, and health checks.
+- [x] 8.1 Build a repeatable Hostinger release artifact with Composer production dependencies, external secret requirements, storage permissions, and health checks.
 - [x] 8.2 Back up and inventory production, run additive migrations, apply the approved clean-start vote policy, import approved data, and record reconciliation evidence.
 - [ ] 8.3 Verify Laravel read and vote contracts on the private deployment target, including mobile GPS, persistence, duplicate rejection, and privacy fields.
 - [ ] 8.4 Switch production to Laravel `public/`, clear caches, and run desktop/mobile smoke tests for home, territorial rounds, candidates, sharing, and votes.

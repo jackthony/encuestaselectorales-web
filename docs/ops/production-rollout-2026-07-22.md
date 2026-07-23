@@ -34,6 +34,8 @@ network identifiers, encryption material, and voter location evidence.
 
 ## Remaining gates
 
+- The reproducible release artifact for commit `ba1d57934c54` was built with
+  production Composer dependencies and stored outside the repository.
 - Push the verified release commit and complete Hostinger Git Deploy.
 - Confirm the external production `.env` is available above `public_html`.
 - Verify `/api/health`, public pages, sharing, mobile GPS, first vote persistence,

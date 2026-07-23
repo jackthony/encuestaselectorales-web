@@ -16,7 +16,12 @@ if (-not $composer) {
     if (-not (Test-Path -LiteralPath $composerPath)) {
         throw 'Composer was not found in PATH or ComposerSetup.'
     }
-    $composer = Get-Item -LiteralPath $composerPath
+    $composerCommand = $composerPath
+} else {
+    $composerCommand = $composer.Path
+    if (-not $composerCommand) {
+        $composerCommand = $composer.Source
+    }
 }
 
 $releaseName = 'encuestaselectorales-' + $commit.Substring(0, 12)
@@ -35,7 +40,7 @@ if ($LASTEXITCODE -ne 0) {
 
 Expand-Archive -LiteralPath $sourceArchive -DestinationPath $stage
 
-& $composer.FullName install `
+& $composerCommand install `
     --working-dir=$stage `
     --no-dev `
     --no-interaction `
