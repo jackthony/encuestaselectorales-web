@@ -37,6 +37,20 @@ class InitialSurveyRoundsSeeder extends Seeder
             'source_key' => 'erm2026:region:070000:regional_governor:round:1',
             'title' => 'Encuesta regional del Callao',
         ],
+        [
+            'scope_type' => 'district',
+            'official_code' => '150142',
+            'office_type' => 'district_mayor',
+            'source_key' => 'erm2026:district:150142:district_mayor:round:1',
+            'title' => 'Encuesta distrital de Villa El Salvador',
+        ],
+        [
+            'scope_type' => 'district',
+            'official_code' => '150143',
+            'office_type' => 'district_mayor',
+            'source_key' => 'erm2026:district:150143:district_mayor:round:1',
+            'title' => 'Encuesta distrital de Villa María del Triunfo',
+        ],
     ];
 
     public function run(): void
@@ -100,10 +114,22 @@ class InitialSurveyRoundsSeeder extends Seeder
      */
     private function reconcileRound(array $target, string $territoryId, Collection $candidacies): string
     {
-        $roundId = DB::table('survey_rounds')
-            ->where('source_system', self::SOURCE_SYSTEM)
-            ->where('source_key', $target['source_key'])
-            ->value('id');
+        $naturalRound = DB::table('survey_rounds')
+            ->where('territory_id', $territoryId)
+            ->where('round_number', 1)
+            ->where('election_cycle', self::ELECTION_CYCLE)
+            ->where('survey_type', 'online_owned')
+            ->where('office_type', $target['office_type'])
+            ->first();
+
+        if ($naturalRound !== null) {
+            $roundId = $naturalRound->id;
+        } else {
+            $roundId = DB::table('survey_rounds')
+                ->where('source_system', self::SOURCE_SYSTEM)
+                ->where('source_key', $target['source_key'])
+                ->value('id');
+        }
 
         $isReady = $candidacies->isNotEmpty();
         $now = now();

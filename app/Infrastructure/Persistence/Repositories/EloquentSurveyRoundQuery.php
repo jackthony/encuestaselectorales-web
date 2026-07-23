@@ -133,6 +133,7 @@ final class EloquentSurveyRoundQuery implements SurveyRoundQuery
                     ->where('status', 'active')
                     ->whereHas('candidate', fn ($candidate) => $candidate->where('status', 'active'))
                     ->whereHas('politicalParty', fn ($party) => $party->where('status', 'active')))
+                ->withCount('votes')
                 ->orderBy('display_order'),
             'options.candidacy.candidate',
             'options.candidacy.politicalParty',
@@ -167,9 +168,11 @@ final class EloquentSurveyRoundQuery implements SurveyRoundQuery
                         partyAcronym: $candidacy->politicalParty->acronym,
                         partyLogoUrl: $candidacy->politicalParty->logo_url,
                         displayOrder: $option->display_order,
+                        voteCount: (int) ($option->votes_count ?? 0),
                     );
                 })
                 ->all(),
+            totalVotes: (int) $round->options->sum('votes_count'),
         );
     }
 }

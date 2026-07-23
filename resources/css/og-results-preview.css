@@ -1,0 +1,320 @@
+/* Fase 1 — prototipo visual estático de la miniatura Open Graph de resultados. */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #1a1a1a;
+}
+
+.og-canvas {
+    position: relative;
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+    background: #ffffff;
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+.og-bg {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 1200px;
+    height: 630px;
+    object-fit: cover;
+    object-position: center;
+}
+
+.og-logo {
+    position: absolute;
+    left: 46px;
+    top: 34px;
+    width: 246px;
+    height: 126px;
+    object-fit: contain;
+    object-position: left center;
+}
+
+.og-divider {
+    position: absolute;
+    left: 306px;
+    top: 38px;
+    width: 1px;
+    height: 124px;
+    background: #CBD5E1;
+    opacity: 0.9;
+}
+
+.og-eyebrow {
+    position: absolute;
+    left: 340px;
+    top: 38px;
+    width: 805px;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 26px;
+    letter-spacing: 0.02em;
+    color: #102F86;
+}
+
+.og-title {
+    position: absolute;
+    left: 340px;
+    top: 67px;
+    width: 805px;
+    max-height: 132px;
+    font-size: 59px;
+    font-weight: 700;
+    line-height: 61px;
+    letter-spacing: -0.025em;
+    color: #111827;
+    white-space: nowrap;
+}
+
+.og-subtitle {
+    position: absolute;
+    left: 340px;
+    top: 133px;
+    width: 805px;
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 30px;
+    color: #4B5563;
+}
+
+.og-panel {
+    position: absolute;
+    left: 42px;
+    top: 181px;
+    width: 1116px;
+    height: 414px;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 20px;
+    box-shadow: 0 4px 18px rgba(17, 24, 39, 0.08);
+    overflow: hidden;
+}
+
+.og-col-header {
+    position: absolute;
+    font-weight: 700;
+}
+
+/* Coordenadas relativas al panel (.og-panel tiene position:absolute y
+   por lo tanto es el contenedor de posicionamiento de sus hijos: x - 42px, y - 181px). */
+
+.og-col-header--results {
+    left: 42px;
+    top: 16px;
+    font-size: 18px;
+    line-height: 22px;
+    color: #4B5563;
+}
+
+.og-col-header--pct {
+    left: 782px;
+    top: 16px;
+    width: 102px;
+    font-size: 16px;
+    line-height: 20px;
+    color: #4B5563;
+    text-align: center;
+}
+
+.og-col-header--votes {
+    left: 972px;
+    top: 16px;
+    width: 112px;
+    font-size: 16px;
+    line-height: 20px;
+    color: #4B5563;
+    text-align: center;
+}
+
+.og-row {
+    position: absolute;
+    left: 0px;
+    width: 1200px;
+    /* height/top: inline por fila — el alto de fila es dinámico según cuántos
+       candidatos traiga el fixture (menos filas => más alto cada una). */
+}
+
+.og-row-sep {
+    position: absolute;
+    left: 20px;
+    width: 1076px;
+    height: 1px;
+    background: #E5E7EB;
+}
+
+.og-rank {
+    position: absolute;
+    left: 37px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 54px;
+    height: 46px;
+    border-radius: 6px;
+    background: #102F86;
+    color: #FFFFFF;
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 46px;
+    text-align: center;
+}
+
+.og-rank.is-first {
+    background: #15BA75;
+}
+
+.og-candidate-block {
+    position: absolute;
+    left: 134px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 330px;
+}
+
+.og-candidate-name {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 24px;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.og-candidate-party {
+    margin-top: 2px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 19px;
+    color: #102F86;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.og-candidate-party.is-first {
+    color: #0F7A4A;
+}
+
+.og-bar-track {
+    position: absolute;
+    left: 482px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 258px;
+    height: 9px;
+    background: #E5E7EB;
+    border-radius: 2px;
+}
+
+.og-bar-fill {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    height: 9px;
+    border-radius: 2px;
+    background: #102F86;
+}
+
+.og-bar-fill.is-first {
+    background: #15BA75;
+}
+
+.og-pct {
+    position: absolute;
+    left: 782px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 102px;
+    font-size: 25px;
+    font-weight: 700;
+    line-height: 30px;
+    text-align: center;
+    color: #111827;
+}
+
+.og-pct.is-first {
+    color: #0F7A4A;
+}
+
+.og-votes-box {
+    position: absolute;
+    left: 972px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 112px;
+    height: 46px;
+    border-radius: 6px;
+    background: #102F86;
+}
+
+.og-votes-box.is-first {
+    background: #15BA75;
+}
+
+.og-votes-text {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 46px;
+    color: #FFFFFF;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.og-footer {
+    position: absolute;
+    left: 20px;
+    top: 373px;
+    width: 1076px;
+    height: 40px;
+    border-top: 1px solid #E5E7EB;
+}
+
+.og-footer-icon {
+    position: absolute;
+    left: 22px;
+    top: 11px;
+    width: 22px;
+    height: 22px;
+}
+
+.og-footer-text {
+    position: absolute;
+    left: 70px;
+    top: 14px;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 22px;
+    color: #4B5563;
+    white-space: nowrap;
+}
+
+/* El asset brand-domain-lockup.png trae ~71% de relleno vertical incorporado
+   (contenido real: 1826x212 dentro de un lienzo de 2172x724). Se recorta por
+   CSS -sin editar el archivo- para mostrar el glifo a un tamaño legible. */
+.og-domain {
+    position: absolute;
+    left: 809px;
+    top: 554px;
+    width: 317px;
+    height: 37px;
+    overflow: hidden;
+}
+
+.og-domain img {
+    position: absolute;
+    left: -33px;
+    top: -42px;
+    width: 377px;
+    height: 126px;
+}
