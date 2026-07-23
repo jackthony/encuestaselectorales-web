@@ -13,6 +13,11 @@ function voteSecurityConfigPath(): string
     $prodPath = isset($_SERVER['DOCUMENT_ROOT'])
         ? dirname($_SERVER['DOCUMENT_ROOT']) . '/config/security.php'
         : null;
+    $envPath = getenv('VOTE_SECURITY_CONFIG') ?: getenv('CODEX_SECURITY_CONFIG') ?: '';
+
+    if ($envPath !== '' && is_file($envPath)) {
+        return $envPath;
+    }
 
     if (is_file($localPath)) {
         return $localPath;

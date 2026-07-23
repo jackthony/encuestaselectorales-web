@@ -32,6 +32,18 @@ jobs:
       - name: PHP refactor regression check
         run: php scripts/check-refactor.php
 
+      - name: BL-14 endpoint tests
+        run: |
+          set -e
+          for f in \
+            scripts/test-rate-limit.php \
+            scripts/test-client-trust.php \
+            scripts/test-district-whitelist.php \
+            scripts/test-trust-score-not-exposed.php; do
+            echo "=== $f ==="
+            php "$f"
+          done
+
       - name: JS data/content validators
         run: |
           set -e

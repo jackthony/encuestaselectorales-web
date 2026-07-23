@@ -21,16 +21,18 @@ function getEncuestasPdo(): ?PDO
     return $pdo;
 }
 
-function getRondaActiva(string $distritoId): ?array
+function getRondaActiva(string $distritoId, string $nivel = 'distrito'): ?array
 {
     static $cache = [];
+    $nivel = strtolower(trim($nivel)) ?: 'distrito';
 
     if ($distritoId === '') {
         return null;
     }
 
-    if (array_key_exists($distritoId, $cache)) {
-        return $cache[$distritoId];
+    $cacheKey = $nivel . '|' . $distritoId;
+    if (array_key_exists($cacheKey, $cache)) {
+        return $cache[$cacheKey];
     }
 
     $pdo = getEncuestasPdo();
@@ -40,9 +42,10 @@ function getRondaActiva(string $distritoId): ?array
     }
 
     $sql = <<<SQL
-SELECT id, distrito_id, tipo, numero_ronda, titulo, fecha_apertura, fecha_cierre, estado_publicacion, created_at
+SELECT id, distrito_id, nivel, tipo, numero_ronda, titulo, fecha_apertura, fecha_cierre, estado_publicacion, created_at
 FROM encuestas
 WHERE distrito_id = :distrito_id
+  AND nivel = :nivel
   AND estado_publicacion = 'producción'
   AND NOW() BETWEEN fecha_apertura AND fecha_cierre
 ORDER BY fecha_apertura DESC, numero_ronda DESC, created_at DESC
@@ -50,12 +53,15 @@ LIMIT 1
 SQL;
 
     $stmt = $pdo->prepare($sql);
-    $stmt->execute(['distrito_id' => $distritoId]);
+    $stmt->execute([
+        'distrito_id' => $distritoId,
+        'nivel' => $nivel,
+    ]);
     $ronda = $stmt->fetch();
 
-    $cache[$distritoId] = $ronda ?: null;
+    $cache[$cacheKey] = $ronda ?: null;
 
-    return $cache[$distritoId];
+    return $cache[$cacheKey];
 }
 
 function getRondasActivas(): array
@@ -73,7 +79,7 @@ function getRondasActivas(): array
     }
 
     $sql = <<<SQL
-SELECT id, distrito_id, tipo, numero_ronda, titulo, fecha_apertura, fecha_cierre, estado_publicacion, created_at
+SELECT id, distrito_id, nivel, tipo, numero_ronda, titulo, fecha_apertura, fecha_cierre, estado_publicacion, created_at
 FROM encuestas
 WHERE estado_publicacion = 'producción'
   AND NOW() BETWEEN fecha_apertura AND fecha_cierre

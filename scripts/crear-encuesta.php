@@ -3,7 +3,7 @@
  * Operator-only CLI helper to create and publish survey rounds.
  *
  * Usage:
- *   php scripts/crear-encuesta.php crear --distrito=miraflores --titulo="..." --apertura="2026-07-21 09:00:00" --cierre="2026-08-05 23:59:59" --ronda=1
+ *   php scripts/crear-encuesta.php crear --nivel=distrito --distrito=miraflores --titulo="..." --apertura="2026-07-21 09:00:00" --cierre="2026-08-05 23:59:59" --ronda=1
  *   php scripts/crear-encuesta.php publicar --id=<encuesta-id>
  */
 
@@ -52,6 +52,17 @@ function parseDateTime(string $value, string $label): string
     return $dt->format('Y-m-d H:i:s');
 }
 
+function parseNivel(array $options): string
+{
+    $nivel = strtolower(trim((string) ($options['nivel'] ?? 'distrito')));
+    if (!in_array($nivel, ['distrito', 'provincia', 'region'], true)) {
+        fwrite(STDERR, "Invalid --nivel. Use distrito, provincia, or region.\n");
+        exit(1);
+    }
+
+    return $nivel;
+}
+
 [$command, $options] = parseArgs($argv);
 $pdo = getEncuestasPdo();
 
@@ -61,6 +72,7 @@ if ($command === 'crear') {
     $apertura = parseDateTime(requireOption($options, 'apertura'), 'apertura');
     $cierre = parseDateTime(requireOption($options, 'cierre'), 'cierre');
     $numeroRonda = (int)($options['ronda'] ?? 1);
+    $nivel = parseNivel($options);
 
     if ($numeroRonda < 1 || $numeroRonda > 255) {
         fwrite(STDERR, "Invalid --ronda. Use a value between 1 and 255.\n");
@@ -73,13 +85,14 @@ if ($command === 'crear') {
     }
 
     $stmt = $pdo->prepare(
-        'INSERT INTO encuestas (id, distrito_id, tipo, numero_ronda, titulo, fecha_apertura, fecha_cierre, estado_publicacion)
-         VALUES (:id, :distrito_id, :tipo, :numero_ronda, :titulo, :fecha_apertura, :fecha_cierre, :estado_publicacion)'
+        'INSERT INTO encuestas (id, distrito_id, nivel, tipo, numero_ronda, titulo, fecha_apertura, fecha_cierre, estado_publicacion)
+         VALUES (:id, :distrito_id, :nivel, :tipo, :numero_ronda, :titulo, :fecha_apertura, :fecha_cierre, :estado_publicacion)'
     );
     $id = bin2hex(random_bytes(16));
     $stmt->execute([
         'id' => $id,
         'distrito_id' => $distritoId,
+        'nivel' => $nivel,
         'tipo' => 'online_propia',
         'numero_ronda' => $numeroRonda,
         'titulo' => $titulo,
@@ -110,6 +123,6 @@ if ($command === 'publicar') {
 }
 
 fwrite(STDERR, "Usage:\n");
-fwrite(STDERR, "  php scripts/crear-encuesta.php crear --distrito=... --titulo=... --apertura=\"YYYY-MM-DD HH:MM:SS\" --cierre=\"YYYY-MM-DD HH:MM:SS\" --ronda=1\n");
+fwrite(STDERR, "  php scripts/crear-encuesta.php crear --nivel=distrito|provincia|region --distrito=... --titulo=... --apertura=\"YYYY-MM-DD HH:MM:SS\" --cierre=\"YYYY-MM-DD HH:MM:SS\" --ronda=1\n");
 fwrite(STDERR, "  php scripts/crear-encuesta.php publicar --id=...\n");
 exit(1);

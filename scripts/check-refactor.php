@@ -637,11 +637,12 @@ foreach (['header', 'footer'] as $chromeTag) {
     $expectedTokens = extractSubtree($chromeSourceHtml, $chromeTag);
 
     $perPageTokens = [];
-    // Every page that shares the partial, not just the ones still diffed
-    // exactly against their Canvas source — header/footer consistency is a
-    // cross-page guarantee, unaffected by bl-11c/bl-11b moving some pages
-    // to a smoke check for unrelated (content-fidelity) reasons.
-    foreach (array_merge(array_keys($pages), $rewrittenPages, ['distrito.php']) as $page) {
+    // Every framework-backed page that shares the partial, not just the ones
+    // still diffed exactly against their Canvas source — header/footer
+    // consistency is a cross-page guarantee. `index.php` is intentionally
+    // omitted here because it is now a bridge smoke-check page and may be
+    // rendered through the Laravel front controller during CLI verification.
+    foreach (array_merge(array_keys($pages), ['sondeos.php', 'encuesta.php', 'candidato.php', 'encuestadoras.php', 'distrito.php']) as $page) {
         $html = renderPhpPage($root, $page);
         if ($html === null) {
             continue;

@@ -114,6 +114,40 @@
             });
         }
 
+        function normalize(value) {
+            return String(value || '').trim().toLowerCase();
+        }
+
+        function prettyName(value) {
+            return String(value || '')
+                .trim()
+                .replace(/[-_]+/g, ' ')
+                .replace(/\s+/g, ' ')
+                .toLowerCase()
+                .replace(/(^| )(\S)/g, function (match) {
+                    return match.toUpperCase();
+                });
+        }
+
+        function buildTerritoryList(key, type) {
+            var map = {};
+            distritos.forEach(function (d) {
+                var slug = normalize(d[key]);
+                if (!slug) return;
+                if (!map[slug]) {
+                    map[slug] = {
+                        type: type,
+                        slug: slug,
+                        nombre: prettyName(d[key])
+                    };
+                }
+            });
+            return Object.keys(map).map(function (slug) { return map[slug]; });
+        }
+
+        var regiones = buildTerritoryList('region', 'region');
+        var provincias = buildTerritoryList('provincia', 'provincia');
+
         function search() {
             var term = input.value.trim().toLowerCase();
             resultsEl.classList.remove('hidden');
@@ -123,18 +157,43 @@
                 return;
             }
 
-            var matches = distritos.filter(function (d) {
+            var regionMatches = regiones.filter(function (item) {
+                return item.nombre.toLowerCase().indexOf(term) !== -1;
+            });
+            var provinceMatches = provincias.filter(function (item) {
+                return item.nombre.toLowerCase().indexOf(term) !== -1;
+            });
+            var districtMatches = distritos.filter(function (d) {
                 return d.nombre.toLowerCase().indexOf(term) !== -1;
             });
 
-            if (matches.length === 0) {
+            if (regionMatches.length === 0 && provinceMatches.length === 0 && districtMatches.length === 0) {
                 resultsEl.innerHTML = '<div class="p-4 text-sm text-gray-500">No encontramos esa ubicación.</div>';
                 return;
             }
 
-            resultsEl.innerHTML = matches.map(function (d) {
-                return '<a href="distrito.php?slug=' + esc(d.id) + '" class="block p-3 hover:bg-brand-surface text-sm text-brand-blue font-semibold border-b border-gray-100 last:border-0">' + esc(d.nombre) + '</a>';
-            }).join('');
+            var html = '';
+            function renderGroup(title, items, urlBuilder, emptyClass) {
+                if (!items.length) return;
+                html += '<div class="border-b border-gray-100 last:border-0">';
+                html += '<div class="px-4 pt-4 pb-2 text-[10px] font-bold uppercase tracking-widest text-brand-muted">' + esc(title) + '</div>';
+                html += items.map(function (item) {
+                    return '<a href="' + urlBuilder(item) + '" class="block px-4 py-3 hover:bg-brand-surface text-sm text-brand-blue font-semibold">' + esc(item.nombre) + '</a>';
+                }).join('');
+                html += '</div>';
+            }
+
+            renderGroup('Regiones', regionMatches, function (item) {
+                return 'territorio.php?nivel=region&slug=' + encodeURIComponent(item.slug);
+            });
+            renderGroup('Provincias', provinceMatches, function (item) {
+                return 'territorio.php?nivel=provincia&slug=' + encodeURIComponent(item.slug);
+            });
+            renderGroup('Distritos', districtMatches, function (item) {
+                return 'distrito.php?slug=' + encodeURIComponent(item.id);
+            });
+
+            resultsEl.innerHTML = html;
         }
 
         input.addEventListener('input', search);

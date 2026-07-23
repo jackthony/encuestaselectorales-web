@@ -13,9 +13,12 @@ $localConfig = __DIR__ . '/../config/db.php';
 $prodConfig  = isset($_SERVER['DOCUMENT_ROOT'])
     ? dirname($_SERVER['DOCUMENT_ROOT']) . '/config/db.php'
     : null;
+$envConfig = getenv('VOTE_DB_CONFIG') ?: getenv('CODEX_DB_CONFIG') ?: '';
 
 $configPath = null;
-if (is_file($localConfig)) {
+if ($envConfig !== '' && is_file($envConfig)) {
+    $configPath = $envConfig;
+} elseif (is_file($localConfig)) {
     $configPath = $localConfig;
 } elseif ($prodConfig !== null && is_file($prodConfig)) {
     $configPath = $prodConfig;

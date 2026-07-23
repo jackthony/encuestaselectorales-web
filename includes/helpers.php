@@ -163,3 +163,81 @@ function iniciales(string $nombre): string
     $ultima = mb_strtoupper(mb_substr($partes[count($partes) - 1], 0, 1));
     return $primera . $ultima;
 }
+
+/**
+ * Resolves the best available candidate photo source.
+ *
+ * Current live CSVs still arrive with `foto` null, so this falls back to the
+ * shared default face asset until the admin panel or batch import fills a real
+ * picture. The helper accepts both current legacy keys and future normalized
+ * keys so the views do not need to care about the source shape.
+ */
+function candidatePhotoSrc(array $candidate): string
+{
+    $candidates = [
+        $candidate['foto'] ?? null,
+        $candidate['candidate_photo_local_path'] ?? null,
+        $candidate['candidate_photo_url'] ?? null,
+    ];
+
+    foreach ($candidates as $src) {
+        if (is_string($src) && trim($src) !== '') {
+            return $src;
+        }
+    }
+
+    return 'assets/img/default-face.svg';
+}
+
+/** Converts a slug-like territorial key into a readable title. */
+function territoryDisplayName(string $slug): string
+{
+    $label = trim(str_replace(['-', '_'], ' ', $slug));
+    if ($label === '') {
+        return '';
+    }
+
+    return mb_convert_case($label, MB_CASE_TITLE, 'UTF-8');
+}
+
+/** Maps stored survey scope levels to display labels. */
+function surveyLevelLabel(?string $level): string
+{
+    return match ($level) {
+        'region' => 'Región',
+        'provincia' => 'Provincia',
+        default => 'Distrito',
+    };
+}
+
+/** Builds a human-readable scope label like "Región Callao". */
+function surveyScopeLabel(array $survey, ?array $district = null): string
+{
+    $level = surveyLevelLabel((string) ($survey['nivel'] ?? 'distrito'));
+    $location = '';
+
+    if ($district && !empty($district['nombre'])) {
+        $location = (string) $district['nombre'];
+    } elseif (!empty($survey['distrito_id'])) {
+        $location = territoryDisplayName((string) $survey['distrito_id']);
+    }
+
+    return trim($level . ' ' . $location);
+}
+
+/** Builds the canonical public URL for a survey round based on its scope. */
+function surveyTargetUrl(array $survey): string
+{
+    $level = strtolower(trim((string) ($survey['nivel'] ?? 'distrito')));
+    $slug = rawurlencode((string) ($survey['distrito_id'] ?? ''));
+
+    if ($slug === '') {
+        return 'index.php';
+    }
+
+    if ($level === 'region' || $level === 'provincia') {
+        return 'territorio.php?nivel=' . rawurlencode($level) . '&slug=' . $slug;
+    }
+
+    return 'distrito.php?slug=' . $slug;
+}

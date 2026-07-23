@@ -6,12 +6,12 @@ across restarts.
 
 ## Current session snapshot
 
-- Repo branch used for production push: `main`
-- Production push completed: `git push origin main`
+- Repo branch used for production push: `codex` (rebasing onto `origin/main`)
+- Production push status: pending until the rebase is finished and pushed
 - Hostinger domain: `encuestaselectorales.pe`
 - Hostinger account username: `u185878096`
 - Production PHP version: `8.3.30`
-- Live site now serves the updated PHP code from `main`
+- Live site should serve the updated PHP code after the rebase/push lands
 - The remaining production-sensitive files live in `config/` locally and are
   ignored by Git
 - If the site ever falls back to an empty home again, the first thing to check
@@ -186,3 +186,8 @@ My own `TaskList` this session had these 8 items; #1 (DB provision) and #2
 - `config/ip.key`
 - `config/security.php` salt / trust config if policy changes
 - Any temporary production config copied for this deployment
+- Laravel scaffold root: `C:\Users\jaaguilar\Documents\neuracode\encuestaselectorales-web\laravel-app`
+- Keep using that path as the stable entry point for Laravel-side changes until the bridge is retired.
+- Local PHP via XAMPP is enough to start the work.
+- Composer should be installed with the official installer if it is missing.
+- Do not improvise a manual scaffold when the official Composer path is available.

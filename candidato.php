@@ -76,8 +76,13 @@ $activeNav = '';
 
         <div class="bg-white rounded-xl border border-brand-border shadow-sm overflow-hidden mb-8">
             <div class="p-6 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
-                <div class="w-32 h-32 md:w-40 md:h-40 shrink-0 rounded-full border-4 border-gray-100 shadow-inner flex items-center justify-center text-white font-bold text-4xl" style="background-color: <?= esc(partyColorOrGray((int) $candidato['partidoId'])) ?>;">
-                    <?= esc(iniciales($candidato['nombre'])) ?>
+                <div class="w-32 h-32 md:w-40 md:h-40 shrink-0 rounded-full border-4 border-gray-100 shadow-inner overflow-hidden bg-gray-50">
+                    <img
+                        src="<?= esc(candidatePhotoSrc($candidato)) ?>"
+                        alt="<?= esc($candidato['nombre']) ?>"
+                        class="w-full h-full object-cover"
+                        onerror="this.onerror=null;this.src='assets/img/default-face.svg';"
+                    >
                 </div>
                 <div class="flex-grow text-center md:text-left flex flex-col justify-center">
                     <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-textMuted mb-2 justify-center md:justify-start">

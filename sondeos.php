@@ -124,13 +124,15 @@ function formatVoteDate(?string $value): string
 <?php foreach ($rondasAbiertas as $ronda): ?>
 <?php
     $rondaDistrito = findDistritoById((string) ($ronda['distrito_id'] ?? ''));
-    if (!$rondaDistrito) {
-        continue;
-    }
+    $scopeLabel = surveyScopeLabel($ronda, $rondaDistrito);
+    $detailUrl = surveyTargetUrl($ronda);
 ?>
                     <article class="bg-brand-card border border-brand-border rounded-2xl p-6 md:p-7 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
                         <div class="flex justify-between items-start mb-3">
-                            <h3 class="font-serif font-bold text-2xl text-brand-blue leading-tight"><?= esc($rondaDistrito['nombre']) ?></h3>
+                            <div>
+                                <h3 class="font-serif font-bold text-2xl text-brand-blue leading-tight"><?= esc($scopeLabel) ?></h3>
+                                <p class="text-xs text-brand-muted mt-1"><?= esc($ronda['titulo']) ?></p>
+                            </div>
                             <span class="inline-flex items-center gap-1.5 bg-[#f0fdf4] text-brand-green border border-[#dcfce7] px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-widest shadow-sm shrink-0">
                                 <span class="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse"></span> Ronda abierta
                             </span>
@@ -143,13 +145,13 @@ function formatVoteDate(?string $value): string
                         </div>
 
                         <p class="text-sm text-brand-muted leading-relaxed mb-6">
-                            <?= esc($ronda['titulo']) ?>. El voto entra con IP blindada, GPS y bloqueo anti duplicado.
+                            El voto entra con IP blindada, GPS y bloqueo anti duplicado.
                         </p>
 
                         <div class="mt-auto pt-5 border-t border-brand-border flex justify-between items-center">
                             <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest"><i class="fas fa-chart-bar mr-1 opacity-50"></i> Voto web activo</span>
-                            <a href="distrito.php?slug=<?= esc($rondaDistrito['id']) ?>" class="text-[13px] font-bold text-brand-blue hover:text-brand-green flex items-center gap-1.5 group transition-colors">
-                                Ir al distrito
+                            <a href="<?= esc($detailUrl) ?>" class="text-[13px] font-bold text-brand-blue hover:text-brand-green flex items-center gap-1.5 group transition-colors">
+                                Ir al sondeo
                                 <i class="fas fa-arrow-right text-[10px] transform group-hover:translate-x-1 transition-transform"></i>
                             </a>
                         </div>
@@ -163,17 +165,17 @@ function formatVoteDate(?string $value): string
 <?php $rondaActiva = $rondasAbiertas[0] ?? null; ?>
 <?php if ($rondaActiva): ?>
 <?php $distritoActiva = findDistritoById((string) ($rondaActiva['distrito_id'] ?? '')); ?>
+<?php $scopeLabel = surveyScopeLabel($rondaActiva, $distritoActiva); ?>
+<?php $detailUrl = surveyTargetUrl($rondaActiva); ?>
                 <div class="sticky top-28 bg-brand-card border border-brand-border rounded-2xl p-6 shadow-soft scroll-animate">
-                    <div class="text-[10px] font-bold uppercase tracking-widest text-brand-blue mb-2">Encuesta web activa</div>
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-brand-blue mb-2"><?= esc($scopeLabel) ?></div>
                     <h3 class="font-serif font-bold text-lg text-brand-blue mb-2"><?= esc($rondaActiva['titulo']) ?></h3>
                     <p class="text-xs text-brand-muted leading-relaxed mb-4">
                         La votación en vivo se habilita en el distrito correspondiente con validación GPS y control anti duplicado.
                     </p>
-<?php if ($distritoActiva): ?>
-                    <a href="distrito.php?slug=<?= esc($distritoActiva['id']) ?>" class="inline-flex items-center justify-center gap-2 bg-brand-blue text-white font-bold py-3 px-5 rounded-xl hover:bg-[#0c2466] transition-colors w-full shadow-sm text-sm">
-                        Ver <?= esc($distritoActiva['nombre']) ?>
+                    <a href="<?= esc($detailUrl) ?>" class="inline-flex items-center justify-center gap-2 bg-brand-blue text-white font-bold py-3 px-5 rounded-xl hover:bg-[#0c2466] transition-colors w-full shadow-sm text-sm">
+                        Ver <?= esc($scopeLabel) ?>
                     </a>
-<?php endif; ?>
                 </div>
 <?php else: ?>
                 <div class="sticky top-28 bg-brand-card border border-brand-border rounded-2xl p-6 shadow-soft scroll-animate text-center">

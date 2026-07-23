@@ -10,6 +10,7 @@
 CREATE TABLE IF NOT EXISTS encuestas (
     id                   CHAR(32)        NOT NULL,
     distrito_id          VARCHAR(64)     NOT NULL,
+    nivel                ENUM('distrito','provincia','region') NOT NULL DEFAULT 'distrito',
     tipo                 ENUM('online_propia','campo_externa') NOT NULL,
     numero_ronda         TINYINT UNSIGNED NOT NULL DEFAULT 1,
     titulo               VARCHAR(255)    NOT NULL,
@@ -19,5 +20,5 @@ CREATE TABLE IF NOT EXISTS encuestas (
     created_at           DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (id),
-    KEY idx_distrito_activo (distrito_id, estado_publicacion, fecha_apertura, fecha_cierre)
+    KEY idx_scope_activo (nivel, distrito_id, estado_publicacion, fecha_apertura, fecha_cierre)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -10,8 +10,13 @@
 
 function resolveTrustedClientIp(): array
 {
-    $remoteAddr = trim((string)($_SERVER['REMOTE_ADDR'] ?? ''));
-    $cfConnectingIp = trim((string)($_SERVER['HTTP_CF_CONNECTING_IP'] ?? ''));
+    return resolveTrustedClientIpFromServer($_SERVER);
+}
+
+function resolveTrustedClientIpFromServer(array $server): array
+{
+    $remoteAddr = trim((string)($server['REMOTE_ADDR'] ?? ''));
+    $cfConnectingIp = trim((string)($server['HTTP_CF_CONNECTING_IP'] ?? ''));
     $localDev = voteLocalDevEnabled();
 
     if ($localDev && $remoteAddr !== '') {
@@ -26,6 +31,10 @@ function resolveTrustedClientIp(): array
             'ip' => $cfConnectingIp,
             'source' => 'cf_connecting_ip',
         ];
+    }
+
+    if (!$localDev) {
+        throw new RuntimeException('Unable to resolve trusted client IP without CF-Connecting-IP.');
     }
 
     if ($remoteAddr !== '') {

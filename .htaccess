@@ -24,6 +24,10 @@ Options -Indexes
 </IfModule>
 
 RewriteEngine On
+RewriteRule ^$ index.php [L,QSA]
+RewriteRule ^index\.php$ index.php [L,QSA]
+RewriteRule ^(sondeos|distrito|encuesta|candidato|encuestadoras|metodologia|quienes-somos|territorio)\.php$ index.php [L,QSA]
+RewriteRule ^(fuentes-correcciones|politica-editorial|politica-privacidad)\.html$ index.php [L,QSA]
 RewriteRule ^includes/ - [F,L]
 RewriteRule ^partials/ - [F,L]
 RewriteRule ^config/ - [F,L]

@@ -51,7 +51,7 @@ if ($tieneCandidatos) {
     }
 }
 
-$rondaActiva = $distrito ? getRondaActiva($distrito['id']) : null;
+$rondaActiva = $distrito ? getRondaActiva($distrito['id'], 'distrito') : null;
 
 // Campo (third-party) study — real ones only.
 $campoEncuesta = null;
@@ -186,7 +186,14 @@ $whatsappTexto = rawurlencode($distrito
                                 <?php if ($rondaActiva): ?>
                                 <input type="radio" name="candidato" value="<?= esc((string) $c['id']) ?>" class="sr-only peer" <?= $index === 0 ? 'required' : '' ?>>
                                 <?php endif; ?>
-                                <div class="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0" style="background-color: <?= esc($color) ?>;"><?= esc(iniciales($c['nombre'])) ?></div>
+                                <div class="w-14 h-14 rounded-full overflow-hidden shrink-0 border-2 shadow-sm" style="border-color: <?= esc($color) ?>; background-color: #f8fafc;">
+                                    <img
+                                        src="<?= esc(candidatePhotoSrc($c)) ?>"
+                                        alt="<?= esc($c['nombre']) ?>"
+                                        class="w-full h-full object-cover"
+                                        onerror="this.onerror=null;this.src='assets/img/default-face.svg';"
+                                    >
+                                </div>
                                 <div class="flex-1">
                                     <div class="font-bold text-brand-text leading-tight mb-1"><?= esc($c['nombre']) ?></div>
                                     <div class="text-xs font-semibold text-brand-muted uppercase tracking-wider">
@@ -213,9 +220,10 @@ $whatsappTexto = rawurlencode($distrito
                         </form>
 <?php endif; ?>
 <?php if ($rondaActiva): ?>
+<?php $scopeLabel = surveyScopeLabel($rondaActiva, $distrito); ?>
                         <div class="mt-8 border-t border-brand-border pt-6" data-distrito="<?= esc($distrito['id']) ?>">
                             <div class="bg-[#f7fbff] border border-[#d7e7ff] rounded-2xl p-5 mb-5">
-                                <div class="text-[10px] font-bold uppercase tracking-widest text-brand-blue mb-2">Encuesta web activa</div>
+                                <div class="text-[10px] font-bold uppercase tracking-widest text-brand-blue mb-2"><?= esc($scopeLabel) ?></div>
                                 <h3 class="font-serif font-bold text-xl text-brand-blue leading-snug mb-2"><?= esc($rondaActiva['titulo']) ?></h3>
                                 <p class="text-sm text-brand-muted">
                                     Ronda <?= esc((string) $rondaActiva['numero_ronda']) ?> disponible hasta <?= esc($rondaActiva['fecha_cierre']) ?>.

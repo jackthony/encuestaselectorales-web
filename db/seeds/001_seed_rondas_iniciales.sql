@@ -5,6 +5,7 @@
 INSERT INTO encuestas (
     id,
     distrito_id,
+    nivel,
     tipo,
     numero_ronda,
     titulo,
@@ -16,25 +17,28 @@ VALUES
 (
     LOWER(LEFT(SHA2('encuestas:callao:1', 256), 32)),
     'callao',
+    'region',
     'online_propia',
     1,
-    'Encuesta web activa del Callao',
+    'Encuesta web activa de la Región Callao',
     '2026-07-21 00:00:00',
     '2026-08-05 23:59:59',
     'producción'
 ),
 (
     LOWER(LEFT(SHA2('encuestas:lima-cercado:1', 256), 32)),
-    'lima-cercado',
+    'lima',
+    'provincia',
     'online_propia',
     1,
-    'Encuesta web activa de Lima (Cercado)',
+    'Encuesta web activa de la Provincia Lima',
     '2026-07-21 00:00:00',
     '2026-08-05 23:59:59',
     'producción'
 )
 ON DUPLICATE KEY UPDATE
     distrito_id = VALUES(distrito_id),
+    nivel = VALUES(nivel),
     tipo = VALUES(tipo),
     numero_ronda = VALUES(numero_ronda),
     titulo = VALUES(titulo),
