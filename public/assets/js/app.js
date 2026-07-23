@@ -85,10 +85,86 @@
         targets.forEach(function (el) { observer.observe(el); });
     }
 
+    function setupHomeVotingFilters() {
+        var list = document.getElementById('home-voting-list');
+        var sortSelect = document.getElementById('home-voting-sort');
+        var statusSelect = document.getElementById('home-voting-status');
+        var roundSelect = document.getElementById('home-voting-round');
+        var resetButton = document.getElementById('home-voting-reset');
+        var emptyState = document.getElementById('home-voting-empty');
+
+        if (!list || !sortSelect || !statusSelect || !roundSelect) return;
+
+        function compareRows(a, b) {
+            var sortValue = sortSelect.value || 'geo-asc';
+            var aScope = parseInt(a.dataset.scopeRank || '3', 10);
+            var bScope = parseInt(b.dataset.scopeRank || '3', 10);
+            var aCode = (a.dataset.territoryCode || '').toString();
+            var bCode = (b.dataset.territoryCode || '').toString();
+            var aRound = parseInt(a.dataset.roundNumber || '1', 10);
+            var bRound = parseInt(b.dataset.roundNumber || '1', 10);
+            var scopeDiff = aScope - bScope;
+
+            if (sortValue === 'geo-desc') {
+                if (scopeDiff !== 0) return -scopeDiff;
+                if (aCode !== bCode) return bCode.localeCompare(aCode);
+                return bRound - aRound;
+            }
+
+            if (scopeDiff !== 0) return scopeDiff;
+            if (aCode !== bCode) return aCode.localeCompare(bCode);
+            return aRound - bRound;
+        }
+
+        function applyFilters() {
+            var statusValue = statusSelect.value || 'all';
+            var roundValue = roundSelect.value || 'all';
+            var rows = Array.prototype.slice.call(list.querySelectorAll('[data-voting-row]'));
+
+            rows.forEach(function (row) {
+                var state = row.dataset.status || 'inactive';
+                var roundNumber = row.dataset.roundNumber || '';
+                var matchesStatus = statusValue === 'all'
+                    || (statusValue === 'active' && state === 'active')
+                    || (statusValue === 'inactive' && state !== 'active');
+                var matchesRound = roundValue === 'all' || String(roundNumber) === roundValue;
+                row.classList.toggle('hidden', !matchesStatus || !matchesRound);
+            });
+
+            rows.sort(compareRows).forEach(function (row) {
+                list.appendChild(row);
+            });
+
+            var visibleCount = rows.filter(function (row) {
+                return !row.classList.contains('hidden');
+            }).length;
+
+            if (emptyState) {
+                emptyState.classList.toggle('hidden', visibleCount !== 0);
+            }
+        }
+
+        sortSelect.addEventListener('change', applyFilters);
+        statusSelect.addEventListener('change', applyFilters);
+        roundSelect.addEventListener('change', applyFilters);
+
+        if (resetButton) {
+            resetButton.addEventListener('click', function () {
+                sortSelect.value = 'geo-asc';
+                statusSelect.value = 'all';
+                roundSelect.value = 'all';
+                applyFilters();
+            });
+        }
+
+        applyFilters();
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         updateClock();
         setInterval(updateClock, 1000);
         setupMobileMenu();
         setupScrollAnimations();
+        setupHomeVotingFilters();
     });
 })();

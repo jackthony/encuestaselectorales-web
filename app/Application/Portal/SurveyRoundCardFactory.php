@@ -13,13 +13,22 @@ final readonly class SurveyRoundCardFactory
         $leader = collect($round->options)
             ->sortByDesc(fn ($option): int => $option->voteCount)
             ->first();
+        $territoryScopeRank = match ($round->territory->scopeType) {
+            'region' => 1,
+            'province' => 2,
+            default => 3,
+        };
 
         return [
             'id' => $round->id,
             'territory_scope' => $round->territory->scopeType,
             'territory_slug' => $round->territory->slug,
             'territory_name' => $round->territory->name,
+            'territory_code' => $round->territory->officialCode,
+            'territory_scope_rank' => $territoryScopeRank,
+            'territory_ancestors' => $round->territory->ancestors,
             'titulo' => $round->title,
+            'round_number' => $round->roundNumber,
             'fecha_apertura' => $round->opensAt->format('d/m/Y'),
             'fecha_cierre' => $round->closesAt->format('d/m/Y'),
             'scope_label' => "{$scopeLabel} {$round->territory->name}",
