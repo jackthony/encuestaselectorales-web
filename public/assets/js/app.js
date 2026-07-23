@@ -87,13 +87,22 @@
 
     function setupHomeVotingFilters() {
         var list = document.getElementById('home-voting-list');
+        var body = document.getElementById('home-voting-body');
+        var toggleButton = document.getElementById('home-voting-toggle');
         var sortSelect = document.getElementById('home-voting-sort');
-        var statusSelect = document.getElementById('home-voting-status');
         var roundSelect = document.getElementById('home-voting-round');
         var resetButton = document.getElementById('home-voting-reset');
         var emptyState = document.getElementById('home-voting-empty');
 
-        if (!list || !sortSelect || !statusSelect || !roundSelect) return;
+        if (!list || !sortSelect || !roundSelect) return;
+
+        function syncToggleState() {
+            if (!body || !toggleButton) return;
+
+            var isCollapsed = body.classList.contains('hidden');
+            toggleButton.textContent = isCollapsed ? 'Mostrar listado' : 'Minimizar listado';
+            toggleButton.setAttribute('aria-expanded', String(!isCollapsed));
+        }
 
         function compareRows(a, b) {
             var sortValue = sortSelect.value || 'geo-asc';
@@ -117,18 +126,13 @@
         }
 
         function applyFilters() {
-            var statusValue = statusSelect.value || 'all';
             var roundValue = roundSelect.value || 'all';
             var rows = Array.prototype.slice.call(list.querySelectorAll('[data-voting-row]'));
 
             rows.forEach(function (row) {
-                var state = row.dataset.status || 'inactive';
                 var roundNumber = row.dataset.roundNumber || '';
-                var matchesStatus = statusValue === 'all'
-                    || (statusValue === 'active' && state === 'active')
-                    || (statusValue === 'inactive' && state !== 'active');
                 var matchesRound = roundValue === 'all' || String(roundNumber) === roundValue;
-                row.classList.toggle('hidden', !matchesStatus || !matchesRound);
+                row.classList.toggle('hidden', !matchesRound);
             });
 
             rows.sort(compareRows).forEach(function (row) {
@@ -145,16 +149,22 @@
         }
 
         sortSelect.addEventListener('change', applyFilters);
-        statusSelect.addEventListener('change', applyFilters);
         roundSelect.addEventListener('change', applyFilters);
 
         if (resetButton) {
             resetButton.addEventListener('click', function () {
                 sortSelect.value = 'geo-asc';
-                statusSelect.value = 'all';
                 roundSelect.value = 'all';
                 applyFilters();
             });
+        }
+
+        if (body && toggleButton) {
+            toggleButton.addEventListener('click', function () {
+                body.classList.toggle('hidden');
+                syncToggleState();
+            });
+            syncToggleState();
         }
 
         applyFilters();
