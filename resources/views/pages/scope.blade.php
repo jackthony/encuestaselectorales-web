@@ -61,9 +61,6 @@
                 @php
                     $activeRoundOptions = $activeRound['options'] ?? [];
                     $activeRoundTotalVotes = (int) ($activeRound['total_votes'] ?? 0);
-                    $activeRoundLeader = collect($activeRoundOptions)
-                        ->sortByDesc(fn (array $option): int => (int) ($option['vote_count'] ?? 0))
-                        ->first();
                 @endphp
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
@@ -139,13 +136,6 @@
                                     Aún no hay votos registrados en esta ronda. Cuando empiece a entrar participación, verás aquí el conteo por candidato y partido.
                                 </div>
                             @else
-                                @if (is_array($activeRoundLeader))
-                                    <div class="mb-5 rounded-xl bg-[#eef8f2] border border-[#bfe8cf] px-4 py-3 text-sm text-brand-text">
-                                        Lidera <span class="font-bold text-brand-blue">{{ $activeRoundLeader['candidate']['name'] ?? 'Candidatura' }}</span>
-                                        con <span class="font-bold text-brand-blue">{{ number_format((int) ($activeRoundLeader['vote_count'] ?? 0)) }}</span> votos.
-                                    </div>
-                                @endif
-
                                 <div class="space-y-4">
                                     @foreach ($activeRoundOptions as $option)
                                         @php

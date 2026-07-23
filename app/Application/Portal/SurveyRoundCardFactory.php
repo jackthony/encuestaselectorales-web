@@ -10,9 +10,6 @@ final readonly class SurveyRoundCardFactory
     public function make(SurveyRoundData $round): array
     {
         $scopeLabel = $this->scopeLabel($round->territory->scopeType);
-        $leader = collect($round->options)
-            ->sortByDesc(fn ($option): int => $option->voteCount)
-            ->first();
         $territoryScopeRank = match ($round->territory->scopeType) {
             'region' => 1,
             'province' => 2,
@@ -37,8 +34,6 @@ final readonly class SurveyRoundCardFactory
             'blocked_reason' => $round->blockedReason,
             'option_count' => count($round->options),
             'total_votes' => $round->totalVotes,
-            'leader_name' => $leader?->candidateName,
-            'leader_votes' => $leader?->voteCount ?? 0,
             'target_url' => route('surveys.scope', [
                 'scope' => $round->territory->scopeType,
                 'slug' => $round->territory->slug,

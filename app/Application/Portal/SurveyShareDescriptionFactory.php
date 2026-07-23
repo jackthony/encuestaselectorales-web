@@ -18,17 +18,6 @@ final readonly class SurveyShareDescriptionFactory
             return "Encuesta electoral de la {$scopeLabel} {$territoryName}. Sin votos registrados todavía.";
         }
 
-        $leader = collect($round['options'])
-            ->sortByDesc(fn (array $option): int => (int) ($option['vote_count'] ?? 0))
-            ->first();
-
-        if (! is_array($leader)) {
-            return "Encuesta electoral de la {$scopeLabel} {$territoryName}. {$totalVotes} votos emitidos.";
-        }
-
-        $leaderName = (string) ($leader['candidate']['name'] ?? 'Candidatura');
-        $leaderVotes = (int) ($leader['vote_count'] ?? 0);
-
-        return "Votación actual de la {$scopeLabel} {$territoryName}: {$totalVotes} votos emitidos. Lidera {$leaderName} con {$leaderVotes} votos.";
+        return "Votación actual de la {$scopeLabel} {$territoryName}: {$totalVotes} votos emitidos.";
     }
 }

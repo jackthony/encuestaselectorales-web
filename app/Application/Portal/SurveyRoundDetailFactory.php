@@ -17,9 +17,6 @@ final readonly class SurveyRoundDetailFactory
 
         $options = is_array($round['options'] ?? null) ? $round['options'] : [];
         $totalVotes = (int) ($round['total_votes'] ?? 0);
-        $leader = collect($options)
-            ->sortByDesc(fn (array $option): int => (int) ($option['vote_count'] ?? 0))
-            ->first();
 
         return [
             'state' => $payload['state'],
@@ -27,8 +24,6 @@ final readonly class SurveyRoundDetailFactory
             'territory' => $territory,
             'round' => $round,
             'total_votes' => $totalVotes,
-            'leader_name' => is_array($leader) ? (string) ($leader['candidate']['name'] ?? 'Candidatura') : 'Candidatura',
-            'leader_votes' => is_array($leader) ? (int) ($leader['vote_count'] ?? 0) : 0,
             'top_options' => array_slice($options, 0, 5),
         ];
     }

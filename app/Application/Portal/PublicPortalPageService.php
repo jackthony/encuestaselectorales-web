@@ -66,8 +66,6 @@ final readonly class PublicPortalPageService
             'blockedReason' => $result['reason'],
             'activeRound' => $result['round'],
             'totalVotes' => $result['total_votes'],
-            'leaderName' => $result['leader_name'],
-            'leaderVotes' => $result['leader_votes'],
             'topOptions' => $result['top_options'],
             'scopeLabel' => $scopeLabel,
             'pageTitle' => "{$scopeLabel} {$territory->name} | EncuestasElectorales.pe",
@@ -95,18 +93,16 @@ final readonly class PublicPortalPageService
      */
     private function resolveSelectedRound(?string $scope, ?string $slug, array $rounds): ?array
     {
-        $round = null;
-        if ($scope !== null && $slug !== null) {
-            $territory = $this->territories->findPublishedByScopeAndSlug($scope, $slug);
-            if ($territory !== null) {
-                $round = $this->rounds->forTerritory($territory->id);
-            }
+        if ($scope === null || $slug === null) {
+            return null;
         }
 
-        if ($round === null && $rounds !== []) {
-            $territory = $rounds[0]->territory;
-            $round = $this->rounds->forTerritory($territory->id);
+        $territory = $this->territories->findPublishedByScopeAndSlug($scope, $slug);
+        if ($territory === null) {
+            return null;
         }
+
+        $round = $this->rounds->forTerritory($territory->id);
 
         return $round ? $this->details->make($round) : null;
     }
