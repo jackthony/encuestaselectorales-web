@@ -15,6 +15,7 @@ final readonly class CandidateOptionData
         public ?string $partyAcronym,
         public ?string $partyLogoUrl,
         public int $displayOrder,
+        public int $voteCount,
     ) {}
 
     /** @return array<string, mixed> */
@@ -36,6 +37,7 @@ final readonly class CandidateOptionData
                 'logo_url' => $this->partyLogoUrl,
             ],
             'display_order' => $this->displayOrder,
+            'vote_count' => $this->voteCount,
         ];
     }
 }

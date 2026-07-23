@@ -10,7 +10,7 @@
  * error step instead of browser alerts so the flow stays usable on mobile.
  *
  * Include this partial on any page that offers a vote action (currently
- * sondeos.php and distrito.php).
+ * current survey flow).
  */
 ?>
     <div id="modal-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden flex items-center justify-center p-4">

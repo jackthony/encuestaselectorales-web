@@ -374,9 +374,11 @@ final class CatalogRowNormalizer
 
         return match ($normalized) {
             'ADMITIDO', 'INSCRITO', 'APTO', 'ACTIVE' => 'active',
+            // En esta línea de trabajo, RECIBIDO ya cuenta como elegible para la ronda 1.
+            'RECIBIDO' => 'active',
             'EXCLUIDO', 'RETIRADO', 'IMPROCEDENTE', 'INADMISIBLE',
             'TACHA_FUNDADA', 'INACTIVE' => 'inactive',
-            'RECIBIDO', 'PENDIENTE', 'EN_TRAMITE', 'SOLICITUD_PRESENTADA', 'PENDING' => 'pending',
+            'PENDIENTE', 'EN_TRAMITE', 'SOLICITUD_PRESENTADA', 'PENDING' => 'pending',
             default => null,
         };
     }

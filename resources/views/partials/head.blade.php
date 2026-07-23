@@ -3,7 +3,7 @@
     $pageDescription = $pageDescription ?? null;
     $shareTitle = $shareTitle ?? $pageTitle;
     $shareDescription = $shareDescription ?? $pageDescription ?? $pageTitle;
-    $shareImage = $shareImage ?? 'assets/img/share/default-share.png';
+    $shareImage = $shareImage ?? null;
     $shareUrl = $shareUrl ?? url()->current();
     $shareType = $shareType ?? 'website';
 @endphp
@@ -19,13 +19,17 @@
 <meta property="og:description" content="{{ $shareDescription }}">
 <meta property="og:url" content="{{ $shareUrl }}">
 <meta property="og:type" content="{{ $shareType }}">
+@if ($shareImage)
 <meta property="og:image" content="{{ preg_match('/^https?:\\/\\//i', (string) $shareImage) ? $shareImage : asset($shareImage) }}">
 <meta property="og:image:width" content="1080">
 <meta property="og:image:height" content="1350">
+@endif
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ $shareTitle }}">
 <meta name="twitter:description" content="{{ $shareDescription }}">
+@if ($shareImage)
 <meta name="twitter:image" content="{{ preg_match('/^https?:\\/\\//i', (string) $shareImage) ? $shareImage : asset($shareImage) }}">
+@endif
 <meta name="theme-color" content="#102f86">
 
 <script src="https://cdn.tailwindcss.com"></script>

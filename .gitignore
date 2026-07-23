@@ -15,6 +15,7 @@ CLAUDE.local.md
 
 # Dependencies
 /node_modules/
+/.dev-tools/node_modules/
 /vendor/
 /public/build
 /public/hot
