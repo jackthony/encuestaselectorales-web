@@ -58,9 +58,9 @@ body {
     left: 340px;
     top: 38px;
     width: 805px;
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
-    line-height: 24px;
+    line-height: 26px;
     letter-spacing: 0.02em;
     color: #102F86;
 }
@@ -71,9 +71,9 @@ body {
     top: 67px;
     width: 805px;
     max-height: 132px;
-    font-size: 54px;
+    font-size: 59px;
     font-weight: 700;
-    line-height: 56px;
+    line-height: 61px;
     letter-spacing: -0.025em;
     color: #111827;
     white-space: nowrap;
@@ -84,9 +84,9 @@ body {
     left: 340px;
     top: 133px;
     width: 805px;
-    font-size: 24px;
+    font-size: 25px;
     font-weight: 600;
-    line-height: 29px;
+    line-height: 30px;
     color: #4B5563;
 }
 
