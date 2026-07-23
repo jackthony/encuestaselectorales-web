@@ -135,7 +135,7 @@
                             $roundNumber = (int) ($ronda['round_number'] ?? 1);
                         @endphp
                         <a
-                            href="{{ route('home', ['scope' => $ronda['territory_scope'], 'slug' => $ronda['territory_slug']]) }}"
+                            href="{{ route('home', ['scope' => $ronda['territory_scope'], 'slug' => $ronda['territory_slug']]) }}#votacion-seleccionada"
                             data-voting-row
                             data-scope-rank="{{ $territoryScopeRank }}"
                             data-territory-code="{{ $territoryCode }}"
@@ -197,7 +197,7 @@
         </div>
     </section>
 
-    <section class="max-w-6xl mx-auto px-4 pb-16">
+    <section id="votacion-seleccionada" class="max-w-6xl mx-auto px-4 pb-16 scroll-mt-28">
         <div class="border-b border-brand-border pb-3 mb-6">
             <h2 class="text-2xl font-serif font-bold text-brand-blue flex items-center">
                 <i class="fas fa-square-poll-vertical text-brand-green mr-2.5"></i> Votación seleccionada
