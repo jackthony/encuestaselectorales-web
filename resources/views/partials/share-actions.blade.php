@@ -23,7 +23,7 @@
         </div>
 
         @if ($hasShareImage && $shareImageUrl)
-            <div class="shrink-0 w-full max-w-[180px]" data-share-image-wrapper data-share-image-base="{{ $shareImageBase }}">
+            <div class="shrink-0 w-full lg:max-w-[180px]" data-share-image-wrapper data-share-image-base="{{ $shareImageBase }}">
                 <a href="{{ $shareImageUrl }}" target="_blank" rel="noopener" class="block" data-share-image-link>
                     <img src="{{ $shareImageUrl }}" alt="{{ $shareTitle }}" class="w-full aspect-[1200/630] object-cover rounded-2xl border border-brand-border shadow-sm" data-share-image>
                 </a>
