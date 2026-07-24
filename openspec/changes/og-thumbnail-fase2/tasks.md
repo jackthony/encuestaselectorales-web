@@ -41,6 +41,6 @@
 
 ## 7. Cierre
 
-- [x] 7.1 Correr suite completa de tests (`php artisan test`) — 21/21 verde (103 assertions)
-- [ ] 7.2 `/opsx:verify` contra la spec `og-thumbnail`
+- [x] 7.1 Correr suite completa de tests (`php artisan test`) — 24/24 verde (109 assertions)
+- [x] 7.2 `/opsx:verify` no está entre las skills disponibles esta sesión (solo propose/apply/archive/explore/sync) — verificación manual: `openspec validate og-thumbnail-fase2` → "valid"; recorridos los 5 requirements de `specs/og-thumbnail/spec.md` uno por uno contra los tests reales. Encontrado y cerrado un hueco real: el shrink-to-fit del título no tenía test determinístico (solo verificación manual ad-hoc) — agregados `OgThumbnailRendererTest::test_title_shrinks_to_fit_a_moderately_long_district_name` y `test_title_stops_shrinking_at_32px_even_if_still_too_wide` (vía Reflection sobre el método privado). Hallazgo real de paso: el nombre de distrito más largo real (data/territories_ubigeo_map.json) no entra ni al piso de 32px (837px medidos vs 805px de caja) — comportamiento esperado y aceptado (mismo trade-off que ya tenía el JS de Fase 1, no una regresión)
 - [ ] 7.3 `/opsx:archive` una vez verificado

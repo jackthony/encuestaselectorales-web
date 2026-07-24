@@ -47,6 +47,52 @@ final class OgThumbnailRendererTest extends TestCase
         self::assertSame(630, $info[1]);
     }
 
+    public function test_title_shrinks_to_fit_a_moderately_long_district_name(): void
+    {
+        $renderer = $this->renderer();
+        $font = resource_path('fonts/Inter-Bold.ttf');
+        $title = 'Distrito de Villa María del Triunfo';
+
+        $fontSize = $this->invokeShrinkFontSizeToFit($renderer, $font, 59, 32, $title, 805);
+
+        self::assertGreaterThan(32, $fontSize, 'this title fits before hitting the floor');
+        self::assertLessThan(59, $fontSize, 'a title this long must actually shrink, not stay at the base size');
+
+        $box = imagettfbbox($fontSize, 0, $font, $title);
+        self::assertLessThanOrEqual(805, $box[2] - $box[0]);
+    }
+
+    public function test_title_stops_shrinking_at_32px_even_if_still_too_wide(): void
+    {
+        // Real longest district name in data/territories_ubigeo_map.json still measures
+        // ~837px at the 32px floor (vs an 805px box) — the floor is a hard stop, not a
+        // guarantee of fitting. Same trade-off Fase 1's JS auto-shrink already accepted.
+        $renderer = $this->renderer();
+        $font = resource_path('fonts/Inter-Bold.ttf');
+        $title = 'Distrito de Carmen de la Legua-Reynoso';
+
+        $fontSize = $this->invokeShrinkFontSizeToFit($renderer, $font, 59, 32, $title, 805);
+
+        self::assertSame(32, $fontSize);
+    }
+
+    public function test_title_does_not_shrink_when_it_already_fits(): void
+    {
+        $renderer = $this->renderer();
+        $font = resource_path('fonts/Inter-Bold.ttf');
+
+        $fontSize = $this->invokeShrinkFontSizeToFit($renderer, $font, 59, 32, 'San Isidro', 805);
+
+        self::assertSame(59, $fontSize);
+    }
+
+    private function invokeShrinkFontSizeToFit(OgThumbnailRenderer $renderer, string $font, int $base, int $min, string $text, int $maxWidth): int
+    {
+        $method = new \ReflectionMethod(OgThumbnailRenderer::class, 'shrinkFontSizeToFit');
+
+        return $method->invoke($renderer, $font, $base, $min, $text, $maxWidth);
+    }
+
     private function renderer(): OgThumbnailRenderer
     {
         return new OgThumbnailRenderer(
