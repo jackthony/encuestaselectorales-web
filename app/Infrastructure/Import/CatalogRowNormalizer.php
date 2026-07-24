@@ -373,13 +373,10 @@ final class CatalogRowNormalizer
         $normalized = $this->canonicalToken($value);
 
         return match ($normalized) {
-            'ADMITIDO', 'INSCRITO', 'APTO', 'ACTIVE' => 'active',
-            // En esta línea de trabajo, RECIBIDO ya cuenta como elegible para la ronda 1.
-            'RECIBIDO' => 'active',
-            'EXCLUIDO', 'RETIRADO', 'IMPROCEDENTE', 'INADMISIBLE',
-            'TACHA_FUNDADA', 'INACTIVE' => 'inactive',
-            'PENDIENTE', 'EN_TRAMITE', 'SOLICITUD_PRESENTADA', 'PENDING' => 'pending',
-            default => null,
+            'IMPROCEDENTE', 'INADMISIBLE' => 'inactive',
+            // Regla pública del portal: todo lo que no esté expresamente
+            // descalificado entra al catálogo visible y al voto.
+            default => $normalized === '' ? null : 'active',
         };
     }
 
