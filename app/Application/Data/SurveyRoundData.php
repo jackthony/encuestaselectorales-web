@@ -20,6 +20,7 @@ final readonly class SurveyRoundData
         public ?string $blockedReason,
         public CarbonImmutable $opensAt,
         public CarbonImmutable $closesAt,
+        public ?CarbonImmutable $lastVoteAt,
         public array $options,
         public int $totalVotes,
     ) {}
@@ -38,6 +39,7 @@ final readonly class SurveyRoundData
             'blocked_reason' => $this->blockedReason,
             'opens_at' => $this->opensAt->toIso8601String(),
             'closes_at' => $this->closesAt->toIso8601String(),
+            'last_vote_at' => $this->lastVoteAt?->toIso8601String(),
             'total_votes' => $this->totalVotes,
             'options' => array_map(
                 static fn (CandidateOptionData $option): array => $option->toArray(),

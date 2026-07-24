@@ -134,6 +134,7 @@ final class EloquentSurveyRoundQuery implements SurveyRoundQuery
                     ->whereHas('candidate', fn ($candidate) => $candidate->where('status', 'active'))
                     ->whereHas('politicalParty', fn ($party) => $party->where('status', 'active')))
                 ->withCount('votes')
+                ->withMax('votes', 'created_at')
                 ->orderBy('display_order'),
             'options.candidacy.candidate',
             'options.candidacy.politicalParty',
@@ -142,6 +143,8 @@ final class EloquentSurveyRoundQuery implements SurveyRoundQuery
 
     private function toData(SurveyRound $round): SurveyRoundData
     {
+        $lastVoteAt = $this->latestVoteAt($round->options);
+
         return new SurveyRoundData(
             id: (string) $round->getKey(),
             territory: $this->territories->toData($round->territory),
@@ -153,6 +156,7 @@ final class EloquentSurveyRoundQuery implements SurveyRoundQuery
             blockedReason: $round->blocked_reason,
             opensAt: CarbonImmutable::instance($round->opens_at),
             closesAt: CarbonImmutable::instance($round->closes_at),
+            lastVoteAt: $lastVoteAt,
             options: $round->options
                 ->map(static function (SurveyOption $option): CandidateOptionData {
                     $candidacy = $option->candidacy;
@@ -174,5 +178,19 @@ final class EloquentSurveyRoundQuery implements SurveyRoundQuery
                 ->all(),
             totalVotes: (int) $round->options->sum('votes_count'),
         );
+    }
+
+    /**
+     * @param  \Illuminate\Support\Collection<int, SurveyOption>  $options
+     */
+    private function latestVoteAt($options): ?CarbonImmutable
+    {
+        $latest = $options
+            ->map(fn (SurveyOption $option) => $option->votes_max_created_at ?? null)
+            ->filter()
+            ->sortDesc()
+            ->first();
+
+        return is_string($latest) ? CarbonImmutable::parse($latest) : null;
     }
 }

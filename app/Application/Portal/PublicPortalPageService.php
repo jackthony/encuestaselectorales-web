@@ -67,6 +67,7 @@ final readonly class PublicPortalPageService
             'activeRound' => $result['round'],
             'totalVotes' => $result['total_votes'],
             'topOptions' => $result['top_options'],
+            'rankedOptions' => $result['ranked_options'],
             'scopeLabel' => $scopeLabel,
             'pageTitle' => "{$scopeLabel} {$territory->name} | EncuestasElectorales.pe",
             'pageDescription' => "Candidaturas y encuesta web de la {$scopeLabel} {$territory->name}.",

@@ -118,6 +118,12 @@ final class VoteControllerTest extends TestCase
                 'device_token',
                 'data' => [
                     'vote_id',
+                    'result' => [
+                        'state',
+                        'reason',
+                        'territory',
+                        'round',
+                    ],
                 ],
             ])
             ->assertCookie('encuestas_device');
@@ -126,6 +132,9 @@ final class VoteControllerTest extends TestCase
         self::assertSame('vote_registered', $response->json('code'));
         self::assertIsString($response->json('device_token'));
         self::assertSame(64, strlen((string) $response->json('device_token')));
+        self::assertSame('active', $response->json('data.result.state'));
+        self::assertSame(1, $response->json('data.result.round.total_votes'));
+        self::assertNotNull($response->json('data.result.round.last_vote_at'));
 
         $this->assertDatabaseCount('interactive_votes', 1);
         $this->assertDatabaseHas('interactive_votes', [
