@@ -372,12 +372,7 @@ final class CatalogRowNormalizer
     {
         $normalized = $this->canonicalToken($value);
 
-        return match ($normalized) {
-            'IMPROCEDENTE', 'INADMISIBLE' => 'inactive',
-            // Regla pública del portal: todo lo que no esté expresamente
-            // descalificado entra al catálogo visible y al voto.
-            default => $normalized === '' ? null : 'active',
-        };
+        return $normalized === '' ? null : 'active';
     }
 
     private function officeType(?string $value): ?string

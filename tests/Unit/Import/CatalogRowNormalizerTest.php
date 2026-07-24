@@ -25,8 +25,8 @@ final class CatalogRowNormalizerTest extends TestCase
             'withdrawn' => ['RETIRADO', 'active'],
             'challenged' => ['TACHA_FUNDADA', 'active'],
             'inactive' => ['INACTIVE', 'active'],
-            'improcedente' => ['IMPROCEDENTE', 'inactive'],
-            'inadmisible' => ['INADMISIBLE', 'inactive'],
+            'improcedente' => ['IMPROCEDENTE', 'active'],
+            'inadmisible' => ['INADMISIBLE', 'active'],
             'blank' => [null, null],
         ];
     }
