@@ -86,6 +86,67 @@ final class PublicPortalPageServiceTest extends TestCase
         self::assertSame(route('home', ['scope' => 'region', 'slug' => 'callao-region']), $viewData['shareUrl']);
     }
 
+    public function test_scope_view_data_sets_share_image_url_for_active_round(): void
+    {
+        $territory = new TerritoryData(
+            id: 'territory-1',
+            officialCode: '070000',
+            name: 'Callao',
+            slug: 'callao-region',
+            scopeType: 'region',
+        );
+
+        $territories = Mockery::mock(TerritoryCatalog::class);
+        $territories->shouldNotReceive('findPublishedByScopeAndSlug');
+
+        $rounds = Mockery::mock(SurveyRoundQuery::class);
+        $rounds->shouldReceive('forTerritory')->once()->with('territory-1')->andReturn($this->makeRoundResult($territory));
+
+        $service = new PublicPortalPageService(
+            $territories,
+            $rounds,
+            new SurveyRoundCardFactory(),
+            new SurveyRoundDetailFactory(),
+            new SurveyShareDescriptionFactory(),
+        );
+
+        $viewData = $service->scopeViewData($territory, 'https://example.test/encuestas/region/callao-region');
+
+        self::assertSame(
+            route('surveys.og-image', ['scope' => 'region', 'slug' => 'callao-region']),
+            $viewData['shareImage'],
+        );
+    }
+
+    public function test_scope_view_data_has_no_share_image_when_round_is_not_active(): void
+    {
+        $territory = new TerritoryData(
+            id: 'territory-1',
+            officialCode: '070000',
+            name: 'Callao',
+            slug: 'callao-region',
+            scopeType: 'region',
+        );
+
+        $territories = Mockery::mock(TerritoryCatalog::class);
+        $rounds = Mockery::mock(SurveyRoundQuery::class);
+        $rounds->shouldReceive('forTerritory')->once()->with('territory-1')->andReturn(
+            new RoundResult(state: RoundAvailability::Unavailable, territory: $territory, reason: 'no_active_round'),
+        );
+
+        $service = new PublicPortalPageService(
+            $territories,
+            $rounds,
+            new SurveyRoundCardFactory(),
+            new SurveyRoundDetailFactory(),
+            new SurveyShareDescriptionFactory(),
+        );
+
+        $viewData = $service->scopeViewData($territory, 'https://example.test/x');
+
+        self::assertNull($viewData['shareImage']);
+    }
+
     private function makeRound(): SurveyRoundData
     {
         $territory = new TerritoryData(

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OgThumbnailController;
 use App\Http\Controllers\PublicPortalController;
 use App\Http\Controllers\StaticPublicPortalController;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,10 @@ Route::get('/quienes-somos.php', [StaticPublicPortalController::class, 'show'])
 Route::get('/encuestas/{scope}/{slug}', [PublicPortalController::class, 'scope'])
     ->whereIn('scope', ['region', 'province', 'district'])
     ->name('surveys.scope');
+
+Route::get('/encuestas/{scope}/{slug}/og-image.png', [OgThumbnailController::class, 'show'])
+    ->whereIn('scope', ['region', 'province', 'district'])
+    ->name('surveys.og-image');
 
 Route::get('/fuentes-correcciones.html', [StaticPublicPortalController::class, 'show'])
     ->defaults('page', 'fuentes-correcciones.html');

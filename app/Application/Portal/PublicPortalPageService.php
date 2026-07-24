@@ -5,6 +5,7 @@ namespace App\Application\Portal;
 use App\Application\Data\TerritoryData;
 use App\Domain\Catalog\Contracts\TerritoryCatalog;
 use App\Domain\Survey\Contracts\SurveyRoundQuery;
+use App\Domain\Survey\RoundAvailability;
 
 final readonly class PublicPortalPageService
 {
@@ -73,7 +74,9 @@ final readonly class PublicPortalPageService
             'pageDescription' => "Candidaturas y encuesta web de la {$scopeLabel} {$territory->name}.",
             'shareTitle' => "{$scopeLabel} {$territory->name} | EncuestasElectorales.pe",
             'shareDescription' => $shareDescription,
-            'shareImage' => null,
+            'shareImage' => $result['state'] === RoundAvailability::Active->value
+                ? route('surveys.og-image', ['scope' => $territory->scopeType, 'slug' => $territory->slug])
+                : null,
             'shareType' => 'article',
             'shareUrl' => $currentUrl,
         ];

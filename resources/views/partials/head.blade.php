@@ -21,8 +21,8 @@
 <meta property="og:type" content="{{ $shareType }}">
 @if ($shareImage)
 <meta property="og:image" content="{{ preg_match('/^https?:\\/\\//i', (string) $shareImage) ? $shareImage : asset($shareImage) }}">
-<meta property="og:image:width" content="1080">
-<meta property="og:image:height" content="1350">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 @endif
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ $shareTitle }}">
