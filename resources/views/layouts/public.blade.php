@@ -12,8 +12,8 @@
     </main>
 
     @include('partials.footer')
-    <script src="{{ asset('assets/js/app.js') }}"></script>
-    <script src="{{ asset('assets/js/share-actions.js') }}"></script>
+    <script src="{{ asset('assets/js/app.js') }}?v={{ filemtime(public_path('assets/js/app.js')) }}"></script>
+    <script src="{{ asset('assets/js/share-actions.js') }}?v={{ filemtime(public_path('assets/js/share-actions.js')) }}"></script>
     @stack('scripts')
 </body>
 </html>
