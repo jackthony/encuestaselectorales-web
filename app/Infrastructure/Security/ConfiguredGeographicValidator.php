@@ -22,7 +22,10 @@ final class ConfiguredGeographicValidator implements GeographicValidator
         $bounds = config("vote.territory_bounds.{$territory->official_code}");
 
         if (! is_array($bounds)) {
-            return app()->environment(['local', 'testing']);
+            // Bounds are an optional hardening layer. If production has no
+            // configured territory box yet, keep the vote flow unblocked and
+            // rely on the remaining protections (accuracy, IP and device HMAC).
+            return true;
         }
 
         foreach (['lat_min', 'lat_max', 'lng_min', 'lng_max'] as $key) {

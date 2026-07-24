@@ -48,7 +48,7 @@ final class VoteInfrastructureTest extends TestCase
         ));
     }
 
-    public function test_geographic_validator_allows_testing_without_bounds_configuration(): void
+    public function test_geographic_validator_allows_when_bounds_configuration_is_missing(): void
     {
         $originalMaxAccuracy = config('vote.max_gps_accuracy_meters');
         Config::set('vote.max_gps_accuracy_meters', 100);
