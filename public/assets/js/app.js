@@ -91,17 +91,41 @@
 
         var totalVotesEl = root.querySelector('[data-vote-live-total]');
         var bannerEl = root.querySelector('[data-vote-live-banner]');
+        var previewRoot = document.querySelector('[data-vote-preview-root]');
+        var previewEyebrow = previewRoot ? previewRoot.querySelector('[data-vote-preview-eyebrow]') : null;
+        var previewTitle = previewRoot ? previewRoot.querySelector('[data-vote-preview-title]') : null;
+        var previewSubtitle = previewRoot ? previewRoot.querySelector('[data-vote-preview-subtitle]') : null;
+        var previewMeta = previewRoot ? previewRoot.querySelector('[data-vote-preview-meta]') : null;
+        var previewTotal = previewRoot ? previewRoot.querySelector('[data-vote-preview-total]') : null;
+        var previewFooter = previewRoot ? previewRoot.querySelector('[data-vote-preview-footer]') : null;
+        var previewResults = previewRoot ? previewRoot.querySelector('[data-vote-preview-results]') : null;
 
         function formatNumber(value) {
             return new Intl.NumberFormat('es-PE').format(Number(value || 0));
         }
 
+        function escapeHtml(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         function updateFromResult(result) {
             if (!result || !result.round) return;
 
+            var territory = result.territory || {};
             var round = result.round;
             var options = Array.isArray(round.options) ? round.options : [];
             var totalVotes = Number(round.total_votes || 0);
+            var now = new Date();
+            var footerText = 'Base: ' + formatNumber(totalVotes) + ' votos · Actualizado: ' + now.toLocaleDateString('es-PE', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            }) + ' ' + now.toLocaleTimeString('es-PE', { hour12: false });
 
             if (totalVotesEl) {
                 totalVotesEl.textContent = formatNumber(totalVotes);
@@ -109,6 +133,64 @@
 
             if (bannerEl) {
                 bannerEl.classList.remove('hidden');
+            }
+
+            if (previewRoot) {
+                previewRoot.classList.remove('hidden');
+            }
+
+            if (previewEyebrow) {
+                previewEyebrow.textContent = 'Voto registrado';
+            }
+            if (previewTitle) {
+                previewTitle.textContent = territory.name || 'Territorio';
+            }
+            if (previewSubtitle) {
+                previewSubtitle.textContent = round.title || 'Encuesta activa';
+            }
+            if (previewMeta) {
+                previewMeta.textContent = 'Ronda ' + (round.round_number || 1) + ' · Ubigeo ' + (territory.official_code || '');
+            }
+            if (previewTotal) {
+                previewTotal.textContent = formatNumber(totalVotes);
+            }
+            if (previewFooter) {
+                previewFooter.textContent = footerText;
+            }
+            if (previewResults) {
+                var previewOptions = options.slice(0, 3);
+                var leadingVoteCount = previewOptions.reduce(function (max, option) {
+                    var voteCount = Number(option && option.vote_count ? option.vote_count : 0);
+                    return voteCount > max ? voteCount : max;
+                }, 0);
+
+                previewResults.innerHTML = previewOptions.map(function (option) {
+                    var voteCount = Number(option.vote_count || 0);
+                    var voteShare = totalVotes > 0 ? (voteCount / totalVotes) * 100 : 0;
+                    var isLeading = leadingVoteCount > 0 && voteCount === leadingVoteCount;
+                    return [
+                        '<div class="rounded-2xl border border-brand-border bg-white p-4 shadow-sm">',
+                        '<div class="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-1">Resultado parcial</div>',
+                        '<div class="flex items-start justify-between gap-4 mb-2">',
+                        '<div class="min-w-0">',
+                        '<div class="font-bold text-brand-text truncate">' + escapeHtml(option.candidate && option.candidate.name ? option.candidate.name : '') + '</div>',
+                        '<div class="text-xs font-semibold uppercase tracking-wider text-brand-muted mt-1 truncate">' + escapeHtml(option.party && option.party.name ? option.party.name : '') + '</div>',
+                        '</div>',
+                        '<div class="shrink-0 text-right">',
+                        '<div class="text-xl font-bold ' + (isLeading ? 'text-brand-greenText' : 'text-brand-blue') + ' tabular-nums">' + formatNumber(voteCount) + '</div>',
+                        '<div class="text-[10px] font-semibold uppercase tracking-wider text-brand-muted">votos</div>',
+                        '</div>',
+                        '</div>',
+                        '<div class="flex items-center justify-between text-xs font-semibold text-brand-muted mb-2">',
+                        '<span>' + escapeHtml(option.candidate && option.candidate.name ? option.candidate.name : '') + '</span>',
+                        '<span>' + voteShare.toFixed(1) + '%</span>',
+                        '</div>',
+                        '<div class="h-2 rounded-full bg-brand-surface overflow-hidden">',
+                        '<div class="h-full rounded-full ' + (isLeading ? 'bg-brand-green' : 'bg-brand-blue') + '" style="width: ' + voteShare + '%"></div>',
+                        '</div>',
+                        '</div>'
+                    ].join('');
+                }).join('');
             }
 
             var cards = root.querySelectorAll('[data-vote-live-option]');
