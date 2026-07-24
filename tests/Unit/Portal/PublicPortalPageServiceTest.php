@@ -118,6 +118,57 @@ final class PublicPortalPageServiceTest extends TestCase
         );
     }
 
+    public function test_scope_view_data_versions_share_image_by_last_vote_at_without_touching_share_url(): void
+    {
+        $territory = new TerritoryData(
+            id: 'territory-1',
+            officialCode: '070000',
+            name: 'Callao',
+            slug: 'callao-region',
+            scopeType: 'region',
+        );
+
+        $round = $this->makeRound();
+        $votedRound = new SurveyRoundData(
+            id: $round->id,
+            territory: $round->territory,
+            roundNumber: $round->roundNumber,
+            electionCycle: $round->electionCycle,
+            officeType: $round->officeType,
+            title: $round->title,
+            readinessState: $round->readinessState,
+            blockedReason: $round->blockedReason,
+            opensAt: $round->opensAt,
+            closesAt: $round->closesAt,
+            lastVoteAt: CarbonImmutable::parse('2026-07-24 10:00:00', 'America/Lima'),
+            options: $round->options,
+            totalVotes: 1,
+        );
+
+        $territories = Mockery::mock(TerritoryCatalog::class);
+        $rounds = Mockery::mock(SurveyRoundQuery::class);
+        $rounds->shouldReceive('forTerritory')->once()->with('territory-1')->andReturn(
+            new RoundResult(state: RoundAvailability::Active, round: $votedRound, territory: $territory, reason: null),
+        );
+
+        $service = new PublicPortalPageService(
+            $territories,
+            $rounds,
+            new SurveyRoundCardFactory(),
+            new SurveyRoundDetailFactory(),
+            new SurveyShareDescriptionFactory(),
+        );
+
+        $currentUrl = 'https://example.test/encuestas/region/callao-region';
+        $viewData = $service->scopeViewData($territory, $currentUrl);
+
+        self::assertSame(
+            route('surveys.og-image', ['scope' => 'region', 'slug' => 'callao-region']).'?v='.$votedRound->lastVoteAt->timestamp,
+            $viewData['shareImage'],
+        );
+        self::assertSame($currentUrl, $viewData['shareUrl'], 'the shared page URL must stay canonical, never versioned');
+    }
+
     public function test_scope_view_data_has_no_share_image_when_round_is_not_active(): void
     {
         $territory = new TerritoryData(

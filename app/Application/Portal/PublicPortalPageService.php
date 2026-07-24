@@ -6,6 +6,7 @@ use App\Application\Data\TerritoryData;
 use App\Domain\Catalog\Contracts\TerritoryCatalog;
 use App\Domain\Survey\Contracts\SurveyRoundQuery;
 use App\Domain\Survey\RoundAvailability;
+use Carbon\CarbonImmutable;
 
 final readonly class PublicPortalPageService
 {
@@ -60,6 +61,7 @@ final readonly class PublicPortalPageService
         $result = $this->details->make($this->rounds->forTerritory($territory->id));
         $scopeLabel = $this->scopeLabel($territory->scopeType);
         $shareDescription = $this->shareDescriptions->forScope($scopeLabel, $territory->name, $result['round'] ?? null);
+        $shareImage = $this->shareImageUrl($result, $territory);
 
         return [
             'territory' => $result['territory'],
@@ -74,9 +76,7 @@ final readonly class PublicPortalPageService
             'pageDescription' => "Candidaturas y encuesta web de la {$scopeLabel} {$territory->name}.",
             'shareTitle' => "{$scopeLabel} {$territory->name} | EncuestasElectorales.pe",
             'shareDescription' => $shareDescription,
-            'shareImage' => $result['state'] === RoundAvailability::Active->value
-                ? route('surveys.og-image', ['scope' => $territory->scopeType, 'slug' => $territory->slug])
-                : null,
+            'shareImage' => $shareImage,
             'shareType' => 'article',
             'shareUrl' => $currentUrl,
         ];
@@ -89,6 +89,29 @@ final readonly class PublicPortalPageService
             'province' => 'Provincia',
             default => 'Distrito',
         };
+    }
+
+    /**
+     * The shared page URL stays canonical (no cache-busting there) — only the OG image
+     * URL is versioned by lastVoteAt, so Facebook/X/WhatsApp re-fetch a fresh thumbnail
+     * when results change instead of pinning a stale cached preview to the post link.
+     *
+     * @param  array<string, mixed>  $result  SurveyRoundDetailFactory::make() output
+     */
+    private function shareImageUrl(array $result, TerritoryData $territory): ?string
+    {
+        if ($result['state'] !== RoundAvailability::Active->value) {
+            return null;
+        }
+
+        $url = route('surveys.og-image', ['scope' => $territory->scopeType, 'slug' => $territory->slug]);
+        $lastVoteAt = $result['round']['last_vote_at'] ?? null;
+
+        if ($lastVoteAt !== null) {
+            $url .= '?v='.CarbonImmutable::parse($lastVoteAt)->timestamp;
+        }
+
+        return $url;
     }
 
     /**
