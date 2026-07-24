@@ -6,6 +6,8 @@ use App\Application\Data\RoundResult;
 use App\Application\Data\SurveyRoundData;
 use Carbon\CarbonImmutable;
 
+// ponytail: Domain contract returns Application-layer DTOs — invert only if Domain needs to
+// consume this without the Application layer loaded.
 interface SurveyRoundQuery
 {
     /** @return array<int, SurveyRoundData> */
