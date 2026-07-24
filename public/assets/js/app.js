@@ -301,29 +301,8 @@
         var roundSelect = document.getElementById('home-voting-round');
         var resetButton = document.getElementById('home-voting-reset');
         var emptyState = document.getElementById('home-voting-empty');
-        var selectedEmpty = document.getElementById('selected-vote-empty');
-        var selectedContent = document.getElementById('selected-vote-content');
-        var selectedScope = document.getElementById('selected-vote-scope');
-        var selectedTerritory = document.getElementById('selected-vote-territory');
-        var selectedTitle = document.getElementById('selected-vote-title');
-        var selectedState = document.getElementById('selected-vote-state');
-        var selectedTotal = document.getElementById('selected-vote-total');
-        var selectedTotal2 = document.getElementById('selected-vote-total-2');
-        var selectedAction = document.getElementById('selected-vote-action');
-        var selectedZero = document.getElementById('selected-vote-zero');
-        var selectedOptions = document.getElementById('selected-vote-options');
-        var homeSelectedTerritory = document.getElementById('home-selected-territory');
-        var homeSelectedRound = document.getElementById('home-selected-round');
-        var initialSelectionEl = document.getElementById('home-initial-selection');
-        var currentSelection = null;
 
         if (!list || !sortSelect || !roundSelect) return;
-
-        try {
-            currentSelection = initialSelectionEl ? JSON.parse(initialSelectionEl.textContent || 'null') : null;
-        } catch (error) {
-            currentSelection = null;
-        }
 
         function formatNumber(value) {
             var numeric = Number(value || 0);
@@ -339,73 +318,6 @@
         function setVisibility(el, visible) {
             if (!el) return;
             el.classList.toggle('hidden', !visible);
-        }
-
-        function renderSelection(roundData) {
-            if (!roundData || !roundData.territory || !roundData.round) return;
-
-            var territory = roundData.territory;
-            var round = roundData.round;
-            var options = Array.isArray(roundData.top_options) ? roundData.top_options.slice(0, 5) : [];
-            var totalVotes = Number(roundData.total_votes || 0);
-
-            if (selectedScope) selectedScope.textContent = scopeLabel(territory.scope_type);
-            if (selectedTerritory) selectedTerritory.textContent = territory.name || 'Territorio';
-            if (selectedTitle) selectedTitle.textContent = round.title || 'Encuesta activa';
-            if (selectedState) {
-                selectedState.innerHTML = '<span class="w-2 h-2 rounded-full bg-brand-green animate-pulse"></span>' + (roundData.state === 'active' ? 'Abierta' : 'En revisión');
-            }
-            if (selectedTotal) selectedTotal.textContent = formatNumber(totalVotes);
-            if (selectedTotal2) selectedTotal2.textContent = formatNumber(totalVotes);
-            if (selectedAction) {
-                var scope = territory.scope_type || 'district';
-                var slug = territory.slug || '';
-                selectedAction.href = '/encuestas/' + scope + '/' + slug;
-            }
-            if (homeSelectedTerritory) homeSelectedTerritory.textContent = territory.name || 'Sin selección';
-            if (homeSelectedRound) homeSelectedRound.textContent = round.title || 'Selecciona una votación';
-
-            setVisibility(selectedEmpty, false);
-            setVisibility(selectedContent, true);
-
-            if (selectedZero) setVisibility(selectedZero, totalVotes === 0);
-            if (selectedOptions) setVisibility(selectedOptions, true);
-
-            var optionCards = selectedOptions ? selectedOptions.querySelectorAll('[data-selected-option-slot]') : [];
-            Array.prototype.forEach.call(optionCards, function (card, index) {
-                var option = options[index] || null;
-                var isPlaceholder = !option;
-                var voteCount = isPlaceholder ? 0 : Number(option.vote_count || 0);
-                var share = totalVotes > 0 ? (voteCount / totalVotes) * 100 : 0;
-
-                var nameEl = card.querySelector('[data-selected-option-name]');
-                var partyEl = card.querySelector('[data-selected-option-party]');
-                var votesEl = card.querySelector('[data-selected-option-votes]');
-                var labelEl = card.querySelector('[data-selected-option-label]');
-                var shareEl = card.querySelector('[data-selected-option-share]');
-                var barEl = card.querySelector('[data-selected-option-bar]');
-
-                if (nameEl) nameEl.textContent = isPlaceholder ? 'Sin candidatura' : (option.candidate && option.candidate.name ? option.candidate.name : '');
-                if (partyEl) partyEl.textContent = isPlaceholder ? 'Espacio reservado' : (option.party && option.party.name ? option.party.name : '');
-                if (votesEl) votesEl.textContent = formatNumber(voteCount);
-                if (labelEl) labelEl.textContent = isPlaceholder ? 'Pendiente' : (option.candidate && option.candidate.name ? option.candidate.name : '');
-                if (shareEl) shareEl.textContent = share.toFixed(1) + '%';
-                if (barEl) barEl.style.width = share + '%';
-            });
-
-            var rows = Array.prototype.slice.call(list.querySelectorAll('[data-voting-row]'));
-            rows.forEach(function (row) {
-                var payloadText = row.getAttribute('data-voting-payload') || '';
-                try {
-                    var payload = JSON.parse(window.atob(payloadText));
-                    var sameScope = payload && payload.territory && territory && payload.territory.slug === territory.slug && payload.territory.scope_type === territory.scope_type;
-                    row.setAttribute('aria-current', sameScope ? 'page' : 'false');
-                    row.classList.toggle('ring-2', sameScope);
-                    row.classList.toggle('ring-brand-blue', sameScope);
-                } catch (error) {
-                    row.removeAttribute('aria-current');
-                }
-            });
         }
 
         function syncToggleState() {
@@ -495,10 +407,8 @@
                 body.classList.toggle('hidden');
                 syncToggleState();
             });
-            if (!currentSelection) {
-                body.classList.remove('hidden');
-                list.classList.remove('hidden');
-            }
+            body.classList.remove('hidden');
+            list.classList.remove('hidden');
             syncToggleState();
         }
 
@@ -508,42 +418,11 @@
 
             event.preventDefault();
 
-            var payloadText = row.getAttribute('data-voting-payload') || '';
-            var payload = null;
-
-            try {
-                payload = JSON.parse(window.atob(payloadText));
-            } catch (error) {
-                payload = null;
-            }
-
-            if (payload && payload.territory && payload.round) {
-                currentSelection = payload;
-                renderSelection(payload);
-
-                if (body && !body.classList.contains('hidden')) {
-                    body.classList.add('hidden');
-                }
-
-                syncToggleState();
-
-                var target = document.getElementById('votacion-seleccionada');
-                if (target && target.scrollIntoView) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-
-                return;
-            }
-
             var targetUrl = row.getAttribute('data-target-url') || '';
             if (!targetUrl) return;
 
-            window.location.href = targetUrl + '#votacion-seleccionada';
+            window.location.href = targetUrl;
         });
-
-        if (currentSelection) {
-            renderSelection(currentSelection);
-        }
 
         applyFilters();
     }

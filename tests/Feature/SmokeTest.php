@@ -13,8 +13,9 @@ final class SmokeTest extends TestCase
     {
         $this->get('/')
             ->assertOk()
-            ->assertSee('Sin selección')
-            ->assertSee('Selecciona una votación');
+            ->assertSee('Acceso directo')
+            ->assertSee('Abre una encuesta')
+            ->assertSee('Ver detalle');
     }
 
     public function test_health_endpoint_loads(): void
