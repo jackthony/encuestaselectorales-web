@@ -58,13 +58,29 @@ final class AesGcmVotePrivacy implements VotePrivacy
             ? base64_decode(substr($value, 7), true)
             : $value;
 
-        if ($decoded === false
-            || ($exact && strlen($decoded) !== $minimumBytes)
-            || (! $exact && strlen($decoded) < $minimumBytes)
+        if ($decoded !== false
+            && ($exact ? strlen($decoded) === $minimumBytes : strlen($decoded) >= $minimumBytes)
         ) {
-            throw new RuntimeException("Invalid runtime key: {$configKey}.");
+            return $decoded;
         }
 
-        return $decoded;
+        if (app()->environment(['local', 'testing'])) {
+            return $this->fallbackKey($configKey, $minimumBytes);
+        }
+
+        throw new RuntimeException("Invalid runtime key: {$configKey}.");
+    }
+
+    private function fallbackKey(string $configKey, int $length): string
+    {
+        $appKey = (string) config('app.key', '');
+        $seed = $appKey !== '' ? $appKey : 'encuestaselectorales-vote';
+        $material = hash('sha256', $seed.'|'.$configKey, true);
+
+        if ($length <= strlen($material)) {
+            return substr($material, 0, $length);
+        }
+
+        return str_repeat($material, (int) ceil($length / strlen($material)));
     }
 }
