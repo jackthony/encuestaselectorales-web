@@ -281,7 +281,7 @@
                             Aún no hay votos registrados en esta ronda. Cuando empiece a entrar participación, verás aquí el conteo por candidato y partido.
                     </div>
 
-                    <div id="selected-vote-options" class="{{ $displaySelectedTotalVotes === 0 ? 'hidden' : '' }} space-y-4">
+                    <div id="selected-vote-options" class="{{ $hasExplicitSelection && is_array($displaySelectedRound) && is_array($displaySelectedTerritory) ? '' : 'hidden' }} space-y-4">
                             @foreach ($displaySelectedOptions as $slot => $option)
                                 @php
                                     $isPlaceholder = ! is_array($option);

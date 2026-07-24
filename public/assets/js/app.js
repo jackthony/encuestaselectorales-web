@@ -162,7 +162,7 @@
             setVisibility(selectedContent, true);
 
             if (selectedZero) setVisibility(selectedZero, totalVotes === 0);
-            if (selectedOptions) setVisibility(selectedOptions, totalVotes !== 0);
+            if (selectedOptions) setVisibility(selectedOptions, true);
 
             var optionCards = selectedOptions ? selectedOptions.querySelectorAll('[data-selected-option-slot]') : [];
             Array.prototype.forEach.call(optionCards, function (card, index) {
@@ -301,52 +301,37 @@
 
             event.preventDefault();
 
+            var payloadText = row.getAttribute('data-voting-payload') || '';
+            var payload = null;
+
+            try {
+                payload = JSON.parse(window.atob(payloadText));
+            } catch (error) {
+                payload = null;
+            }
+
+            if (payload && payload.territory && payload.round) {
+                currentSelection = payload;
+                renderSelection(payload);
+
+                if (body && !body.classList.contains('hidden')) {
+                    body.classList.add('hidden');
+                }
+
+                syncToggleState();
+
+                var target = document.getElementById('votacion-seleccionada');
+                if (target && target.scrollIntoView) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+
+                return;
+            }
+
             var targetUrl = row.getAttribute('data-target-url') || '';
             if (!targetUrl) return;
 
-            fetch(targetUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-                .then(function (response) {
-                    if (!response.ok) throw new Error('Bad response');
-                    return response.text();
-                })
-                .then(function (html) {
-                    var parser = new DOMParser();
-                    var doc = parser.parseFromString(html, 'text/html');
-                    var nextSelection = doc.getElementById('selected-vote-content');
-                    var nextEmpty = doc.getElementById('selected-vote-empty');
-                    var nextTerritory = doc.getElementById('home-selected-territory');
-                    var nextRound = doc.getElementById('home-selected-round');
-
-                    if (nextTerritory && homeSelectedTerritory) {
-                        homeSelectedTerritory.textContent = nextTerritory.textContent || 'Sin selección';
-                    }
-                    if (nextRound && homeSelectedRound) {
-                        homeSelectedRound.textContent = nextRound.textContent || 'Selecciona una votación';
-                    }
-                    if (selectedContent && nextSelection) {
-                        selectedContent.innerHTML = nextSelection.innerHTML;
-                        selectedContent.classList.remove('hidden');
-                    }
-                    if (selectedEmpty && nextEmpty) {
-                        selectedEmpty.className = nextEmpty.className;
-                        selectedEmpty.innerHTML = nextEmpty.innerHTML;
-                    }
-
-                    currentSelection = null;
-
-                    if (body && !body.classList.contains('hidden')) {
-                        body.classList.add('hidden');
-                        syncToggleState();
-                    }
-
-                    var target = document.getElementById('votacion-seleccionada');
-                    if (target && target.scrollIntoView) {
-                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                })
-                .catch(function () {
-                    window.location.href = targetUrl;
-                });
+            window.location.href = targetUrl + '#votacion-seleccionada';
         });
 
         if (currentSelection) {
