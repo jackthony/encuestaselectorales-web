@@ -189,12 +189,37 @@
             card.setAttribute('data-display-order', String(option.display_order || 0));
         }
 
+        function updateShareImage(lastVoteAt) {
+            var wrapper = document.querySelector('[data-share-image-wrapper]');
+            if (!wrapper || !lastVoteAt) return;
+
+            var base = wrapper.getAttribute('data-share-image-base') || '';
+            if (!base) return;
+
+            var version = Math.floor(new Date(lastVoteAt).getTime() / 1000);
+            if (!version || isNaN(version)) return;
+
+            var versionedUrl = base + (base.indexOf('?') === -1 ? '?' : '&') + 'v=' + version;
+
+            var img = wrapper.querySelector('[data-share-image]');
+            if (img && img.getAttribute('src') !== versionedUrl) {
+                img.setAttribute('src', versionedUrl);
+            }
+
+            var link = wrapper.querySelector('[data-share-image-link]');
+            if (link) link.setAttribute('href', versionedUrl);
+
+            var download = document.querySelector('[data-share-image-download]');
+            if (download) download.setAttribute('href', versionedUrl);
+        }
+
         function render(payload, showBanner) {
             var result = getPayload(payload);
             if (!result || !result.round) return;
 
             var options = getOptions(result);
             var lastVoteAt = result.round.last_vote_at || result.last_vote_at || '';
+            updateShareImage(lastVoteAt);
             var totalVotes = Number(result.total_votes || (result.round && Array.isArray(result.round.options)
                 ? result.round.options.reduce(function (sum, option) {
                     return sum + Number(option.vote_count || 0);
