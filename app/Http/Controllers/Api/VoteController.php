@@ -67,8 +67,9 @@ final class VoteController extends Controller
             'status' => 'success',
             'code' => 'vote_registered',
             'message' => 'Voto registrado correctamente.',
+            'device_token' => $deviceToken,
             'data' => ['vote_id' => (string) $vote->getKey()],
-        ], 201)->cookie($this->deviceCookie($deviceToken));
+        ], 201)->cookie($this->deviceCookie($deviceToken, $request->isSecure()));
     }
 
     private function deviceToken(Request $request, mixed $submitted): string
@@ -94,7 +95,7 @@ final class VoteController extends Controller
         }
     }
 
-    private function deviceCookie(string $token): Cookie
+    private function deviceCookie(string $token, bool $secure): Cookie
     {
         return cookie(
             'encuestas_device',
@@ -102,7 +103,7 @@ final class VoteController extends Controller
             60 * 24 * 365,
             '/',
             null,
-            true,
+            $secure,
             true,
             false,
             'Lax',

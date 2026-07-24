@@ -27,12 +27,17 @@
                     <p class="text-lg text-brand-muted max-w-2xl">
                         Candidaturas y encuesta web de nivel {{ strtolower($scopeLabel) }}, diferenciada por ubigeo y ámbito electoral.
                     </p>
+                    <div class="mt-6 flex flex-wrap gap-3">
+                        <a href="{{ route('home') }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-brand-border bg-white px-5 py-3 text-sm font-bold text-brand-blue hover:border-brand-blue/30 hover:text-brand-green transition-colors">
+                            <i class="fas fa-arrow-left text-[11px]"></i>
+                            Volver al inicio
+                        </a>
+                        <a href="#conteo-actual" class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-blue px-5 py-3 text-sm font-bold text-white hover:bg-[#0a2060] transition-colors">
+                            Ver conteo actual
+                        </a>
+                    </div>
                 </div>
             </div>
-        </section>
-
-        <section class="max-w-7xl mx-auto px-4 -mt-5 relative z-10">
-            @include('partials.share-actions')
         </section>
 
         <section class="max-w-7xl mx-auto px-4 py-12">
@@ -119,7 +124,7 @@
                             </form>
                         </section>
 
-                        <section class="mt-8 bg-brand-card border border-brand-border rounded-2xl p-6 md:p-8 shadow-sm">
+                        <section id="conteo-actual" class="mt-8 bg-brand-card border border-brand-border rounded-2xl p-6 md:p-8 shadow-sm">
                             <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 border-b border-brand-border pb-5 mb-5">
                                 <div>
                                     <div class="text-[10px] uppercase tracking-widest text-brand-muted font-bold mb-2">Votación actual</div>
@@ -142,16 +147,17 @@
                                             $voteCount = (int) ($option['vote_count'] ?? 0);
                                             $voteShare = $activeRoundTotalVotes > 0 ? ($voteCount / $activeRoundTotalVotes) * 100 : 0;
                                         @endphp
-                                        <div class="rounded-xl border border-brand-border bg-white p-4">
+                                        <div class="rounded-xl border border-brand-border bg-white p-4 shadow-[0_1px_0_rgba(16,47,134,0.02)]">
                                             <div class="flex items-start justify-between gap-4 mb-2">
                                                 <div class="min-w-0">
+                                                    <div class="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-1">Resultado parcial</div>
                                                     <div class="font-bold text-brand-text truncate">{{ $option['candidate']['name'] ?? '' }}</div>
                                                     <div class="text-xs font-semibold uppercase tracking-wider text-brand-muted mt-1 truncate">
                                                         {{ $option['party']['name'] ?? '' }}
                                                     </div>
                                                 </div>
                                                 <div class="shrink-0 text-right">
-                                                    <div class="text-xl font-bold text-brand-blue tabular-nums">{{ number_format($voteCount) }}</div>
+                                                    <div class="text-2xl font-bold text-brand-blue tabular-nums">{{ number_format($voteCount) }}</div>
                                                     <div class="text-[10px] font-semibold uppercase tracking-wider text-brand-muted">votos</div>
                                                 </div>
                                             </div>
