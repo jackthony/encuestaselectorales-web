@@ -91,7 +91,7 @@
             <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center text-red-600 text-3xl mb-4">
                 <i class="fas fa-triangle-exclamation"></i>
             </div>
-            <h4 class="font-serif text-2xl font-bold text-brand-blue mb-2">No pudimos registrar el voto</h4>
+            <h4 id="paso-error-title" class="font-serif text-2xl font-bold text-brand-blue mb-2">No pudimos registrar el voto</h4>
             <p id="paso-error-texto" class="text-sm text-gray-600 leading-relaxed">
                 Ocurrió un error al intentar guardar tu voto.
             </p>

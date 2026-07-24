@@ -89,67 +89,182 @@
         var root = document.querySelector('[data-vote-live-root]');
         if (!root) return;
 
+        var territoryId = root.getAttribute('data-survey-territory-id') || '';
         var totalVotesEl = root.querySelector('[data-vote-live-total]');
         var bannerEl = root.querySelector('[data-vote-live-banner]');
+        var emptyEl = root.querySelector('[data-vote-live-empty]');
+        var listEl = root.querySelector('[data-vote-live-list]');
+        var updatedAtEl = root.querySelector('[data-vote-live-updated-at]');
+
+        if (!territoryId || !totalVotesEl || !emptyEl || !listEl) {
+            return;
+        }
+
         function formatNumber(value) {
             return new Intl.NumberFormat('es-PE').format(Number(value || 0));
         }
 
-        function updateFromResult(result) {
+        function formatDateTime(value) {
+            if (!value) return '';
+
+            var date = new Date(value);
+            if (isNaN(date.getTime())) return '';
+
+            return new Intl.DateTimeFormat('es-PE', {
+                dateStyle: 'medium',
+                timeStyle: 'short',
+                timeZone: 'America/Lima',
+            }).format(date);
+        }
+
+        function rankOptions(options) {
+            return options.slice().sort(function (left, right) {
+                var leftVotes = Number(left.vote_count || 0);
+                var rightVotes = Number(right.vote_count || 0);
+                if (leftVotes !== rightVotes) {
+                    return rightVotes - leftVotes;
+                }
+
+                var leftOrder = Number(left.display_order || 0);
+                var rightOrder = Number(right.display_order || 0);
+                if (leftOrder !== rightOrder) {
+                    return leftOrder - rightOrder;
+                }
+
+                return String(left.option_id || '').localeCompare(String(right.option_id || ''));
+            });
+        }
+
+        function getPayload(response) {
+            if (!response) return null;
+            if (response.round || response.territory) {
+                return response;
+            }
+            if (response.data && (response.data.round || response.data.territory)) {
+                return response.data;
+            }
+
+            return null;
+        }
+
+        function getOptions(payload) {
+            if (!payload || !payload.round) return [];
+            if (Array.isArray(payload.ranked_options) && payload.ranked_options.length > 0) {
+                return rankOptions(payload.ranked_options);
+            }
+
+            return rankOptions(Array.isArray(payload.round.options) ? payload.round.options : []);
+        }
+
+        function updateCard(card, option, totalVotes) {
+            var voteCount = Number(option.vote_count || 0);
+            var voteShare = totalVotes > 0 ? (voteCount / totalVotes) * 100 : 0;
+
+            var nameEl = card.querySelector('[data-vote-live-name]');
+            var partyEl = card.querySelector('[data-vote-live-party]');
+            var votesEl = card.querySelector('[data-vote-live-votes]');
+            var labelEl = card.querySelector('[data-vote-live-label]');
+            var shareEl = card.querySelector('[data-vote-live-share]');
+            var barEl = card.querySelector('[data-vote-live-bar]');
+
+            if (nameEl) {
+                nameEl.textContent = option.candidate && option.candidate.name ? option.candidate.name : '';
+            }
+            if (partyEl) {
+                partyEl.textContent = option.party && option.party.name ? option.party.name : '';
+            }
+            if (votesEl) {
+                votesEl.textContent = formatNumber(voteCount);
+            }
+            if (labelEl) {
+                labelEl.textContent = option.candidate && option.candidate.name ? option.candidate.name : '';
+            }
+            if (shareEl) {
+                shareEl.textContent = voteShare.toFixed(1) + '%';
+            }
+            if (barEl) {
+                barEl.style.width = voteShare + '%';
+            }
+
+            card.setAttribute('data-display-order', String(option.display_order || 0));
+        }
+
+        function render(payload, showBanner) {
+            var result = getPayload(payload);
             if (!result || !result.round) return;
 
-            var round = result.round;
-            var options = Array.isArray(round.options) ? round.options : [];
-            var totalVotes = Number(round.total_votes || 0);
+            var options = getOptions(result);
+            var lastVoteAt = result.round.last_vote_at || result.last_vote_at || '';
+            var totalVotes = Number(result.total_votes || (result.round && Array.isArray(result.round.options)
+                ? result.round.options.reduce(function (sum, option) {
+                    return sum + Number(option.vote_count || 0);
+                }, 0)
+                : 0));
+            var cards = Array.prototype.slice.call(listEl.querySelectorAll('[data-vote-live-card]'));
+            var cardByOptionId = {};
+            var fragment = document.createDocumentFragment();
 
-            if (totalVotesEl) {
-                totalVotesEl.textContent = formatNumber(totalVotes);
+            cards.forEach(function (card) {
+                cardByOptionId[String(card.getAttribute('data-option-id') || '')] = card;
+            });
+
+            totalVotesEl.textContent = formatNumber(totalVotes);
+            emptyEl.classList.toggle('hidden', totalVotes !== 0);
+            listEl.classList.toggle('hidden', totalVotes === 0);
+
+            if (updatedAtEl) {
+                var updatedLabel = formatDateTime(lastVoteAt);
+                updatedAtEl.textContent = updatedLabel ? 'Última actualización ' + updatedLabel : '';
+                updatedAtEl.classList.toggle('hidden', !updatedLabel);
             }
 
-            if (bannerEl) {
+            options.forEach(function (option) {
+                var optionId = String(option.option_id || '');
+                var card = cardByOptionId[optionId];
+                if (!card) return;
+
+                updateCard(card, option, totalVotes);
+                fragment.appendChild(card);
+            });
+
+            if (totalVotes > 0 && fragment.childNodes.length > 0) {
+                listEl.innerHTML = '';
+                listEl.appendChild(fragment);
+            }
+
+            if (showBanner && bannerEl) {
                 bannerEl.classList.remove('hidden');
             }
+        }
 
-            var cards = root.querySelectorAll('[data-vote-live-option]');
-            Array.prototype.forEach.call(cards, function (card, index) {
-                var option = options[index] || null;
-                var isPlaceholder = !option;
-                var voteCount = isPlaceholder ? 0 : Number(option.vote_count || 0);
-                var voteShare = totalVotes > 0 ? (voteCount / totalVotes) * 100 : 0;
+        function refresh(showBanner) {
+            if (document.hidden) return;
 
-                var nameEl = card.querySelector('[data-vote-live-name]');
-                var partyEl = card.querySelector('[data-vote-live-party]');
-                var votesEl = card.querySelector('[data-vote-live-votes]');
-                var labelEl = card.querySelector('[data-vote-live-label]');
-                var shareEl = card.querySelector('[data-vote-live-share]');
-                var barEl = card.querySelector('[data-vote-live-bar]');
-
-                if (nameEl) {
-                    nameEl.textContent = isPlaceholder ? 'Sin candidatura' : (option.candidate && option.candidate.name ? option.candidate.name : '');
+            fetch('/api/territories/' + encodeURIComponent(territoryId) + '/survey-round', {
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json'
                 }
-                if (partyEl) {
-                    partyEl.textContent = isPlaceholder ? 'Espacio reservado' : (option.party && option.party.name ? option.party.name : '');
-                }
-                if (votesEl) {
-                    votesEl.textContent = formatNumber(voteCount);
-                }
-                if (labelEl) {
-                    labelEl.textContent = isPlaceholder ? 'Pendiente' : (option.candidate && option.candidate.name ? option.candidate.name : '');
-                }
-                if (shareEl) {
-                    shareEl.textContent = voteShare.toFixed(1) + '%';
-                }
-                if (barEl) {
-                    barEl.style.width = voteShare + '%';
-                }
-            });
+            }).then(function (response) {
+                return response.json();
+            }).then(function (payload) {
+                render(payload, showBanner);
+            }).catch(function () {});
         }
 
         document.addEventListener('vote:registered', function (event) {
             var detail = event && event.detail ? event.detail : null;
-            if (!detail || !detail.result) return;
-            updateFromResult(detail.result);
+            if (detail && detail.territoryId && detail.territoryId !== territoryId) {
+                return;
+            }
+
+            refresh(true);
         });
+
+        refresh(false);
+        setInterval(function () {
+            refresh(false);
+        }, 15000);
     }
 
     function setupHomeVotingFilters() {

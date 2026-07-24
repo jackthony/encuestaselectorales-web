@@ -11,7 +11,7 @@
     var startTime;
     var latestGps = null;
 
-    var overlay, vistaSoftAsk, vistaCargando, vistaSmartMatch, vistaExito, vistaError, vistaErrorTexto;
+    var overlay, vistaSoftAsk, vistaCargando, vistaSmartMatch, vistaExito, vistaError, vistaErrorTexto, vistaErrorTitulo;
 
     function ocultarTodasLasVistas() {
         [vistaSoftAsk, vistaCargando, vistaSmartMatch, vistaExito, vistaError].forEach(function (v) {
@@ -19,8 +19,11 @@
         });
     }
 
-    function mostrarError(mensaje) {
+    function mostrarError(mensaje, titulo) {
         ocultarTodasLasVistas();
+        if (vistaErrorTitulo) {
+            vistaErrorTitulo.textContent = titulo || 'No pudimos registrar el voto';
+        }
         if (vistaErrorTexto) {
             vistaErrorTexto.textContent = mensaje || 'No pudimos registrar tu voto.';
         }
@@ -28,8 +31,88 @@
         if (vistaError) vistaError.classList.remove('hidden');
     }
 
+    function messageForGpsError(error) {
+        switch (error && error.code) {
+            case 1:
+                return {
+                    title: 'Activa tu ubicación',
+                    message: 'Debes permitir el acceso a ubicación para continuar con tu voto.',
+                };
+            case 2:
+                return {
+                    title: 'No detectamos tu ubicación',
+                    message: 'Tu navegador no pudo obtener una posición válida. Revisa el GPS o inténtalo otra vez.',
+                };
+            case 3:
+                return {
+                    title: 'La validación tardó demasiado',
+                    message: 'La confirmación de ubicación se quedó sin tiempo. Vuelve a intentarlo.',
+                };
+            default:
+                return {
+                    title: 'No pudimos validar tu ubicación',
+                    message: 'Revisa la ubicación de tu equipo e inténtalo nuevamente.',
+                };
+        }
+    }
+
+    function messageForVoteResponse(response, data) {
+        var code = data && typeof data.code === 'string' ? data.code : '';
+
+        if (code === 'duplicate_vote' || response.status === 409) {
+            return {
+                title: 'Voto ya registrado',
+                message: data && data.message ? data.message : 'Ya registramos un voto para esta encuesta desde este dispositivo o conexión.',
+            };
+        }
+
+        if (code === 'geographic_validation_failed' || response.status === 422) {
+            if (data && data.errors && typeof data.errors === 'object') {
+                var firstField = Object.keys(data.errors)[0];
+                var firstError = firstField && Array.isArray(data.errors[firstField]) ? data.errors[firstField][0] : null;
+
+                if (firstError) {
+                    return {
+                        title: 'Datos de voto inválidos',
+                        message: firstError,
+                    };
+                }
+            }
+
+            return {
+                title: 'Ubicación fuera de ámbito',
+                message: data && data.message ? data.message : 'No pudimos validar tu ubicación dentro del ámbito de esta encuesta.',
+            };
+        }
+
+        if (code === 'network_validation_failed' || response.status === 503) {
+            return {
+                title: 'No pudimos validar la conexión',
+                message: data && data.message ? data.message : 'Inténtalo nuevamente.',
+            };
+        }
+
+        if (response.status === 422 && data && data.errors) {
+            return {
+                title: 'Revisa tu voto',
+                message: 'La información enviada ya no es válida. Selecciona nuevamente y vuelve a intentarlo.',
+            };
+        }
+
+        return {
+            title: 'No pudimos registrar el voto',
+            message: data && data.message ? data.message : 'No pudimos registrar tu voto.',
+        };
+    }
+
     function iniciarValidacion() {
+        var context = getVoteContext();
         var seleccionado = document.querySelector('input[name="candidato"]:checked');
+        if (context && context.surveyRoundId && hasStoredVoteForRound(context.surveyRoundId)) {
+            mostrarError('Ya registraste tu voto en esta encuesta. Revisa el conteo actual.', 'Voto ya registrado');
+            return;
+        }
+
         if (!seleccionado) {
             mostrarError('Por favor, selecciona un candidato primero.');
             return;
@@ -77,7 +160,8 @@
     }
 
     function gpsError(error) {
-        mostrarError('No podemos registrar tu voto sin validación geográfica. Permiso denegado.');
+        var payload = messageForGpsError(error || {});
+        mostrarError(payload.message, payload.title);
     }
 
     function getVoteContext() {
@@ -87,6 +171,7 @@
         }
 
         return {
+            territoryId: host.getAttribute('data-territory-id') || '',
             surveyRoundId: host.getAttribute('data-survey-round-id') || host.getAttribute('data-encuesta-id') || '',
             territoryName: host.getAttribute('data-territory-name') || host.getAttribute('data-distrito-nombre') || ''
         };
@@ -123,6 +208,70 @@
         } catch (e) {}
 
         return token.toLowerCase();
+    }
+
+    function getStoredVotedRounds() {
+        var storageKey = 'encuestaselectorales.voted_rounds';
+        var stored = {};
+
+        try {
+            stored = JSON.parse(window.localStorage.getItem(storageKey) || '{}') || {};
+        } catch (e) {
+            stored = {};
+        }
+
+        return stored && typeof stored === 'object' ? stored : {};
+    }
+
+    function storeVotedRound(roundId, voteId) {
+        if (!roundId) {
+            return;
+        }
+
+        var storageKey = 'encuestaselectorales.voted_rounds';
+        var stored = getStoredVotedRounds();
+
+        stored[roundId] = {
+            vote_id: voteId || null,
+            recorded_at: new Date().toISOString()
+        };
+
+        try {
+            window.localStorage.setItem(storageKey, JSON.stringify(stored));
+        } catch (e) {}
+    }
+
+    function hasStoredVoteForRound(roundId) {
+        if (!roundId) {
+            return false;
+        }
+
+        return Object.prototype.hasOwnProperty.call(getStoredVotedRounds(), roundId);
+    }
+
+    function syncVoteAlreadyState() {
+        var context = getVoteContext();
+        if (!context || !context.surveyRoundId) {
+            return;
+        }
+
+        var banner = document.querySelector('[data-vote-already-registered]');
+        var button = document.getElementById('registrar-voto-btn');
+        var hasVote = hasStoredVoteForRound(context.surveyRoundId);
+
+        if (banner) {
+            banner.classList.toggle('hidden', !hasVote);
+        }
+
+        if (button) {
+            button.disabled = hasVote;
+            button.classList.toggle('opacity-60', hasVote);
+            button.classList.toggle('cursor-not-allowed', hasVote);
+
+            if (hasVote) {
+                button.innerHTML = '<i class="fas fa-check"></i> Ya votaste';
+            }
+        }
     }
 
     function storeDeviceToken(token) {
@@ -162,17 +311,17 @@
         var surveyOptionId = getSelectedCandidateId();
 
         if (!context || !context.surveyRoundId) {
-            mostrarError('No encontramos la encuesta activa de este ámbito electoral.');
+            mostrarError('No encontramos la encuesta activa de este ámbito electoral.', 'Encuesta no disponible');
             return;
         }
 
         if (!surveyOptionId) {
-            mostrarError('Por favor, selecciona un candidato primero.');
+            mostrarError('Por favor, selecciona un candidato primero.', 'Selecciona un candidato');
             return;
         }
 
         if (!latestGps) {
-            mostrarError('Primero valida tu ubicación.');
+            mostrarError('Primero valida tu ubicación.', 'Falta validar ubicación');
             return;
         }
 
@@ -200,8 +349,10 @@
                 return {};
             }).then(function (data) {
                 if (!response.ok) {
-                    var message = data && data.message ? data.message : 'No pudimos registrar tu voto.';
-                    throw new Error(message);
+                    var errorPayload = messageForVoteResponse(response, data || {});
+                    var error = new Error(errorPayload.message);
+                    error.title = errorPayload.title;
+                    throw error;
                 }
                 return data;
             });
@@ -209,7 +360,11 @@
             if (data && data.device_token) {
                 storeDeviceToken(data.device_token);
             }
+            storeVotedRound(context.surveyRoundId, data && data.data ? data.data.vote_id : null);
+            syncVoteAlreadyState();
             emitVoteRegistered({
+                territoryId: context.territoryId || '',
+                surveyRoundId: context.surveyRoundId || '',
                 voteId: data && data.data ? data.data.vote_id : null,
                 deviceToken: data && data.device_token ? data.device_token : null,
                 result: data && data.data ? data.data.result : null
@@ -217,7 +372,7 @@
             ocultarTodasLasVistas();
             if (vistaExito) vistaExito.classList.remove('hidden');
         }).catch(function (error) {
-            mostrarError(error.message || 'No pudimos registrar tu voto.');
+            mostrarError(error.message || 'No pudimos registrar tu voto.', error.title || null);
         });
     }
 
@@ -233,7 +388,9 @@
         vistaSmartMatch = document.getElementById('paso-smartmatch');
         vistaExito = document.getElementById('paso-exito');
         vistaError = document.getElementById('paso-error');
+        vistaErrorTitulo = document.getElementById('paso-error-title');
         vistaErrorTexto = document.getElementById('paso-error-texto');
+        syncVoteAlreadyState();
     });
 
     // Exposed globally: partials/widget-gps.php and page-specific vote

@@ -65,7 +65,9 @@
             @else
                 @php
                     $activeRoundOptions = $activeRound['options'] ?? [];
+                    $rankedOptions = $rankedOptions ?? [];
                     $activeRoundTotalVotes = (int) ($activeRound['total_votes'] ?? 0);
+                    $activeRoundLastVoteAt = $activeRound['last_vote_at'] ?? null;
                 @endphp
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
@@ -83,6 +85,7 @@
 
                             <form id="voto-panel"
                                   data-survey-round-id="{{ $activeRound['id'] }}"
+                                  data-territory-id="{{ $territory['id'] }}"
                                   data-territory-name="{{ $territory['name'] }}"
                                   class="space-y-7">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -117,14 +120,17 @@
                                     <p class="text-xs text-brand-muted max-w-xl">
                                         El voto exige permiso de ubicación. La ubicación se contrasta de forma aproximada con la zona configurada; la conexión se protege con cifrado y se bloquean duplicados por ronda.
                                     </p>
-                                    <button type="button" onclick="iniciarValidacion()" class="inline-flex items-center justify-center gap-2 bg-brand-blue text-white font-bold py-3 px-6 rounded-xl hover:bg-[#0a2060] transition-colors shadow-sm">
+                                    <button id="registrar-voto-btn" type="button" onclick="iniciarValidacion()" class="inline-flex items-center justify-center gap-2 bg-brand-blue text-white font-bold py-3 px-6 rounded-xl hover:bg-[#0a2060] transition-colors shadow-sm">
                                         <i class="fas fa-location-arrow"></i> Registrar mi voto
                                     </button>
+                                </div>
+                                <div class="hidden rounded-xl border border-[#bfe8d5] bg-[#f1fbf6] px-4 py-3 text-sm font-semibold text-brand-greenText" data-vote-already-registered>
+                                    Ya registraste tu voto en esta encuesta. El conteo se sigue actualizando abajo.
                                 </div>
                             </form>
                         </section>
 
-                        <section id="conteo-actual" class="mt-8 bg-brand-card border border-brand-border rounded-2xl p-6 md:p-8 shadow-sm" data-vote-live-root>
+                        <section id="conteo-actual" class="mt-8 bg-brand-card border border-brand-border rounded-2xl p-6 md:p-8 shadow-sm" data-vote-live-root data-survey-territory-id="{{ $territory['id'] }}">
                             <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 border-b border-brand-border pb-5 mb-5">
                                 <div>
                                     <div class="text-[10px] uppercase tracking-widest text-brand-muted font-bold mb-2">Votación actual</div>
@@ -133,6 +139,11 @@
                                 <div class="text-right">
                                     <div class="text-3xl font-bold text-brand-blue tabular-nums" data-vote-live-total>{{ number_format($activeRoundTotalVotes) }}</div>
                                     <div class="text-xs font-semibold uppercase tracking-wider text-brand-muted">votos emitidos</div>
+                                    <div class="mt-2 text-[11px] font-semibold text-brand-muted" data-vote-live-updated-at>
+                                        @if ($activeRoundLastVoteAt)
+                                            Última actualización {{ \Carbon\CarbonImmutable::parse($activeRoundLastVoteAt)->timezone('America/Lima')->format('d/m/Y H:i') }}
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 
@@ -140,42 +151,43 @@
                                 Tu voto fue registrado y el conteo se actualizó en esta pantalla.
                             </div>
 
-                            @if ($activeRoundTotalVotes === 0)
-                                <div class="rounded-xl border border-dashed border-brand-border bg-brand-surface px-5 py-6 text-sm text-brand-muted leading-relaxed">
-                                    Aún no hay votos registrados en esta ronda. Cuando empiece a entrar participación, verás aquí el conteo por candidato y partido.
-                                </div>
-                            @else
-                                <div class="space-y-4">
-                                    @foreach ($activeRoundOptions as $slot => $option)
-                                        @php
-                                            $voteCount = (int) ($option['vote_count'] ?? 0);
-                                            $voteShare = $activeRoundTotalVotes > 0 ? ($voteCount / $activeRoundTotalVotes) * 100 : 0;
-                                        @endphp
-                                        <div class="rounded-xl border border-brand-border bg-white p-4 shadow-[0_1px_0_rgba(16,47,134,0.02)]" data-vote-live-option data-vote-live-slot="{{ $slot }}">
-                                            <div class="flex items-start justify-between gap-4 mb-2">
-                                                <div class="min-w-0">
-                                                    <div class="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-1">Resultado parcial</div>
-                                                    <div class="font-bold text-brand-text truncate" data-vote-live-name>{{ $option['candidate']['name'] ?? '' }}</div>
-                                                    <div class="text-xs font-semibold uppercase tracking-wider text-brand-muted mt-1 truncate" data-vote-live-party>
-                                                        {{ $option['party']['name'] ?? '' }}
-                                                    </div>
-                                                </div>
-                                                <div class="shrink-0 text-right">
-                                                    <div class="text-2xl font-bold text-brand-blue tabular-nums" data-vote-live-votes>{{ number_format($voteCount) }}</div>
-                                                    <div class="text-[10px] font-semibold uppercase tracking-wider text-brand-muted">votos</div>
+                            <div data-vote-live-empty class="{{ $activeRoundTotalVotes === 0 ? '' : 'hidden' }} rounded-xl border border-dashed border-brand-border bg-brand-surface px-5 py-6 text-sm text-brand-muted leading-relaxed">
+                                Aún no hay votos registrados en esta ronda. Cuando empiece a entrar participación, verás aquí el conteo por candidato y partido.
+                            </div>
+
+                            <div data-vote-live-list class="space-y-4 {{ $activeRoundTotalVotes === 0 ? 'hidden' : '' }}">
+                                @foreach ($rankedOptions as $option)
+                                    @php
+                                        $voteCount = (int) ($option['vote_count'] ?? 0);
+                                        $voteShare = $activeRoundTotalVotes > 0 ? ($voteCount / $activeRoundTotalVotes) * 100 : 0;
+                                    @endphp
+                                    <div class="rounded-xl border border-brand-border bg-white p-4 shadow-[0_1px_0_rgba(16,47,134,0.02)]"
+                                         data-vote-live-card
+                                         data-option-id="{{ $option['option_id'] }}"
+                                         data-display-order="{{ $option['display_order'] ?? 0 }}">
+                                        <div class="flex items-start justify-between gap-4 mb-2">
+                                            <div class="min-w-0">
+                                                <div class="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-1">Resultado parcial</div>
+                                                <div class="font-bold text-brand-text truncate" data-vote-live-name>{{ $option['candidate']['name'] ?? '' }}</div>
+                                                <div class="text-xs font-semibold uppercase tracking-wider text-brand-muted mt-1 truncate" data-vote-live-party>
+                                                    {{ $option['party']['name'] ?? '' }}
                                                 </div>
                                             </div>
-                                            <div class="flex items-center justify-between text-xs font-semibold text-brand-muted mb-2">
-                                                <span data-vote-live-label>{{ $option['candidate']['name'] ?? '' }}</span>
-                                                <span data-vote-live-share>{{ number_format($voteShare, 1) }}%</span>
-                                            </div>
-                                            <div class="h-2 rounded-full bg-brand-surface overflow-hidden">
-                                                <div class="h-full rounded-full bg-brand-blue" data-vote-live-bar style="width: {{ $voteShare }}%"></div>
+                                            <div class="shrink-0 text-right">
+                                                <div class="text-2xl font-bold text-brand-blue tabular-nums" data-vote-live-votes>{{ number_format($voteCount) }}</div>
+                                                <div class="text-[10px] font-semibold uppercase tracking-wider text-brand-muted">votos</div>
                                             </div>
                                         </div>
-                                    @endforeach
-                                </div>
-                            @endif
+                                        <div class="flex items-center justify-between text-xs font-semibold text-brand-muted mb-2">
+                                            <span data-vote-live-label>{{ $option['candidate']['name'] ?? '' }}</span>
+                                            <span data-vote-live-share>{{ number_format($voteShare, 1) }}%</span>
+                                        </div>
+                                        <div class="h-2 rounded-full bg-brand-surface overflow-hidden">
+                                            <div class="h-full rounded-full bg-brand-blue" data-vote-live-bar style="width: {{ $voteShare }}%"></div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
                         </section>
                     </div>
 

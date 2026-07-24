@@ -107,6 +107,7 @@ final class PublicPortalPageServiceTest extends TestCase
             blockedReason: null,
             opensAt: CarbonImmutable::parse('2026-07-23 00:00:00', 'America/Lima'),
             closesAt: CarbonImmutable::parse('2026-08-23 00:00:00', 'America/Lima'),
+            lastVoteAt: null,
             options: [
                 new CandidateOptionData(
                     optionId: 'option-1',
