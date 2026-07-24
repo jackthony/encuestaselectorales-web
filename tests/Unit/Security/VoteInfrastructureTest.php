@@ -5,6 +5,7 @@ namespace Tests\Unit\Security;
 use App\Infrastructure\Persistence\Models\Territory;
 use App\Infrastructure\Security\AesGcmVotePrivacy;
 use App\Infrastructure\Security\ConfiguredGeographicValidator;
+use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 
 final class VoteInfrastructureTest extends TestCase
@@ -27,13 +28,20 @@ final class VoteInfrastructureTest extends TestCase
 
     public function test_geographic_validator_allows_testing_without_bounds_configuration(): void
     {
+        $originalMaxAccuracy = config('vote.max_gps_accuracy_meters');
+        Config::set('vote.max_gps_accuracy_meters', 100);
+
         $territory = new Territory([
             'official_code' => '070103',
         ]);
 
-        $validator = new ConfiguredGeographicValidator();
+        try {
+            $validator = new ConfiguredGeographicValidator();
 
-        self::assertTrue($validator->contains($territory, -12.057222, -77.095833, 18));
-        self::assertFalse($validator->contains($territory, -12.057222, -77.095833, 500));
+            self::assertTrue($validator->contains($territory, -12.057222, -77.095833, 18));
+            self::assertFalse($validator->contains($territory, -12.057222, -77.095833, 500));
+        } finally {
+            Config::set('vote.max_gps_accuracy_meters', $originalMaxAccuracy);
+        }
     }
 }
