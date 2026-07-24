@@ -10,10 +10,10 @@
                     Votos actuales en vivo
                 </span>
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 leading-tight tracking-tight mx-auto">
-                    Todas las votaciones activas en una sola portada.
+                    Sigue el pulso electoral en tiempo real.
                 </h1>
                 <p class="text-lg md:text-xl text-white/80 mb-10 max-w-2xl font-medium mx-auto">
-                    Elige una encuesta, revisa cómo va sin votar y entra al detalle cuando quieras participar.
+                    Explora cada encuesta, revisa el conteo al instante y entra al detalle con un clic.
                 </p>
             </div>
 
