@@ -179,44 +179,6 @@
                         </section>
                     </div>
 
-                    <section id="miniatura-voto" class="mt-8 hidden overflow-hidden rounded-3xl border border-brand-border bg-white shadow-sm lg:col-span-12" data-vote-preview-root>
-                        <div class="relative overflow-hidden bg-[radial-gradient(circle_at_top_right,_rgba(21,186,117,0.12),_transparent_34%),linear-gradient(135deg,#f8fbff_0%,#ffffff_56%,#f4f5f3_100%)] px-6 py-6 md:px-8 md:py-8">
-                            <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-                                <div class="max-w-2xl">
-                                    <div class="inline-flex rounded-full bg-brand-blue/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-blue" data-vote-preview-eyebrow>
-                                        Voto registrado
-                                    </div>
-                                    <h3 class="mt-4 text-3xl md:text-4xl font-serif font-bold text-brand-blue leading-tight" data-vote-preview-title>
-                                        {{ $territory['name'] }}
-                                    </h3>
-                                    <p class="mt-2 text-sm md:text-base text-brand-muted max-w-2xl" data-vote-preview-subtitle>
-                                        {{ $activeRound['title'] }}
-                                    </p>
-                                    <p class="mt-3 text-xs font-semibold uppercase tracking-widest text-brand-muted" data-vote-preview-meta>
-                                        Ronda {{ $activeRound['round_number'] ?? 1 }} · Ubigeo {{ $territory['official_code'] }}
-                                    </p>
-                                </div>
-                                <div class="rounded-2xl border border-brand-border bg-white px-5 py-4 shadow-sm lg:min-w-[15rem]">
-                                    <div class="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-1">Votos emitidos</div>
-                                    <div class="text-3xl font-bold text-brand-blue tabular-nums" data-vote-preview-total>{{ number_format($activeRoundTotalVotes) }}</div>
-                                    <div class="text-xs font-semibold uppercase tracking-wider text-brand-muted">resultado en vivo</div>
-                                </div>
-                            </div>
-
-                            <div class="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-3" data-vote-preview-results></div>
-
-                            <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                                <p class="text-xs text-brand-muted leading-relaxed max-w-2xl" data-vote-preview-footer>
-                                    Base: {{ number_format($activeRoundTotalVotes) }} votos · Actualizado: {{ now()->timezone('America/Lima')->format('d/m/Y H:i') }}
-                                </p>
-                                <a href="{{ route('home') }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-brand-border bg-white px-4 py-3 text-sm font-bold text-brand-blue hover:border-brand-blue/30 hover:text-brand-green transition-colors">
-                                    <i class="fas fa-house text-[11px]"></i>
-                                    Ir al inicio
-                                </a>
-                            </div>
-                        </div>
-                    </section>
-
                     <aside class="lg:col-span-4 space-y-5">
                         <div class="bg-brand-card border border-brand-border rounded-2xl p-6 shadow-sm">
                             <div class="text-[10px] uppercase tracking-widest text-brand-muted font-bold mb-3">Vigencia</div>
