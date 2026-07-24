@@ -156,7 +156,6 @@ Relaciones:
 Uso real en código:
 - `EloquentSurveyRoundQuery`
 - `RegisterVote`
-- `SurveyOptionEligibility`
 - `InitialSurveyRoundsSeeder`
 - `TransactionalElectoralCatalogImporter`
 
