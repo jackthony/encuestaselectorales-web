@@ -66,5 +66,5 @@ prod; vale la pena que Codex lo blinde.
 ## 5. Pendiente / a decidir con el usuario
 
 - Fuente de los polígonos/bounding boxes por distrito (¿shapefile INEI, Google Maps, algo ya usado en `scope.blade.php` para el mapa?).
-- Dónde vive el env de producción (no hay `railway.toml`/config de Railway en el repo) — confirmar plataforma antes de setear vars ahí.
+- ~~Dónde vive el env de producción~~ — confirmado: **Hostinger** (coincide con [[og-thumbnail-fase2-architecture]]: Business, `public_html`, sin root, 60 PHP workers compartidos entre 19 sitios). Hostinger compartido no tiene panel de "env vars" tipo Railway — el `.env` es un archivo real en el hosting, editado por File Manager/SFTP/SSH si el plan lo permite. Falta confirmar: ¿hay acceso SSH a esa cuenta, o solo File Manager? Quien suba las 3 claves + bounds tiene que escribir el `.env` de prod directamente, a mano, con cuidado de no pisarlo con el `.env` local (ver hallazgo de `VOTE_MAX_GPS_ACCURACY_METERS=50000` arriba — mismo riesgo aplica a las 3 claves si alguna vez se sincroniza el archivo entero por error).
 - ¿Rotación de claves planeada para el día de elección? Si no, `VOTE_ENCRYPTION_KEY_VERSION=1` fijo alcanza.
