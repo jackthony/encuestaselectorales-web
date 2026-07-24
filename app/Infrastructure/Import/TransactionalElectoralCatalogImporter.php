@@ -2,7 +2,6 @@
 
 namespace App\Infrastructure\Import;
 
-use App\Application\Import\Contracts\ElectoralCatalogImporter;
 use App\Application\Import\Data\CatalogImportOptions;
 use App\Application\Import\Data\CatalogImportSummary;
 use App\Application\Import\Data\NormalizedCatalogRow;
@@ -19,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Throwable;
 
-final readonly class TransactionalElectoralCatalogImporter implements ElectoralCatalogImporter
+final readonly class TransactionalElectoralCatalogImporter
 {
     public function __construct(
         private VersionedCatalogReader $reader,

@@ -2,11 +2,10 @@
 
 namespace App\Infrastructure\Import;
 
-use App\Application\Import\Contracts\CatalogSourceReader;
 use App\Application\Import\Data\CatalogImportDocument;
 use App\Application\Import\Exceptions\CatalogImportException;
 
-final readonly class VersionedCatalogReader implements CatalogSourceReader
+final readonly class VersionedCatalogReader
 {
     public function __construct(
         private CsvCatalogReader $csv,
