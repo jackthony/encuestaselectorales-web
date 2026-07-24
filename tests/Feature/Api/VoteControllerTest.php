@@ -152,5 +152,13 @@ final class VoteControllerTest extends TestCase
                 ->where('survey_option_id', $option->getKey())
                 ->count(),
         );
+
+        $vote = InteractiveVote::query()->firstOrFail();
+        self::assertNotSame('', (string) $vote->device_token_ciphertext);
+        self::assertNotSame('', (string) $vote->browser_fingerprint_ciphertext);
+        self::assertNotSame('', (string) $vote->device_token_nonce);
+        self::assertNotSame('', (string) $vote->browser_fingerprint_nonce);
+        self::assertNotSame('', (string) $vote->device_token_auth_tag);
+        self::assertNotSame('', (string) $vote->browser_fingerprint_auth_tag);
     }
 }

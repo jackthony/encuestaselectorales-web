@@ -22,33 +22,55 @@ final class AesGcmVotePrivacy implements VotePrivacy
         $ipHmacKey = $this->key('vote.ip_hmac_key', 32);
         $deviceHmacKey = $this->key('vote.device_hmac_key', 32);
         $version = max(1, (int) config('vote.encryption_key_version', 1));
-        $nonce = random_bytes(12);
-        $tag = '';
-        $ciphertext = openssl_encrypt(
-            $ip,
+        [$ipCiphertext, $ipNonce, $ipTag] = $this->encrypt($ip, $encryptionKey, 'client network signal');
+        [$deviceCiphertext, $deviceNonce, $deviceTag] = $this->encrypt(
+            trim($deviceToken),
+            $encryptionKey,
+            'device token',
+        );
+        [$browserCiphertext, $browserNonce, $browserTag] = $this->encrypt(
+            trim($browserFingerprint),
+            $encryptionKey,
+            'browser fingerprint',
+        );
+
+        return new PrivacySignals(
+            ipCiphertext: $ipCiphertext,
+            ipNonce: $ipNonce,
+            ipAuthTag: $ipTag,
+            encryptionKeyVersion: $version,
+            ipHmac: hash_hmac('sha256', $ip, $ipHmacKey),
+            ipHmacKeyVersion: $version,
+            deviceTokenCiphertext: $deviceCiphertext,
+            deviceTokenNonce: $deviceNonce,
+            deviceTokenAuthTag: $deviceTag,
+            deviceHmac: hash_hmac('sha256', trim($deviceToken), $deviceHmacKey),
+            deviceHmacKeyVersion: $version,
+            browserFingerprintCiphertext: $browserCiphertext,
+            browserFingerprintNonce: $browserNonce,
+            browserFingerprintAuthTag: $browserTag,
+            browserHmac: hash_hmac('sha256', trim($browserFingerprint), $deviceHmacKey),
+            browserHmacKeyVersion: $version,
+        );
+    }
+
+    public function decrypt(string $ciphertext, string $nonce, string $authTag): string
+    {
+        $encryptionKey = $this->key('vote.encryption_key', 32, exact: true);
+        $plainText = openssl_decrypt(
+            $ciphertext,
             'aes-256-gcm',
             $encryptionKey,
             OPENSSL_RAW_DATA,
             $nonce,
-            $tag,
+            $authTag,
         );
 
-        if ($ciphertext === false || strlen($tag) !== 16) {
-            throw new RuntimeException('Unable to protect the client network signal.');
+        if ($plainText === false) {
+            throw new RuntimeException('Unable to decrypt the protected signal.');
         }
 
-        return new PrivacySignals(
-            ipCiphertext: $ciphertext,
-            ipNonce: $nonce,
-            ipAuthTag: $tag,
-            encryptionKeyVersion: $version,
-            ipHmac: hash_hmac('sha256', $ip, $ipHmacKey),
-            ipHmacKeyVersion: $version,
-            deviceHmac: hash_hmac('sha256', trim($deviceToken), $deviceHmacKey),
-            deviceHmacKeyVersion: $version,
-            browserHmac: hash_hmac('sha256', trim($browserFingerprint), $deviceHmacKey),
-            browserHmacKeyVersion: $version,
-        );
+        return $plainText;
     }
 
     private function key(string $configKey, int $minimumBytes, bool $exact = false): string
@@ -69,6 +91,29 @@ final class AesGcmVotePrivacy implements VotePrivacy
         }
 
         throw new RuntimeException("Invalid runtime key: {$configKey}.");
+    }
+
+    /**
+     * @return array{0:string,1:string,2:string}
+     */
+    private function encrypt(string $plainText, string $encryptionKey, string $signalName): array
+    {
+        $nonce = random_bytes(12);
+        $tag = '';
+        $ciphertext = openssl_encrypt(
+            $plainText,
+            'aes-256-gcm',
+            $encryptionKey,
+            OPENSSL_RAW_DATA,
+            $nonce,
+            $tag,
+        );
+
+        if ($ciphertext === false || strlen($tag) !== 16) {
+            throw new RuntimeException("Unable to protect the {$signalName}.");
+        }
+
+        return [$ciphertext, $nonce, $tag];
     }
 
     private function fallbackKey(string $configKey, int $length): string

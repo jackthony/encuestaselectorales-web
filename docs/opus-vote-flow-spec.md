@@ -34,6 +34,28 @@ No incluye:
 - analytics,
 - ni reescritura de la arquitectura.
 
+## Decisión actual
+
+La primera versión del flujo de voto será estrictamente territorial y presencial:
+- solo se aceptan votos dentro del distrito validado por GPS y bounds configurados,
+- si la ubicación actual queda fuera del ámbito, el voto se rechaza,
+- no existe modo remoto en esta iteración.
+
+## Decisión futura pendiente
+
+La próxima semana se reevalúan estas casuísticas de producto para decidir si entran en una fase posterior:
+- voto desde fuera del distrito por viaje,
+- voto remoto con verificación alternativa,
+- tolerancia a GPS impreciso,
+- voto con geolocalización denegada,
+- reintento seguro si falló la red,
+- cambio de distrito o encuesta entre selección y envío,
+- criterios para empates y orden en vivo del conteo,
+- casos de doble pestaña, doble click y envío repetido.
+
+Texto base para esa decisión futura:
+`La primera versión del flujo de voto es estrictamente territorial: solo se aceptan votos dentro del distrito validado por GPS y bounds configurados. Los casos de voto remoto, viaje, geolocalización débil o excepciones operativas quedan fuera de alcance de esta iteración y se reevalúan la semana siguiente como decisión de producto.`
+
 ## Flujo
 
 ### 1. Selección
