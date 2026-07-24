@@ -6,19 +6,23 @@ El sistema SHALL transformar el `RoundResult`/ranked options de un territorio
 `SurveyRoundDetailFactory`) al shape `{eyebrow, title, subtitle, footer_text,
 results: [{position, candidate_name, party_name, percentage, votes,
 bar_width}]}` validado en Fase 1, sin duplicar la lógica de ranking/empates
-existente.
+existente. `footer_text` SHALL derivarse de `total_votes` +
+`SurveyRoundData::$lastVoteAt` (no de un timestamp nuevo ni inventado).
 
 #### Scenario: Ronda con votos
 - **WHEN** se transforma una ronda activa con `total_votes > 0` y opciones
   con `voteCount` distintos
 - **THEN** `results` queda ordenado igual que `ranked_options` (mismo criterio
-  de empate: votos desc, luego `display_order`, luego nombre), y cada
-  `percentage`/`bar_width` se calcula desde `voteCount / total_votes`
+  de empate: votos desc, luego `display_order`, luego nombre), cada
+  `percentage`/`bar_width` se calcula desde `voteCount / total_votes`, y
+  `footer_text` incluye la fecha/hora de `lastVoteAt` formateada
 
 #### Scenario: Ronda sin votos todavía
 - **WHEN** se transforma una ronda activa con `total_votes === 0`
-- **THEN** todas las opciones quedan con `percentage = 0` y `bar_width = 0`,
-  sin división por cero
+  (`lastVoteAt` es `null`)
+- **THEN** todas las opciones quedan con `percentage = 0` y `bar_width = 0`
+  sin división por cero, y `footer_text` muestra el total en 0 sin fecha de
+  actualización
 
 ### Requirement: Render server-side pixel-fiel al diseño aprobado
 El sistema SHALL generar un PNG de 1200x630 px usando PHP GD que reproduce la
@@ -39,19 +43,17 @@ de un navegador headless.
 
 ### Requirement: Cache por versión de datos, no por tiempo
 El sistema SHALL cachear el PNG generado en disco con una clave derivada
-determinísticamente del identificador de la ronda y los `voteCount` de sus
-opciones, y SHALL reusar el archivo cacheado mientras esa combinación no
-cambie.
+determinísticamente de `round.id` + `SurveyRoundData::$lastVoteAt`, y SHALL
+reusar el archivo cacheado mientras esa combinación no cambie.
 
-#### Scenario: Vote counts sin cambios
-- **WHEN** se solicita la miniatura dos veces seguidas sin que cambien los
-  votos de la ronda
+#### Scenario: Sin votos nuevos
+- **WHEN** se solicita la miniatura dos veces seguidas sin que `lastVoteAt`
+  cambie
 - **THEN** ambas respuestas usan el mismo archivo cacheado (no se regenera el
   PNG)
 
-#### Scenario: Vote counts cambian
-- **WHEN** cambian los `voteCount` de al menos una opción de la ronda entre
-  dos solicitudes
+#### Scenario: Entra un voto nuevo
+- **WHEN** `lastVoteAt` avanza entre dos solicitudes (nuevo voto registrado)
 - **THEN** la clave de cache cambia y se genera (y sirve) un PNG nuevo que
   refleja los resultados actualizados
 

@@ -35,12 +35,23 @@ Restricciones duras:
 
 ## Decisions
 
-**1. Clave de cache = hash determinístico de los vote counts, no timestamp.**
-`sha1($round->id . '|' . implode(',', array_map(fn($o) => "{$o->optionId}:{$o->voteCount}", $rankedOptions)))`.
-Alternativa descartada: agregar columna `updated_at`-like agregada por ronda
-— requiere migración y mantenerla sincronizada en cada voto (carril de
-Codex); el hash de vote counts da la misma garantía (cambia sí y solo sí el
-resultado visible cambia) sin tocar el modelo de datos ni el carril ajeno.
+**1. Clave de cache = `round.id` + `SurveyRoundData::$lastVoteAt`.**
+Actualizado 2026-07-23: Codex cerró el carril de voto en el commit `ffe2a77`
+(mergeado a `cleanup/second-pass` en `e2e6eec`) y agregó `lastVoteAt`
+(`?CarbonImmutable`, vía `EloquentSurveyRoundQuery::latestVoteAt()` =
+`MAX(votes.created_at)` de las opciones de la ronda) — es real, está
+commiteado, no es hipotético. Reemplaza la decisión anterior (hash de vote
+counts): `sha1($round->id . '|' . ($round->lastVoteAt?->toIso8601String() ?? 'no-votes'))`.
+Motivo del cambio: `lastVoteAt` es la misma señal que ya usa el resto del
+sistema (nada nuevo que sincronizar, no es una fuente paralela) y además
+resuelve gratis el footer `"Actualizado: DD/MM/AAAA HH:MM"` que en Fase 1 era
+un valor inventado en el fixture — ahora sale del mismo dato real que arma la
+clave de cache. Cuando `lastVoteAt` es `null` (ronda sin votos aún), el
+footer debe mostrar el total en 0 sin fecha de actualización (ver spec,
+requirement del transformer).
+No renombrar/mover `SurveyRoundData`, `CandidateOptionData` ni
+`EloquentSurveyRoundQuery` — son la fuente de verdad compartida con el flujo
+de voto (carril de Codex), este change solo las consume.
 
 **2. Archivo cacheado en disco, nombrado por territorio + hash:**
 `storage/app/og-thumbnails/{territory_id}-{hash}.png`. Si el archivo existe,

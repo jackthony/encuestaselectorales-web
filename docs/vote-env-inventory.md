@@ -45,7 +45,25 @@ Ambos son **hard blockers** de producción, no cosméticos:
 
 Ninguno de los dos está reservado a Codex (`RegisterVote`/`VoteController` sí lo están, pero configurar env vars no toca esos archivos).
 
-## 4. Pendiente / a decidir con el usuario
+## 4. Hallazgo post-merge (2026-07-23, merge `codex/fix-vote-flow` → `cleanup/second-pass`)
+
+El `.env` local (no trackeado, no tocar por accidente al copiar a prod) tiene
+`VOTE_MAX_GPS_ACCURACY_METERS=50000` — 500x el default de `config/vote.php`
+(`100`). Es útil para bootstrap local (no requiere GPS real preciso para
+probar), pero **si ese valor se copia tal cual a producción, la validación de
+precisión GPS queda efectivamente desactivada** (tolera 50km de margen de
+error). Confirmar explícitamente el valor de `VOTE_MAX_GPS_ACCURACY_METERS`
+en el entorno de producción, no asumir que "no seteado = default seguro" —
+si alguien clona el `.env` local por error, hereda el valor permisivo.
+
+De paso, esto rompe `tests/Unit/Security/VoteInfrastructureTest.php::test_geographic_validator_allows_testing_without_bounds_configuration`
+en local (`assertFalse($validator->contains(..., 500))` falla porque 500 <
+50000 ya no dispara el rechazo por precisión) — el test depende del valor de
+`.env` en vez de fijar `config(['vote.max_gps_accuracy_meters' => ...])`
+explícitamente en el propio test. Frágil independientemente del valor de
+prod; vale la pena que Codex lo blinde.
+
+## 5. Pendiente / a decidir con el usuario
 
 - Fuente de los polígonos/bounding boxes por distrito (¿shapefile INEI, Google Maps, algo ya usado en `scope.blade.php` para el mapa?).
 - Dónde vive el env de producción (no hay `railway.toml`/config de Railway en el repo) — confirmar plataforma antes de setear vars ahí.

@@ -7,6 +7,7 @@
 
 - [ ] 2.1 Crear transformer que reciba `RoundResult` (vía `SurveyRoundDetailFactory::make()`) y `TerritoryData`, y devuelva `{eyebrow, title, subtitle, footer_text, results[]}` según spec `og-thumbnail`
 - [ ] 2.2 Calcular `percentage`/`bar_width` por opción desde `voteCount`/`totalVotes`, tratando `totalVotes === 0` como `percentage = 0` en todas las opciones
+- [ ] 2.2b Derivar `footer_text` de `totalVotes` + `SurveyRoundData::$lastVoteAt` (formateado; sin fecha cuando `lastVoteAt` es `null`), no de un timestamp inventado
 - [ ] 2.3 Test unitario del transformer contra los 4 fixtures de `tests/Fixtures/og-results-preview*.php` (caso normal, 3 candidatos, empate, título largo) adaptados a partir de datos reales simulados
 
 ## 3. Renderer GD
@@ -19,10 +20,10 @@
 
 ## 4. Cache por versión de datos
 
-- [ ] 4.1 Implementar cálculo de clave de cache: hash determinístico de `round.id` + `voteCount` por opción (ver Decisión 1 en `design.md`)
+- [ ] 4.1 Implementar cálculo de clave de cache: `round.id` + `SurveyRoundData::$lastVoteAt` (ver Decisión 1 en `design.md`, actualizada tras el cierre del carril de voto en `ffe2a77`/`e2e6eec`)
 - [ ] 4.2 Implementar servicio de cache en disco (`storage/app/og-thumbnails/{territory_id}-{hash}.png`): servir si existe, generar y guardar si no
-- [ ] 4.3 Test: dos solicitudes con los mismos `voteCount` reusan el mismo archivo cacheado (no se regenera)
-- [ ] 4.4 Test: cambiar `voteCount` de una opción produce una clave distinta y un PNG nuevo
+- [ ] 4.3 Test: dos solicitudes con el mismo `lastVoteAt` reusan el mismo archivo cacheado (no se regenera)
+- [ ] 4.4 Test: `lastVoteAt` avanza (voto nuevo) → clave distinta y PNG nuevo
 
 ## 5. Endpoint
 
