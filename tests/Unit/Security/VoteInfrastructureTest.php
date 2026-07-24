@@ -48,10 +48,19 @@ final class VoteInfrastructureTest extends TestCase
         ));
     }
 
-    public function test_geographic_validator_allows_when_bounds_configuration_is_missing(): void
+    public function test_geographic_validator_only_checks_accuracy_and_ignores_bounds_configuration(): void
     {
         $originalMaxAccuracy = config('vote.max_gps_accuracy_meters');
+        $originalBounds = config('vote.territory_bounds');
         Config::set('vote.max_gps_accuracy_meters', 100);
+        Config::set('vote.territory_bounds', [
+            '070103' => [
+                'lat_min' => 0,
+                'lat_max' => 1,
+                'lng_min' => 0,
+                'lng_max' => 1,
+            ],
+        ]);
 
         $territory = new Territory([
             'official_code' => '070103',
@@ -64,6 +73,7 @@ final class VoteInfrastructureTest extends TestCase
             self::assertFalse($validator->contains($territory, -12.057222, -77.095833, 500));
         } finally {
             Config::set('vote.max_gps_accuracy_meters', $originalMaxAccuracy);
+            Config::set('vote.territory_bounds', $originalBounds);
         }
     }
 }

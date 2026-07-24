@@ -19,24 +19,8 @@ final class ConfiguredGeographicValidator implements GeographicValidator
             return false;
         }
 
-        $bounds = config("vote.territory_bounds.{$territory->official_code}");
-
-        if (! is_array($bounds)) {
-            // Bounds are an optional hardening layer. If production has no
-            // configured territory box yet, keep the vote flow unblocked and
-            // rely on the remaining protections (accuracy, IP and device HMAC).
-            return true;
-        }
-
-        foreach (['lat_min', 'lat_max', 'lng_min', 'lng_max'] as $key) {
-            if (! isset($bounds[$key]) || ! is_numeric($bounds[$key])) {
-                return false;
-            }
-        }
-
-        return $latitude >= (float) $bounds['lat_min']
-            && $latitude <= (float) $bounds['lat_max']
-            && $longitude >= (float) $bounds['lng_min']
-            && $longitude <= (float) $bounds['lng_max'];
+        // Territorial geofence was intentionally disabled to keep the vote
+        // flow usable in production. IP, device and GPS-accuracy checks remain.
+        return true;
     }
 }
