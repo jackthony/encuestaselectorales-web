@@ -158,10 +158,21 @@ El bootstrap local debe:
 - sembrar la ronda del distrito mostrado en producción,
 - dejar el flujo operativo sin depender de inserts manuales.
 
+## Rutas canónicas
+
+La URL canónica para Callao es:
+- `/encuestas/region/callao-region`
+
+Compatibilidad de legado:
+- `/encuestas/region/callao` debe responder con `301` hacia la URL canónica.
+
+Esto evita 404 para enlaces viejos, mantiene una sola URL pública y no duplica la lógica de la vista.
+
 ## Validaciones
 
 - `php artisan migrate --seed` debe dejar el distrito visible.
 - `/encuestas/district/carmen-de-la-legua-reynoso` debe abrir en local.
+- `/encuestas/region/callao` debe redirigir a `/encuestas/region/callao-region`.
 - el modal debe mostrar mensajes distintos para GPS y backend.
 - `POST /api/votes` debe devolver `201` al persistir.
 - el conteo en pantalla debe actualizarse sin reload.

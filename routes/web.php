@@ -16,6 +16,8 @@ Route::get('/metodologia.php', [StaticPublicPortalController::class, 'show'])
 Route::get('/quienes-somos.php', [StaticPublicPortalController::class, 'show'])
     ->defaults('page', 'quienes-somos.php');
 
+Route::redirect('/encuestas/region/callao', '/encuestas/region/callao-region', 301);
+
 Route::get('/encuestas/{scope}/{slug}', [PublicPortalController::class, 'scope'])
     ->whereIn('scope', ['region', 'province', 'district'])
     ->name('surveys.scope');
