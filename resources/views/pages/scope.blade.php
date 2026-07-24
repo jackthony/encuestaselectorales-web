@@ -124,16 +124,20 @@
                             </form>
                         </section>
 
-                        <section id="conteo-actual" class="mt-8 bg-brand-card border border-brand-border rounded-2xl p-6 md:p-8 shadow-sm">
+                        <section id="conteo-actual" class="mt-8 bg-brand-card border border-brand-border rounded-2xl p-6 md:p-8 shadow-sm" data-vote-live-root>
                             <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 border-b border-brand-border pb-5 mb-5">
                                 <div>
                                     <div class="text-[10px] uppercase tracking-widest text-brand-muted font-bold mb-2">Votación actual</div>
                                     <h3 class="text-2xl font-serif font-bold text-brand-blue">Conteo parcial por candidatura</h3>
                                 </div>
                                 <div class="text-right">
-                                    <div class="text-3xl font-bold text-brand-blue tabular-nums">{{ number_format($activeRoundTotalVotes) }}</div>
+                                    <div class="text-3xl font-bold text-brand-blue tabular-nums" data-vote-live-total>{{ number_format($activeRoundTotalVotes) }}</div>
                                     <div class="text-xs font-semibold uppercase tracking-wider text-brand-muted">votos emitidos</div>
                                 </div>
+                            </div>
+
+                            <div class="hidden mb-5 rounded-xl border border-[#bfe8d5] bg-[#f1fbf6] px-4 py-3 text-sm font-semibold text-brand-greenText" data-vote-live-banner>
+                                Tu voto fue registrado y el conteo se actualizó en esta pantalla.
                             </div>
 
                             @if ($activeRoundTotalVotes === 0)
@@ -142,31 +146,31 @@
                                 </div>
                             @else
                                 <div class="space-y-4">
-                                    @foreach ($activeRoundOptions as $option)
+                                    @foreach ($activeRoundOptions as $slot => $option)
                                         @php
                                             $voteCount = (int) ($option['vote_count'] ?? 0);
                                             $voteShare = $activeRoundTotalVotes > 0 ? ($voteCount / $activeRoundTotalVotes) * 100 : 0;
                                         @endphp
-                                        <div class="rounded-xl border border-brand-border bg-white p-4 shadow-[0_1px_0_rgba(16,47,134,0.02)]">
+                                        <div class="rounded-xl border border-brand-border bg-white p-4 shadow-[0_1px_0_rgba(16,47,134,0.02)]" data-vote-live-option data-vote-live-slot="{{ $slot }}">
                                             <div class="flex items-start justify-between gap-4 mb-2">
                                                 <div class="min-w-0">
                                                     <div class="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-1">Resultado parcial</div>
-                                                    <div class="font-bold text-brand-text truncate">{{ $option['candidate']['name'] ?? '' }}</div>
-                                                    <div class="text-xs font-semibold uppercase tracking-wider text-brand-muted mt-1 truncate">
+                                                    <div class="font-bold text-brand-text truncate" data-vote-live-name>{{ $option['candidate']['name'] ?? '' }}</div>
+                                                    <div class="text-xs font-semibold uppercase tracking-wider text-brand-muted mt-1 truncate" data-vote-live-party>
                                                         {{ $option['party']['name'] ?? '' }}
                                                     </div>
                                                 </div>
                                                 <div class="shrink-0 text-right">
-                                                    <div class="text-2xl font-bold text-brand-blue tabular-nums">{{ number_format($voteCount) }}</div>
+                                                    <div class="text-2xl font-bold text-brand-blue tabular-nums" data-vote-live-votes>{{ number_format($voteCount) }}</div>
                                                     <div class="text-[10px] font-semibold uppercase tracking-wider text-brand-muted">votos</div>
                                                 </div>
                                             </div>
                                             <div class="flex items-center justify-between text-xs font-semibold text-brand-muted mb-2">
-                                                <span>{{ $option['candidate']['name'] ?? '' }}</span>
-                                                <span>{{ number_format($voteShare, 1) }}%</span>
+                                                <span data-vote-live-label>{{ $option['candidate']['name'] ?? '' }}</span>
+                                                <span data-vote-live-share>{{ number_format($voteShare, 1) }}%</span>
                                             </div>
                                             <div class="h-2 rounded-full bg-brand-surface overflow-hidden">
-                                                <div class="h-full rounded-full bg-brand-blue" style="width: {{ $voteShare }}%"></div>
+                                                <div class="h-full rounded-full bg-brand-blue" data-vote-live-bar style="width: {{ $voteShare }}%"></div>
                                             </div>
                                         </div>
                                     @endforeach

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Application\Data\RegisterVoteData;
 use App\Application\Vote\RegisterVote;
+use App\Domain\Survey\Contracts\SurveyRoundQuery;
 use App\Domain\Vote\Exceptions\DuplicateVote;
 use App\Domain\Vote\Exceptions\GeographicValidationFailed;
 use App\Domain\Vote\Exceptions\VoteUnavailable;
@@ -19,6 +20,7 @@ final class VoteController extends Controller
 {
     public function __construct(
         private readonly RegisterVote $registerVote,
+        private readonly SurveyRoundQuery $rounds,
         private readonly TrustedClientIp $clientIp,
     ) {}
 
@@ -63,12 +65,18 @@ final class VoteController extends Controller
             );
         }
 
+        $vote->loadMissing('surveyRound');
+        $roundResult = $this->rounds->forTerritory((string) $vote->surveyRound->territory_id);
+
         return response()->json([
             'status' => 'success',
             'code' => 'vote_registered',
             'message' => 'Voto registrado correctamente.',
             'device_token' => $deviceToken,
-            'data' => ['vote_id' => (string) $vote->getKey()],
+            'data' => [
+                'vote_id' => (string) $vote->getKey(),
+                'result' => $roundResult->toArray(),
+            ],
         ], 201)->cookie($this->deviceCookie($deviceToken, $request->isSecure()));
     }
 

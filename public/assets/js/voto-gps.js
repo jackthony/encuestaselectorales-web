@@ -136,6 +136,27 @@
         } catch (e) {}
     }
 
+    function emitVoteRegistered(detail) {
+        if (!detail || typeof document === 'undefined' || typeof document.dispatchEvent !== 'function') {
+            return;
+        }
+
+        document.dispatchEvent(new CustomEvent('vote:registered', {
+            detail: detail
+        }));
+    }
+
+    function volverAResultados() {
+        cerrarModal();
+
+        var target = document.getElementById('conteo-actual');
+        if (target && typeof target.scrollIntoView === 'function') {
+            setTimeout(function () {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+        }
+    }
+
     function finalizarVoto() {
         var context = getVoteContext();
         var surveyOptionId = getSelectedCandidateId();
@@ -188,6 +209,11 @@
             if (data && data.device_token) {
                 storeDeviceToken(data.device_token);
             }
+            emitVoteRegistered({
+                voteId: data && data.data ? data.data.vote_id : null,
+                deviceToken: data && data.device_token ? data.device_token : null,
+                result: data && data.data ? data.data.result : null
+            });
             ocultarTodasLasVistas();
             if (vistaExito) vistaExito.classList.remove('hidden');
         }).catch(function (error) {
@@ -216,4 +242,5 @@
     window.solicitarGPS = solicitarGPS;
     window.finalizarVoto = finalizarVoto;
     window.cerrarModal = cerrarModal;
+    window.volverAResultados = volverAResultados;
 })();

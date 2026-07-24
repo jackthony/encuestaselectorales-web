@@ -85,6 +85,74 @@
         targets.forEach(function (el) { observer.observe(el); });
     }
 
+    function setupVoteLiveUpdates() {
+        var root = document.querySelector('[data-vote-live-root]');
+        if (!root) return;
+
+        var totalVotesEl = root.querySelector('[data-vote-live-total]');
+        var bannerEl = root.querySelector('[data-vote-live-banner]');
+
+        function formatNumber(value) {
+            return new Intl.NumberFormat('es-PE').format(Number(value || 0));
+        }
+
+        function updateFromResult(result) {
+            if (!result || !result.round) return;
+
+            var round = result.round;
+            var options = Array.isArray(round.options) ? round.options : [];
+            var totalVotes = Number(round.total_votes || 0);
+
+            if (totalVotesEl) {
+                totalVotesEl.textContent = formatNumber(totalVotes);
+            }
+
+            if (bannerEl) {
+                bannerEl.classList.remove('hidden');
+            }
+
+            var cards = root.querySelectorAll('[data-vote-live-option]');
+            Array.prototype.forEach.call(cards, function (card, index) {
+                var option = options[index] || null;
+                var isPlaceholder = !option;
+                var voteCount = isPlaceholder ? 0 : Number(option.vote_count || 0);
+                var voteShare = totalVotes > 0 ? (voteCount / totalVotes) * 100 : 0;
+
+                var nameEl = card.querySelector('[data-vote-live-name]');
+                var partyEl = card.querySelector('[data-vote-live-party]');
+                var votesEl = card.querySelector('[data-vote-live-votes]');
+                var labelEl = card.querySelector('[data-vote-live-label]');
+                var shareEl = card.querySelector('[data-vote-live-share]');
+                var barEl = card.querySelector('[data-vote-live-bar]');
+
+                if (nameEl) {
+                    nameEl.textContent = isPlaceholder ? 'Sin candidatura' : (option.candidate && option.candidate.name ? option.candidate.name : '');
+                }
+                if (partyEl) {
+                    partyEl.textContent = isPlaceholder ? 'Espacio reservado' : (option.party && option.party.name ? option.party.name : '');
+                }
+                if (votesEl) {
+                    votesEl.textContent = formatNumber(voteCount);
+                }
+                if (labelEl) {
+                    labelEl.textContent = isPlaceholder ? 'Pendiente' : (option.candidate && option.candidate.name ? option.candidate.name : '');
+                }
+                if (shareEl) {
+                    shareEl.textContent = voteShare.toFixed(1) + '%';
+                }
+                if (barEl) {
+                    barEl.style.width = voteShare + '%';
+                }
+            });
+        }
+
+        document.addEventListener('vote:registered', function (event) {
+            var detail = event && event.detail ? event.detail : null;
+            if (!detail || !detail.result) return;
+            updateFromResult(detail.result);
+        });
+    }
+
     function setupHomeVotingFilters() {
         var list = document.getElementById('home-voting-list');
         var body = document.getElementById('home-voting-body');
@@ -346,6 +414,7 @@
         setInterval(updateClock, 1000);
         setupMobileMenu();
         setupScrollAnimations();
+        setupVoteLiveUpdates();
         setupHomeVotingFilters();
     });
 })();
