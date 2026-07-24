@@ -8,6 +8,7 @@
         ? (preg_match('/^https?:\/\//i', (string) $shareImage) ? $shareImage : asset($shareImage))
         : null;
     $shareText = trim($shareTitle . ' ' . $shareUrl);
+    $shareImageBase = $shareImageUrl ? preg_replace('/\?.*$/', '', $shareImageUrl) : null;
     $buttonGridClass = $hasShareImage ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3';
 @endphp
 
@@ -22,9 +23,9 @@
         </div>
 
         @if ($hasShareImage && $shareImageUrl)
-            <div class="shrink-0 w-full max-w-[180px]">
-                <a href="{{ $shareImageUrl }}" target="_blank" rel="noopener" class="block">
-                    <img src="{{ $shareImageUrl }}" alt="{{ $shareTitle }}" class="w-full aspect-[4/5] object-cover rounded-2xl border border-brand-border shadow-sm">
+            <div class="shrink-0 w-full lg:max-w-[180px]" data-share-image-wrapper data-share-image-base="{{ $shareImageBase }}">
+                <a href="{{ $shareImageUrl }}" target="_blank" rel="noopener" class="block" data-share-image-link>
+                    <img src="{{ $shareImageUrl }}" alt="{{ $shareTitle }}" class="w-full aspect-[1200/630] object-cover rounded-2xl border border-brand-border shadow-sm" data-share-image>
                 </a>
             </div>
         @endif
@@ -46,7 +47,7 @@
             <i class="fas fa-link"></i> Copiar enlace
         </button>
         @if ($hasShareImage && $shareImageUrl)
-            <a href="{{ $shareImageUrl }}" download class="inline-flex items-center justify-center gap-2 rounded-xl border border-brand-border bg-white px-4 py-3 text-sm font-bold text-brand-blue hover:border-brand-blue/30 hover:text-brand-green transition-colors">
+            <a href="{{ $shareImageUrl }}" download class="inline-flex items-center justify-center gap-2 rounded-xl border border-brand-border bg-white px-4 py-3 text-sm font-bold text-brand-blue hover:border-brand-blue/30 hover:text-brand-green transition-colors" data-share-image-download>
                 <i class="fas fa-image"></i> Historia
             </a>
         @endif

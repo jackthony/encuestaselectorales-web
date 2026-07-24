@@ -40,10 +40,6 @@
             </div>
         </section>
 
-        <section class="max-w-7xl mx-auto px-4 pt-8">
-            @include('partials.share-actions')
-        </section>
-
         <section class="max-w-7xl mx-auto px-4 py-12">
             @if ($roundState !== 'active' || !$activeRound)
                 <div class="max-w-3xl bg-brand-card border-2 border-dashed border-brand-green/40 rounded-2xl p-8 md:p-10 shadow-sm">
@@ -208,6 +204,10 @@
                             <p class="text-xs text-white/60 mt-3">El contraste de ubicación usa una zona aproximada y no certifica límites distritales exactos.</p>
                         </div>
                     </aside>
+                </div>
+
+                <div class="mt-8">
+                    @include('partials.share-actions')
                 </div>
             @endif
         </section>
